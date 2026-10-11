@@ -94,14 +94,14 @@
 - Safety-committed and pushed all previously-untracked files in `RSGzen/UDiff` (`091f67c..9357fcc`) so the pre-merge state is fully recoverable.
 - Merged the two repos into one: the Next.js app stays at the repo root (Vercel unchanged); the Python pipeline was relocated under `pipeline/` with a clean `src/` + `data/{raw,interim,output}` layout.
 - Retired the Streamlit dashboard and its Dockerfile/config into `pipeline/legacy/`.
-- Preserved the pipeline's original GPLv3 text at `pipeline/LICENSE-GPLv3.txt`.
+- Relicensed the pipeline to MIT and removed the original GPLv3 text (repo is now MIT-only).
 - Wrote `docs/UDiff.md`, `docs/Tech Stack.md`, and this file.
 - Rewrote the top-level `README.md` (the old one had stale versions and a placeholder clone URL).
 
 **Did not do (left for the next agent):** refactor code / fix paths, extend the pipeline entrypoint, fix `requirements.txt`, re-scrape, web cleanup. See milestones M0, M2–M8.
 
 **Open items / decisions:**
-- **License reconciliation:** pipeline = GPLv3, repo = MIT. Owner to confirm which license governs the merged repo.
+- **License reconciliation:** resolved — relicensed to MIT; GPLv3 file removed.
 - **Repo name:** the GitHub repo is still `udiff-web`; renaming to `udiff` requires manual action (no `gh` CLI available). Renaming may affect the Vercel Git connection.
 - **Streamlit retirement:** `pipeline/legacy/` is kept for now; delete once confirmed unnecessary.
 - **Original `RSGzen/UDiff` repo:** retained as the pre-merge backup; can be archived later.

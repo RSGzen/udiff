@@ -66,4 +66,3 @@ Supporting files:
 - **`skill_class.json` is synthetic:** its course names are LLM-generated, not scraped from real university curricula — treat it as illustrative, not authoritative.
 - **Matching is lexical, not semantic:** the curriculum checker uses keyword/synonym matching, not embeddings.
 - **Code quality:** mixed human + AI-assisted code, **needs a refactor**. Notably, scripts resolve paths from `os.getcwd()` (they must be run from the repo root) and hard-code folder names; there are no tests and limited error handling.
-- **License:** the pipeline was previously GPLv3 (`pipeline/LICENSE-GPLv3.txt`); the merged repo carries an MIT `LICENSE`. This must be reconciled by the owner.

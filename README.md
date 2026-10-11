@@ -89,4 +89,4 @@ See [`docs/Milestones and Logs.md`](docs/Milestones%20and%20Logs.md). Highlights
 
 ## 📄 License
 
-MIT (see `LICENSE`). Note: the pipeline was previously under GPLv3 (`pipeline/LICENSE-GPLv3.txt`); licensing is pending reconciliation by the owner.
+MIT (see `LICENSE`).
