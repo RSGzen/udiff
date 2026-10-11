@@ -43,7 +43,8 @@ TARGET_PAGES = 15
 HEADLESS = False  # keep False to watch the clicks happen
 
 # --- LLM ---
-MODEL_NAME = "llama3.1"
+MODEL_NAME = "qwen3:8b"  # fits fully on an 8 GB GPU (~5.2 GB, Q4)
+MAX_DESCRIPTION_CHARS = 3500
 
 
 def ensure_utf8_stdout() -> None:

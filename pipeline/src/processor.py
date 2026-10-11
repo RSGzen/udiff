@@ -128,7 +128,7 @@ def extract_data(description):
        - "Unknown": If ambiguous.
 
     Job Description:
-    {description[:3500]}
+    {description[:config.MAX_DESCRIPTION_CHARS]}
     """
 
     try:
@@ -139,6 +139,7 @@ def extract_data(description):
                       {'role': 'user',
                        'content': user_message}],
             format='json',  # JSON mode guarantees a parseable response
+            think=False,  # extraction needs no long reasoning; ~2.6x faster
         )
         # Parse the string response into a real dictionary
         return json.loads(response['message']['content'])

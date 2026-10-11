@@ -82,7 +82,8 @@ def llm_query(class_subject, num_names):
                        'content': system_prompt},
                       {'role': 'user',
                        'content': user_message}],
-            format='json'
+            format='json',
+            think=False,  # course-name generation needs no long reasoning
         )
 
         content = response['message']['content']
