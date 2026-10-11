@@ -45,6 +45,9 @@ next-env.d.ts
 
 .vercel
 
+# local agent notes (not committed)
+AGENTS.md
+
 # python (pipeline)
 __pycache__/
 *.py[cod]

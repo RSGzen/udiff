@@ -1,32 +1,26 @@
 import time
-import os
 import pandas as pd
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
-import sys
-# Force output to UTF-8 to prevent pipeline crashes
-if sys.stdout.encoding != 'utf-8':
-    sys.stdout.reconfigure(encoding='utf-8')
+import config
 
 # --- CONFIGURATION ---
-INPUT_FOLDER_NAME = 'jobstreet_scraper'
-INPUT_FILE = 'job_links.csv'
-INPUT_FILE_PATH = os.path.join(os.getcwd(), INPUT_FOLDER_NAME, INPUT_FILE)
-
-OUTPUT_FOLDER_NAME = 'jobstreet_scraper'
-OUTPUT_FILE = 'job_details_full.csv'
-OUTPUT_FILE_PATH = os.path.join(os.getcwd(), OUTPUT_FOLDER_NAME, OUTPUT_FILE)
+headless_flag = config.HEADLESS
+job_links_csv_filepath = config.JOB_LINKS_CSV
+job_details_csv_filepath = config.JOB_DETAILS_CSV
 # ---------------------
+
+config.ensure_utf8_stdout()
 
 def scrape_details():
     # 1. Load the links we harvested
 
     try:
-        df = pd.read_csv(INPUT_FILE_PATH)
+        df = pd.read_csv(job_links_csv_filepath)
         print(f"Loaded {len(df)} jobs to process.")
 
     except FileNotFoundError:
-        print(f"Error: '{INPUT_FILE}' not found. Run scraper.py first.")
+        print(f"Error: '{job_links_csv_filepath}' not found. Run scraper.py first.")
         return
 
     # Create a column for the new data if it doesn't exist
@@ -34,25 +28,27 @@ def scrape_details():
         df['description'] = ""
 
     with sync_playwright() as p:
-        # headless=True is faster, but keep False if you want to watch it work
-        browser = p.chromium.launch(headless=False) 
+        # HEADLESS comes from config.py (False = watch the browser work).
+        browser = p.chromium.launch(headless=headless_flag)
         page = browser.new_page()
 
         # 2. Iterate through the links
-        for index, row in df.iterrows():
+        for i, (index, row) in enumerate(df.iterrows()):
             # Skip if we already have the description (allows restarting crashed scripts)
             if pd.notna(row['description']) and row['description'] != "":
                 continue
 
             url = row['link']
-            print(f"[{index+1}/{len(df)}] Visiting: {row['title']}...")
+            index_val = i + 1
+
+            print(f"[{index_val}/{len(df)}] Visiting: {row['title']}...")
 
             try:
-                page.goto(url, timeout=60000) # 60s timeout for slow pages
-                
+                page.goto(url, timeout=60000)  # 60s timeout for slow pages
+
                 # Wait for the description to load
                 page.wait_for_selector('div[data-automation="jobAdDetails"]', timeout=5000)
-                
+
                 # Extract HTML
                 html = page.content()
                 soup = BeautifulSoup(html, 'html.parser')
@@ -60,10 +56,10 @@ def scrape_details():
                 # 3. Target the Description Container
                 # JobStreet standard tag for the body text
                 desc_div = soup.find('div', attrs={"data-automation": "jobAdDetails"})
-                
+
                 if desc_div:
-                    # distinct separator to keep structure clean
-                    full_text = desc_div.get_text(separator="\n").strip() 
+                    # A distinct separator keeps the extracted structure clean.
+                    full_text = desc_div.get_text(separator="\n").strip()
                     df.at[index, 'description'] = full_text
                     print("   -> Success: Extracted description.")
                 else:
@@ -76,19 +72,19 @@ def scrape_details():
 
             # 4. Respectful Delay & Save Checkpoint
             # Don't hammer their server; sleep 1-2 seconds
-            time.sleep(1) 
-            
+            time.sleep(1)
+
             # Save every 5 rows so we don't lose data if it crashes
-            if index % 5 == 0:
-                df.to_csv(OUTPUT_FILE_PATH, index=False)
+            if index_val % 5 == 0:
+                df.to_csv(job_details_csv_filepath, index=False)
                 print("   [Checkpoint Saved]")
 
         browser.close()
 
     # Final Save
-    df.to_csv(OUTPUT_FILE_PATH, index=False)
+    df.to_csv(job_details_csv_filepath, index=False)
     print("\n--- EXTRACTION COMPLETE ---")
-    print(f"Data saved to '{OUTPUT_FILE}'")
+    print(f"Data saved to '{job_details_csv_filepath}'")
 
 if __name__ == "__main__":
     scrape_details()
