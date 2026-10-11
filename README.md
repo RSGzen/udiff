@@ -1,88 +1,92 @@
 # UDiff: University Diff
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue) ![Tailwind](https://img.shields.io/badge/Tailwind-CSS-3.0-38bdf8) ![License](https://img.shields.io/badge/License-MIT-green)
+![Next.js](https://img.shields.io/badge/Next.js-16-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind](https://img.shields.io/badge/Tailwind-CSS-4-38bdf8) ![Python](https://img.shields.io/badge/Python-3.x-3776AB) ![License](https://img.shields.io/badge/License-MIT-green)
 
 **Bridging the gap between Academic Curricula and Industry Reality.**
 
-UDiff is an intelligent career dashboard designed to help university students transition into founders and engineers. It analyzes live job market data to visualize the "gap" between what universities teach and what companies actually hire for.
+UDiff is an end-to-end project that scrapes live job-market data, uses an LLM to extract the skills employers demand, and visualises the "gap" between what universities teach and what companies actually hire for.
+
+> ⚠️ **Status: working prototype, pending polish.** This repo merges two previously separate repositories (a Python data pipeline and a Next.js web app). The pipeline code is experimental and needs refactoring. See [`docs/Milestones and Logs.md`](docs/Milestones%20and%20Logs.md).
+
+**Docs:** [`docs/UDiff.md`](docs/UDiff.md) (what it is) · [`docs/Tech Stack.md`](docs/Tech%20Stack.md) (how it's built) · [`docs/Milestones and Logs.md`](docs/Milestones%20and%20Logs.md) (plan + logs)
+
+## 🔗 Live site
+[Have a look for yourself!](https://udiff-web.vercel.app/)
+
+## 🧭 How it works
+
+```
+JobStreet ──scrape──▶ job_links.csv ──scrape──▶ job_details_full.csv
+        ──LLM extract──▶ job_analysis_final.json
+        ──aggregate──▶ gap_report.json ──LLM──▶ skill_class.json
+                                                       │
+                                    Next.js dashboard ◀┘ (+ roadmaps.json)
+```
+
+- **Data side (`pipeline/`)** — Python. Playwright + BeautifulSoup scrape postings; pandas cleans/dedupes; a local **Llama 3.1 8B** (Ollama) extracts hard/soft skills, technical context, and experience level; pandas aggregates a per-role gap report.
+- **Web side (repo root)** — Next.js 16 / React 19 / TypeScript / Tailwind 4, with Recharts and shadcn/ui, deployed on Vercel.
 
 ## 🚀 Features
 
 ### 1. Market Gap Dashboard
-- **Real-time Visualization:** Interactive Bar Charts and Treemaps (built with `recharts`) showing the most in-demand hard skills and technical contexts.
-- **Smart Filtering:** Segment data by role (Backend, AI, Security) and seniority (Junior, Mid, Senior).
-- **Focus Mode:** Interactive "Dim & Focus" UX patterns to highlight key data points without visual clutter.
+- **Visualization:** interactive bar charts and treemaps (Recharts) of the most in-demand hard skills and technical contexts.
+- **Smart Filtering:** segment by role (Backend, AI, Security, …) and seniority (Junior, Mid, Senior).
+- **Focus Mode:** interactive "dim & focus" UX to highlight key data points.
 
 ![Dashboard Screenshot](/public/screenshots/main_page1.png)
-![Dashboard Screenshot](/public/screenshots/main_page2.png)
-![Dashboard Screenshot](/public/screenshots/main_page3.png)
 
 ### 2. Gamified Career Roadmaps
-- **Dynamic Progression:** A "Tech Tree" style roadmap for 15+ career paths.
-- **Phase-Locking System:** Users must complete "Foundation" skills before unlocking "Advanced" tiers, enforcing structured learning.
-- **Persistent Progress:** Local state management tracks user progress across different career paths.
+- A "tech tree" style roadmap for 15+ career paths (foundation → core → advanced), with phase-locking and persisted local progress.
 
-![Dashboard Screenshot](/public/screenshots/career_path1.png)
+![Roadmap Screenshot](/public/screenshots/career_path1.png)
 
 ### 3. Curriculum Gap Analyzer (Beta)
-- **Client-Side Semantic Search:** A fast, privacy-focused keyword matcher that scans user syllabi against market demands.
-- **Semantic Expansion:** Utilizes a pre-computed "Brain" (`skill_class.json`) to map university course titles (e.g., "CS101") to industry skills (e.g., "Python"), enabling robust matching without expensive LLM calls.
+- Client-side keyword matcher that scans a syllabus against market demand using a pre-computed skill/curriculum dictionary (`skill_class.json`).
 
-![Dashboard Screenshot](/public/screenshots/curriculum_check1.png)
+![Curriculum Screenshot](/public/screenshots/curriculum_check1.png)
 
-## 🔗 Link to Website
-[Have a look for yourself!](https://udiff-web.vercel.app/)
+## 📦 Getting started
 
-## 🛠️ Tech Stack
-
-- **Framework:** Next.js 14 (App Router)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS + Shadcn UI
-- **Visualization:** Recharts
-- **Data:** Custom JSON datasets (Scraped & Synthesized)
-- **Deployment:** Vercel
-
-## 📦 Getting Started
-
-1. **Clone the repository**
-   ```bash
-   git clone [https://github.com/yourusername/udiff.git](https://github.com/yourusername/udiff.git)
-   cd udiff
-
-2. **Install dependencies**
-    ```bash
-    npm install
-
-3. **Run the development server**
-    ```bash
-    npm run dev
-
-4. **Open your browser**
-    Navigate to http://localhost:3000 to see the website.
-
-## 📂 Project Structure
-
+### Web app
 ```bash
-src/
-├── app/                  # Next.js App Router pages
-│   ├── curriculum/       # Curriculum Check feature
-│   ├── roadmap/          # Interactive Roadmap feature
-│   └── page.tsx          # Main Dashboard
-├── components/
-│   ├── dashboard/        # Charts & Metric Cards
-│   ├── ui/               # Shadcn Reusable Components
-│   └── Sidebar.tsx       # Main Navigation
-├── data/
-│   ├── gap_report.json   # Market Analysis Data
-│   ├── roadmaps.json     # Career Path Definitions
-│   └── skill_class.json  # Semantic Synonym Dictionary
-└── lib/                  # Utilities
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-## 🔮 Future Roadmap
+### Data pipeline (run from the repo ROOT)
+```bash
+# requires Python 3.x and Ollama running with the 'llama3.1' model
+pip install -r pipeline/requirements.txt
+python pipeline/src/pipeline.py --skip-scrape   # steps 1-4
+python pipeline/src/curriculum_generation.py    # step 5 (not yet in the orchestrator)
+```
+> Paths currently use `os.getcwd()`, so the pipeline must be run from the repo root. This is scheduled to be fixed (see docs).
 
-[ ] Live Scraping Pipeline: Automate the gap_report.json updates using Python/Scrapy.
+## 📂 Project structure
 
-[ ] LLM Integration: Replace the keyword matcher with a local LLM (Ollama) for deeper syllabus understanding.
+```
+.
+├── docs/                     # UDiff.md, Tech Stack.md, Milestones and Logs.md
+├── pipeline/                 # Python data pipeline
+│   ├── src/                  # scraper, processor, analyzer, curriculum, orchestrator
+│   ├── data/{raw,interim,output}
+│   ├── legacy/               # retired Streamlit dashboard
+│   └── requirements.txt
+├── src/                      # Next.js app (app router, components, data, types)
+├── public/                   # static assets + screenshots
+└── README.md
+```
 
-[ ] User Auth: Save progress to a database (Supabase/Firebase).
+## 🛠️ Tech stack
+
+- **Data:** Python, Playwright, BeautifulSoup, pandas, Ollama (Llama 3.1 8B)
+- **Web:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, Recharts
+- **Deploy:** Vercel
+
+## 🔮 Roadmap
+
+See [`docs/Milestones and Logs.md`](docs/Milestones%20and%20Logs.md). Highlights: refactor pipeline paths/config, single robust entrypoint, re-scrape & refresh data, web cleanup, automate the JSON data contract.
+
+## 📄 License
+
+MIT (see `LICENSE`). Note: the pipeline was previously under GPLv3 (`pipeline/LICENSE-GPLv3.txt`); licensing is pending reconciliation by the owner.

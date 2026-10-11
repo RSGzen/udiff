@@ -44,3 +44,14 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# python (pipeline)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+pipeline/**/*.log
