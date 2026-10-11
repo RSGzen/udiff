@@ -23,7 +23,7 @@ JobStreet ──scrape──▶ job_links.csv ──scrape──▶ job_details_
                                     Next.js dashboard ◀┘ (+ roadmaps.json)
 ```
 
-- **Data side (`pipeline/`)** — Python. Playwright + BeautifulSoup scrape postings; pandas cleans/dedupes; a local **Llama 3.1 8B** (Ollama) extracts hard/soft skills, technical context, and experience level; pandas aggregates a per-role gap report.
+- **Data side (`pipeline/`)** — Python. Playwright + BeautifulSoup scrape postings; pandas cleans/dedupes; a local **Qwen3 8B** (Ollama) extracts hard/soft skills, technical context, and experience level; pandas aggregates a per-role gap report.
 - **Web side (repo root)** — Next.js 16 / React 19 / TypeScript / Tailwind 4, with Recharts and shadcn/ui, deployed on Vercel.
 
 ## 🚀 Features
@@ -55,12 +55,12 @@ npm run dev        # http://localhost:3000
 
 ### Data pipeline (run from the repo ROOT)
 ```bash
-# requires Python 3.x and Ollama running with the 'llama3.1' model
+# requires Python 3.x and Ollama running the 'qwen3:8b' model
 pip install -r pipeline/requirements.txt
 python pipeline/src/pipeline.py --skip-scrape   # steps 1-4
 python pipeline/src/curriculum_generation.py    # step 5 (not yet in the orchestrator)
 ```
-> Paths currently use `os.getcwd()`, so the pipeline must be run from the repo root. This is scheduled to be fixed (see docs).
+> Paths resolve from the repo root via `pipeline/src/config.py` (M2, done). The orchestrator (`pipeline.py`) is still being repaired (M3) — run the individual steps for now.
 
 ## 📂 Project structure
 
@@ -79,7 +79,7 @@ python pipeline/src/curriculum_generation.py    # step 5 (not yet in the orchest
 
 ## 🛠️ Tech stack
 
-- **Data:** Python, Playwright, BeautifulSoup, pandas, Ollama (Llama 3.1 8B)
+- **Data:** Python, Playwright, BeautifulSoup, pandas, Ollama (Qwen3 8B)
 - **Web:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, Recharts
 - **Deploy:** Vercel
 

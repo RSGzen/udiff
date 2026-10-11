@@ -12,7 +12,7 @@ UDiff is two halves: a **Python data pipeline** and a **Next.js web app**. They 
 | Scraping | **Playwright** (sync API, Chromium) | Drive the job board, paginate, click "Next", render lazy content, extract listing fields |
 | HTML parsing | **BeautifulSoup 4** (+ `html.parser`) | Pull the job-description container out of the fetched page |
 | Data wrangling | **pandas** | CSV/JSON I/O, de-duplication, group-by aggregation |
-| LLM extraction | **Ollama** running **Llama 3.1 8B** | Structured skill/context/experience extraction (JSON mode), and course-name generation. Runs locally on an RTX 4060 Ti 8 GB |
+| LLM extraction | **Ollama** running **Qwen3 8B** | Structured skill/context/experience extraction (JSON mode), and course-name generation. Runs locally on an RTX 4060 Ti 8 GB |
 | Std library | `re`, `json`, `hashlib`, `subprocess`, `argparse`, `pathlib`/`os`, `time`, `datetime` | Text cleaning, fingerprinting, orchestration |
 | Legacy dashboard | **Streamlit** + **Plotly** + **WordCloud** + **matplotlib** | The retired prototype dashboard (`pipeline/legacy/dashboard.py`) |
 | Legacy packaging | **Docker** | Used to deploy the retired Streamlit dashboard |
@@ -27,7 +27,7 @@ Data artifacts:
 | `pipeline/data/output/gap_report.json` | `analyzer.py` | Aggregated market report (consumed by the web app) |
 | `pipeline/data/output/skill_class.json` | `curriculum_generation.py` | Skill→course synonym dictionary (consumed by the web app) |
 
-> **Note:** the pipeline currently resolves paths with `os.getcwd()`, so scripts must be run from the repo root (or fixed during the planned refactor).
+> **Note:** paths now resolve from the repo root via `pipeline/src/config.py` (M2, done), so scripts run from any directory.
 
 ---
 

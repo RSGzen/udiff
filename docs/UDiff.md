@@ -26,7 +26,7 @@ The system is a **batch data pipeline** that feeds a **static web dashboard**. D
 flowchart LR
     A[JobStreet search pages] -->|Playwright| B[job_links.csv]
     B -->|Playwright + BS4| C[job_details_full.csv]
-    C -->|clean / dedupe / parse| D[Llama 3.1 via Ollama]
+    C -->|clean / dedupe / parse| D[Qwen3 8B via Ollama]
     D --> E[job_analysis_final.json]
     E -->|categorize + aggregate| F[gap_report.json]
     F --> G[LLM curriculum generator]
@@ -40,7 +40,7 @@ flowchart LR
 |---|---|---|---|
 | 1. Scrape links | `pipeline/src/scraper.py` | JobStreet → `job_links.csv` | For each search query (10 role keywords), paginates results and collects title, company, location, salary, link |
 | 2. Scrape details | `pipeline/src/scraper_details.py` | `job_links.csv` → `job_details_full.csv` | Visits each listing and extracts the full job description |
-| 3. Extract skills | `pipeline/src/processor.py` | CSV → `job_analysis_final.json` | Cleans text, parses salary, normalizes location, de-duplicates (URL + content hash), then asks **Llama 3.1 8B** (Ollama, JSON mode) for `hard_skills`, `soft_skills`, `technical_context`, `experience_level` |
+| 3. Extract skills | `pipeline/src/processor.py` | CSV → `job_analysis_final.json` | Cleans text, parses salary, normalizes location, de-duplicates (URL + content hash), then asks **Qwen3 8B** (Ollama, JSON mode) for `hard_skills`, `soft_skills`, `technical_context`, `experience_level` |
 | 4. Analyze market | `pipeline/src/analyzer.py` | JSON → `gap_report.json` | Buckets job titles into role categories via keyword heuristics; aggregates top skills/contexts and salary stats per category × experience level |
 | 5. Curriculum generator | `pipeline/src/curriculum_generation.py` | `gap_report.json` → `skill_class.json` | For each category's top skills, asks the LLM to generate plausible university course names → a skill→course synonym dictionary |
 | 6. Dashboard | `web/` (Next.js) | JSONs → website | Renders the gap report, career roadmaps, and curriculum checker |
@@ -65,4 +65,4 @@ Supporting files:
 - **Salary sparsity:** many postings hide salary, so salary averages are noisy.
 - **`skill_class.json` is synthetic:** its course names are LLM-generated, not scraped from real university curricula — treat it as illustrative, not authoritative.
 - **Matching is lexical, not semantic:** the curriculum checker uses keyword/synonym matching, not embeddings.
-- **Code quality:** mixed human + AI-assisted code, **needs a refactor**. Notably, scripts resolve paths from `os.getcwd()` (they must be run from the repo root) and hard-code folder names; there are no tests and limited error handling.
+- **Code quality:** mixed human + AI-assisted code. Path resolution was centralised in `pipeline/src/config.py` during M2 (scripts no longer depend on `os.getcwd()`); the orchestrator still needs repair (M3) and there are no tests yet.

@@ -38,22 +38,24 @@
 
 ## 2. Milestones (polish plan)
 
-### M0 — Triage & baseline `Pending`
+### M0 — Triage & baseline `Done (12 Oct 2026)`
 - Confirm `web`: `npm install`, `npm run build`, `npm run lint` all pass; record current output.
 - Map every script's inputs/outputs and current path assumptions.
 - Decide keep/drop for `legacy/` (currently retired, not deleted).
-- **Done when:** a written baseline exists and the web app builds locally.
+- **Result:** `next build` and `tsc --noEmit` pass; `npm run lint` fails (15 errors); pipeline un-runnable (dead post-merge paths).
+- **Done when:** a written baseline exists and the web app builds locally. ✅
 
 ### M1 — Publish the pipeline `Done (11 Oct 2026)`
 - The entire pipeline was previously **unpushed** (only `dashboard.py` + one JSON were public).
 - Committed and pushed everything in the original repo; merged into this repo under `pipeline/`.
 - **Done when:** all pipeline scripts are visible on GitHub. ✅
 
-### M2 — Restructure into a clean package `In progress`
+### M2 — Restructure into a clean package `Done (12 Oct 2026)`
 - Introduce a central `config.py` (queries, page depth, model name, paths).
 - Replace every `os.getcwd()` path with `pathlib` paths resolved **relative to the repo root**.
 - Group code as a proper module (`pipeline/src/udiff/…`) or keep a flat `src/` with a clear `__init__.py`.
-- **Done when:** scripts run identically from the repo root regardless of cwd.
+- **Result:** `pipeline/src/config.py` is the single source of truth; all six scripts resolve paths from `Path(__file__)`. `pipeline.py`'s dead `SCRIPTS` folder names are handled under M3.
+- **Done when:** scripts run identically from the repo root regardless of cwd. ✅
 
 ### M3 — Single robust entrypoint `In progress`
 - Extend `pipeline/src/pipeline.py` to include **step 5 (curriculum generation)** and expose step selection flags (`--steps`, `--skip-scrape`).
@@ -106,6 +108,16 @@
 - **Streamlit retirement:** `pipeline/legacy/` is kept for now; delete once confirmed unnecessary.
 - **Original `RSGzen/UDiff` repo:** retained as the pre-merge backup; can be archived later.
 
+### 12_10_2026 — M2 refactor + LLM upgrade, docs pass (assistant)
+**Did:**
+- M0 triage: `next build`/`tsc` pass, `npm run lint` fails (15 errors), pipeline un-runnable.
+- M2: added `pipeline/src/config.py` (single source of truth); converted all six scripts off `os.getcwd()` to `Path(__file__)`; PEP-8 comment/whitespace pass (`ruff`).
+- Upgraded the extraction model `llama3.1` → `qwen3:8b` (fits 8 GB VRAM fully) and set `think=False`; measured ~13 s → ~5 s per posting.
+- Updated `README.md`, `docs/UDiff.md`, `docs/Tech Stack.md` to match.
+
+**Did not do (next):** M3 orchestrator repair; M4 `requirements.txt`; M5 re-scrape; M6 web cleanup.
+**Open items:** planned order changed to M5 (re-scrape) before finishing M4/M3, because refreshing data gates the value of the run.
+
 ---
 
 ## 4. Backlog (feature requests, carried from `future_changes.txt`)
@@ -125,11 +137,11 @@
 npm install
 npm run dev            # http://localhost:3000
 
-# Pipeline (run from the repo ROOT -- paths use os.getcwd())
-# requires: Python 3.x, Ollama running with the llama3.1 model
+# Pipeline (paths resolve from the repo root; run from anywhere after `pip install -r`)
+# requires: Python 3.x, Ollama running the qwen3:8b model
 pip install -r pipeline/requirements.txt
-python pipeline/src/pipeline.py --skip-scrape   # steps 1-4
-python pipeline/src/curriculum_generation.py    # step 5 (not yet in the orchestrator)
+python pipeline/src/pipeline.py --skip-scrape   # steps 1-4 (orchestrator repair = M3)
+python pipeline/src/curriculum_generation.py    # step 5
 ```
 
 > Expect path fixes in M2–M3; the above reflects the current prototype.
