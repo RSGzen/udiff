@@ -1,3 +1,9 @@
+"""
+RETIRED: original JobStreet search scraper. Superseded by fetch_jobs.py (JSearch
+API) in M5 because automated scraping is disallowed by JobStreet's robots.txt and
+Terms of Use. Kept for reference; to run, put pipeline/src on sys.path.
+"""
+
 import time
 from playwright.sync_api import sync_playwright
 import pandas as pd

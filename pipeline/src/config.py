@@ -7,6 +7,7 @@ which directory you run them from. Import what you need; never use os.getcwd().
     from config import JOB_LINKS_CSV, MODEL_NAME
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -22,6 +23,23 @@ OUTPUT_DIR = DATA_DIR / "output"
 
 # The Next.js app bundles its JSON from here (see docs: data contract).
 WEB_DATA_DIR = PROJECT_ROOT / "src" / "data"
+
+
+def load_env_key(name: str) -> str:
+    """Read a secret from the environment, then fall back to pipeline/.env."""
+    value = os.environ.get(name)
+    if value:
+        return value
+    env_file = PIPELINE_DIR / ".env"
+    if env_file.is_file():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, val = line.partition("=")
+            if key.strip() == name:
+                return val.strip().strip('"').strip("'")
+    return ""
 
 # --- Pipeline artifacts (single source of truth) ---
 JOB_LINKS_CSV = RAW_DIR / "job_links.csv"
@@ -45,6 +63,15 @@ HEADLESS = False  # keep False to watch the clicks happen
 # --- LLM ---
 MODEL_NAME = "qwen3:8b"  # fits fully on an 8 GB GPU (~5.2 GB, Q4)
 MAX_DESCRIPTION_CHARS = 3500
+
+# --- Job API (JSearch by OpenWebNinja) ---
+# Replaces the retired JobStreet scrapers. Each page returns up to 10 jobs and
+# consumes one API credit (~$0.005 on pay-per-use).
+JSEARCH_BASE_URL = "https://api.openwebninja.com/jsearch"
+JSEARCH_COUNTRY = "my"
+JSEARCH_PAGES_PER_QUERY = 20  # 20 pages x 10 jobs = up to 200 jobs per query
+JSEARCH_DATE_POSTED = "all"  # all | today | 3days | week | month
+JSEARCH_API_KEY = load_env_key("JSEARCH_API_KEY")
 
 
 def ensure_utf8_stdout() -> None:
