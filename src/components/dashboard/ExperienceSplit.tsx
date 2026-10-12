@@ -14,7 +14,7 @@ function SliceTooltip({ active, payload }: any) {
   const p = payload[0].payload as ExperienceSlice
   return (
     <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-xl">
-      <div className="flex items-center justify-between gap-4 text-xs">
+      <div className="flex items-center justify-between gap-4 text-sm">
         <span className="text-muted-foreground">{p.label}</span>
         <span className="font-medium text-foreground tabular-nums">{p.count}</span>
       </div>
@@ -31,18 +31,18 @@ export function ExperienceSplit({ slices }: { slices: ExperienceSlice[] }) {
       <CardHeader>
         <CardTitle className="text-foreground">Experience Split</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-col items-center justify-center gap-8">
         {total > 0 ? (
-          <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-center">
-            <div className="relative h-[180px] w-[180px] shrink-0">
+          <>
+            <div className="relative aspect-square w-full max-w-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={data}
                     dataKey="count"
                     nameKey="label"
-                    innerRadius={52}
-                    outerRadius={82}
+                    innerRadius="60%"
+                    outerRadius="92%"
                     paddingAngle={2}
                     stroke="none"
                   >
@@ -54,16 +54,16 @@ export function ExperienceSplit({ slices }: { slices: ExperienceSlice[] }) {
                 </PieChart>
               </ResponsiveContainer>
               <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold tabular-nums text-foreground">{total}</span>
-                <span className="text-xs text-muted-foreground">jobs</span>
+                <span className="text-4xl font-bold tabular-nums text-foreground">{total}</span>
+                <span className="text-sm text-muted-foreground">jobs</span>
               </div>
             </div>
 
-            <div className="w-full space-y-2 sm:w-auto sm:min-w-[150px]">
+            <div className="w-full max-w-xs space-y-3">
               {data.map((s) => (
-                <div key={s.label} className="flex items-center gap-3 text-sm">
+                <div key={s.label} className="flex items-center gap-3 text-base">
                   <span
-                    className="h-2.5 w-2.5 shrink-0 rounded-full"
+                    className="h-3 w-3 shrink-0 rounded-full"
                     style={{ background: `var(${s.varName})` }}
                   />
                   <span className="text-muted-foreground">{s.label}</span>
@@ -76,7 +76,7 @@ export function ExperienceSplit({ slices }: { slices: ExperienceSlice[] }) {
                 </div>
               ))}
             </div>
-          </div>
+          </>
         ) : (
           <p className="text-sm text-muted-foreground">No experience data for this selection.</p>
         )}
