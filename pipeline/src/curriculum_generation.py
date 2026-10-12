@@ -1,6 +1,5 @@
 """Generate course-name synonyms for each role's top skills via the LLM."""
 
-import pandas as pd
 import json
 import ollama
 import time
@@ -15,35 +14,22 @@ skill_class_json_filepath = config.SKILL_CLASS_JSON
 
 NUM_HARD_SKILLS = 10
 NUM_TECH_CONTEXT = 5
-NUM_CLASS_NAMES = 25
+NUM_CLASS_NAMES = 12
 
 model_name = config.MODEL_NAME
 # ---------------------
 
-def extraction_of_skills(df, num_hard_skills, num_tech_context):
-
-    # Obtain list that contains n required hard skill
-    hard_skill_lst = []
-
-    hard_skill_df = df['All']['top_hard_skills']
-
-    if len(hard_skill_df) < num_hard_skills:
-        raise ValueError(f"Number of hard skill queried is more than available of {len(hard_skill_df)}")
-
-    for n in range(0, num_hard_skills):
-        hard_skill_lst.append(hard_skill_df[n]['name'])
-
-    # Obtain list that contains n required technical context
-    tech_context_lst = []
-
-    tech_context_df = df['All']['top_technical_context']
-
-    if len(tech_context_df) < num_tech_context:
-        raise ValueError(f"Number of tech context queried is more than available of {len(tech_context_df)}")
-
-    for n in range(0, num_tech_context):
-        tech_context_lst.append(tech_context_df[n]['name'])
-
+def extraction_of_skills(details, num_hard_skills, num_tech_context):
+    """Return up to n hard skills and m technical contexts for one category."""
+    all_level = details.get("All") or {}
+    hard_skill_lst = [
+        skill["name"]
+        for skill in (all_level.get("top_hard_skills") or [])[:num_hard_skills]
+    ]
+    tech_context_lst = [
+        context["name"]
+        for context in (all_level.get("top_technical_context") or [])[:num_tech_context]
+    ]
     return hard_skill_lst, tech_context_lst
 
 def llm_query(class_subject, num_names):
@@ -84,6 +70,8 @@ def llm_query(class_subject, num_names):
                        'content': user_message}],
             format='json',
             think=False,  # course-name generation needs no long reasoning
+            keep_alive='30m',  # keep the model resident between calls
+            options={'num_predict': 600},  # bound the output length
         )
 
         content = response['message']['content']
@@ -114,65 +102,48 @@ def llm_query(class_subject, num_names):
 
 def curriculum_gen():
 
-    # 1. Load Data
+    # 1. Load the gap report (plain dict; pandas mangles the nested structure).
     try:
         with open(gap_report_json_filepath, 'r') as f:
-            data = json.load(f)
-
-        df = pd.DataFrame(data)
-
+            gap_report = json.load(f)
         print(f"Loaded {gap_report_json_filepath} for analysis.")
-
     except Exception as e:
         print(f"Error loading source JSON: {e}")
         return
 
     # 2. Prepare Report Structure
     report = {
-        "generated at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "generated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
         "categories": {}
     }
 
     # 3. Generate class names for each role category.
+    categories = gap_report.get("categories", {})
 
-    job_types_list = list(df['categories'].keys())
-
-    for i in range(0, len(job_types_list)):
-
-        current_job_type = job_types_list[i]
+    for i, (current_job_type, details) in enumerate(categories.items()):
 
         if current_job_type == 'Other':
             continue
 
         print(f"\nProcessing skills for {current_job_type} ===> ")
 
-        current_job_details = df['categories'][current_job_type]
-
-        hard_skill_lst = []
-        tech_context_lst = []
-
         # Get the top n hard skills and top m technical contexts.
-        try:
-            hard_skill_lst, tech_context_lst = extraction_of_skills(df=current_job_details,
-                                                                    num_hard_skills=NUM_HARD_SKILLS,
-                                                                    num_tech_context=NUM_TECH_CONTEXT)
-        except ValueError as e:
-            print(f"Error caught: {e}")
+        hard_skill_lst, tech_context_lst = extraction_of_skills(
+            details=details,
+            num_hard_skills=NUM_HARD_SKILLS,
+            num_tech_context=NUM_TECH_CONTEXT,
+        )
 
         # Generate possible class names for each subject.
         skill_dict = {}
 
         for subject in hard_skill_lst:
-            data = llm_query(class_subject=subject,
-                             num_names=NUM_CLASS_NAMES)
-
-            skill_dict[subject] = data
+            skill_dict[subject] = llm_query(class_subject=subject,
+                                            num_names=NUM_CLASS_NAMES)
 
         for subject in tech_context_lst:
-            data = llm_query(class_subject=subject,
-                             num_names=NUM_CLASS_NAMES)
-
-            skill_dict[subject] = data
+            skill_dict[subject] = llm_query(class_subject=subject,
+                                            num_names=NUM_CLASS_NAMES)
 
         # Save the nested class names to the main report.
         report['categories'][current_job_type] = skill_dict
@@ -181,7 +152,7 @@ def curriculum_gen():
         with open(skill_class_json_filepath, 'w') as f:
             json.dump(report, f, indent=4)
 
-        print(f"Checkpoint reached {i+1} / {len(job_types_list)}")
+        print(f"Checkpoint reached {i+1} / {len(categories)}")
 
     # 4. Save the final report.
     with open(skill_class_json_filepath, 'w') as f:

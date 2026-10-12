@@ -1,5 +1,5 @@
-streamlit
+# Core pipeline dependencies.
+# fetch_jobs.py uses only the Python standard library.
+# Steps: fetch -> extract -> analyze -> curriculum
 pandas
-plotly
-wordcloud
-matplotlib
+ollama

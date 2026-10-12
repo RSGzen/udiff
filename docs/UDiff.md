@@ -24,8 +24,7 @@ The system is a **batch data pipeline** that feeds a **static web dashboard**. D
 
 ```mermaid
 flowchart LR
-    A[JobStreet search pages] -->|Playwright| B[job_links.csv]
-    B -->|Playwright + BS4| C[job_details_full.csv]
+    A[JSearch API] -->|fetch_jobs.py| C[job_details_full.csv]
     C -->|clean / dedupe / parse| D[Qwen3 8B via Ollama]
     D --> E[job_analysis_final.json]
     E -->|categorize + aggregate| F[gap_report.json]
@@ -38,17 +37,16 @@ flowchart LR
 
 | Step | Module | Input → Output | What it does |
 |---|---|---|---|
-| 1. Scrape links | `pipeline/src/scraper.py` | JobStreet → `job_links.csv` | For each search query (10 role keywords), paginates results and collects title, company, location, salary, link |
-| 2. Scrape details | `pipeline/src/scraper_details.py` | `job_links.csv` → `job_details_full.csv` | Visits each listing and extracts the full job description |
-| 3. Extract skills | `pipeline/src/processor.py` | CSV → `job_analysis_final.json` | Cleans text, parses salary, normalizes location, de-duplicates (URL + content hash), then asks **Qwen3 8B** (Ollama, JSON mode) for `hard_skills`, `soft_skills`, `technical_context`, `experience_level` |
-| 4. Analyze market | `pipeline/src/analyzer.py` | JSON → `gap_report.json` | Buckets job titles into role categories via keyword heuristics; aggregates top skills/contexts and salary stats per category × experience level |
-| 5. Curriculum generator | `pipeline/src/curriculum_generation.py` | `gap_report.json` → `skill_class.json` | For each category's top skills, asks the LLM to generate plausible university course names → a skill→course synonym dictionary |
-| 6. Dashboard | `web/` (Next.js) | JSONs → website | Renders the gap report, career roadmaps, and curriculum checker |
+| 1. Fetch jobs | `pipeline/src/fetch_jobs.py` | JSearch API → `job_links.csv`, `job_details_full.csv` | Queries the JSearch API (OpenWebNinja, "Google for Jobs") per role keyword; maps title, company, location, salary, link and the full description; de-duplicates by job id |
+| 2. Extract skills | `pipeline/src/processor.py` | CSV → `job_analysis_final.json` | Cleans text, parses salary, normalizes location, de-duplicates (URL + content hash), then asks **Qwen3 8B** (Ollama, JSON mode) for `hard_skills`, `soft_skills`, `technical_context`, `experience_level` |
+| 3. Analyze market | `pipeline/src/analyzer.py` | JSON → `gap_report.json` | Buckets job titles into role categories via keyword heuristics; aggregates top skills/contexts and salary stats per category × experience level |
+| 4. Curriculum generator | `pipeline/src/curriculum_generation.py` | `gap_report.json` → `skill_class.json` | For each category's top skills, asks the LLM to generate plausible university course names → a skill→course synonym dictionary |
+| 5. Sync + dashboard | `pipeline/src/sync_web_data.py` + `src/` (Next.js) | JSONs → website | Copies the outputs into the app, which renders the gap report, roadmaps, and curriculum checker |
 
 Supporting files:
-- `pipeline/src/pipeline.py` — orchestrator that chains steps 1–4 as subprocesses (note: it does **not** yet include step 5).
+- `pipeline/src/pipeline.py` — orchestrator that chains every step (fetch → extract → analyze → curriculum → sync) as subprocesses.
+- `pipeline/src/config.py` — paths, settings, and the `.env` secret loader.
 - `pipeline/src/inspect_others.py` — dev utility that prints unclassified job titles (helps tune the category heuristics).
-- `pipeline/legacy/dashboard.py` — **retired** Streamlit dashboard (superseded by the Next.js web app).
 
 ## 4. Expected outcome
 
@@ -59,7 +57,7 @@ Supporting files:
 
 ## 5. Limitations (honest)
 
-- **Scraper fragility:** depends on JobStreet's current DOM and automation attributes; selectors will break when the site changes. Single-threaded with fixed delays → slow, and requires a visible (non-headless) browser.
+- **Data source:** postings come from the **JSearch API** (a Google-for-Jobs aggregator); coverage, and especially salary fields, depend on it — salary is frequently absent.
 - **Point-in-time data:** the dataset is a snapshot; there is no scheduler or live refresh.
 - **No ground truth for LLM extraction:** skill/context extraction is prompt-based and unvalidated; quality varies per posting. Category assignment is keyword heuristics and is brittle (see `inspect_others.py`).
 - **Salary sparsity:** many postings hide salary, so salary averages are noisy.

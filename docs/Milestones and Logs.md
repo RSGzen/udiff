@@ -60,14 +60,14 @@
 ### M3 — Single robust entrypoint `Done (12 Oct 2026)`
 - Extend `pipeline/src/pipeline.py` to include **step 5 (curriculum generation)** and expose step selection flags.
 - Add resume/checkpointing, retries, and clear failure messages.
-- **Result:** 4-step orchestrator (`fetch → extract → analyze → curriculum`) with `--steps`, `--skip`, `--skip-scrape`, `--dry-run`, `--list`; logs to `pipeline/pipeline_log.txt`. Resume/checkpointing deferred (steps are re-runnable).
+- **Result:** 4-step orchestrator (`fetch → extract → analyze → curriculum`) with `--steps`, `--skip`, `--skip-scrape`, `--dry-run`, `--list`; logs to `pipeline/pipeline_log.log`. Resume/checkpointing deferred (steps are re-runnable).
 - **Done when:** one command runs the full pipeline (or a chosen subset) and fails gracefully. ✅
 
-### M4 — Documentation `In progress`
+### M4 — Documentation `Done (12 Oct 2026)`
 - ✅ `docs/UDiff.md`, `docs/Tech Stack.md`, this file.
-- ⬜ Fix `pipeline/requirements.txt` (add `ollama` + `pandas`; playwright/bs4 are now legacy-only; consider a `pyproject.toml`).
-- ⬜ Add module docstrings + a short `pipeline/README.md`.
-- ⬜ Add an architecture diagram to the top-level `README.md` (partially done).
+- ✅ `pipeline/requirements.txt` trimmed to `pandas` + `ollama` (fetch uses the stdlib).
+- ✅ Module docstrings + a short `pipeline/README.md`.
+- ✅ Architecture reflected in `README.md` and the mermaid diagram in `docs/UDiff.md`.
 
 ### M5 — Data refresh `In progress (fetch done 12 Oct 2026)`
 - JobStreet scraping is disallowed by its robots.txt (`Disallow: */job/`, `*?`) and ToS cl. 7.d/9.b, so the scrapers were retired to `pipeline/legacy/` and replaced by the **JSearch API** (`fetch_jobs.py`, OpenWebNinja).
@@ -78,15 +78,40 @@
 ### M6 — Web cleanup `Pending`
 - Remove the `as any` casts and unused default assets; ensure types are honest.
 - Verify `npm run build` + `npm run lint`; add a screenshot/GIF to the README.
+- **Note:** this is the **code-hygiene** pass (`as any`, `@ts-ignore`, lint), separate from the
+  **design** revamp (M9–M11). Run M6 **before** M9 so the revamp starts from a typed, lint-clean base.
 - **Done when:** build/lint pass with no dead cruft and docs show the live link.
 
-### M7 — Automate the data contract `Pending`
-- Add a build/sync step that copies `pipeline/data/output/*.json` into `web/src/data/`.
-- **Done when:** the web app consumes pipeline output without manual file copying.
+### M7 — Automate the data contract `Done (12 Oct 2026)`
+- Added `pipeline/src/sync_web_data.py` (the final orchestrator step) that copies `gap_report.json` + `skill_class.json` into `src/data/`.
+- **Done when:** the web app consumes pipeline output without manual file copying. ✅
 
 ### M8 — Portfolio packaging `Pending`
 - Add the UDiff project entry to the résumé (held until docs are finalised).
 - **Done when:** the repo reads cleanly to a reviewer end-to-end.
+
+### M9 — Frontend revamp: Tier 0 (de-slop) `Pending`
+- Kill the "AI-generated" tells **without layout changes**: apply the existing dark tokens
+  (`layout.tsx`), real metadata, swap hardcoded `slate-*`/`blue-*`/cyan/hex for semantic tokens,
+  remove gradient text, replace `transition-all` and inline `transition:'all'`, add button press
+  feedback, fix chart contrast/tooltips, honest salary label, radius consistency.
+- **No new dependencies.** Full task list in [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §5.
+- **Depends on:** M6 (typed/lint-clean base).
+- **Done when:** no palette hardcoding or `transition-all` in components; `npm run build` + `tsc --noEmit` pass; layout visually unchanged.
+
+### M10 — Frontend revamp: Tier 1 (re-skin) `Pending`
+- Token-driven, responsive re-skin: `next-themes` dark theming, a shared `AppShell` used by every
+  route, responsive sidebar (drawer on mobile), Geist type + `tabular-nums`, motion tokens +
+  reduced-motion, tokenized charts + one shared tooltip, re-skinned roadmap/curriculum,
+  `localStorage` roadmap progress, a11y pass.
+- **New dep:** `next-themes` (optional if dark-only). Plan: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §6.
+- **Done when:** every route shares one responsive shell; build + lint pass; charts use tokens.
+
+### M11 — Frontend revamp: Tier 2 (restructure) `Future`
+- Landing/About page, IA + route moves (`/dashboard`, `/methodology`), optional role detail route,
+  mobile drawer, methodology/data page, chart redesign, motion polish, full a11y + performance audit.
+- **New dep:** `motion` (optional). Plan: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §7.
+- **Done when:** a stranger understands UDiff without context and the app passes an a11y audit.
 
 ---
 
@@ -106,7 +131,7 @@
 **Open items / decisions:**
 - **License reconciliation:** resolved — relicensed to MIT; GPLv3 file removed.
 - **Repo name:** the GitHub repo is still `udiff-web`; renaming to `udiff` requires manual action (no `gh` CLI available). Renaming may affect the Vercel Git connection.
-- **Streamlit retirement:** `pipeline/legacy/` is kept for now; delete once confirmed unnecessary.
+- **Streamlit retirement:** resolved — `pipeline/legacy/` (dashboard + Dockerfile + scrapers) has been deleted.
 - **Original `RSGzen/UDiff` repo:** retained as the pre-merge backup; can be archived later.
 
 ### 12_10_2026 — M2 refactor + LLM upgrade, docs pass (assistant)
@@ -127,6 +152,31 @@
 
 **Next:** run the pipeline on the new data (LLM extract ≈ 80 min), then M4 `requirements.txt`, M6 web cleanup, M7 data-contract sync.
 
+### 12_10_2026 (night) — Frontend design audit + revamp plan (assistant)
+**Did:**
+- Reviewed the entire web UI (`src/app/**`, `src/components/**`, `globals.css`, `layout.tsx`).
+- Diagnosed the "AI-generated / outdated" look: **two parallel styling systems** (the `globals.css`
+  token layer is unused; components hardcode `slate-*`/`blue-*`/cyan/hex), gradient text on headings,
+  bracket mono tooltips, `transition-all`, fake dark mode, and a non-responsive fixed sidebar.
+- Agreed the direction with the user: **Tier 1 as baseline, Tier 2 later**; reference = Linear /
+  Vercel Geist (visual) + Tremor (dashboard, same Recharts/Radix/Tailwind stack); no new UI library.
+- Wrote [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md): style guide (color/type/space/
+  radius/motion), tiered task lists with done-when criteria, effort table, agent guardrails, and a
+  before→after audit appendix.
+- Updated [`Tech Stack.md`](Tech%20Stack.md) web section (design system, typography, plan pointer)
+  and this file: added **M9–M11**, linked them from M6, and repointed the "modern UI" backlog item.
+
+**Did not do:** any UI/code changes. This pass was docs-only by explicit request.
+**Next:** M6 (web cleanup) → M9 (Tier 0 de-slop).
+
+### 12_10_2026 (evening) — run + curriculum fix, M4 + M7 (assistant)
+**Did:**
+- Ran the pipeline on the 935 fetched jobs → 677 analysed; `gap_report.json` regenerated (14 categories).
+- Fixed `curriculum_generation.py`: use `min()` instead of raising on small categories, and keep the model resident (`keep_alive='30m'`) with bounded output — the first curriculum run crawled due to model unload/reload gaps.
+- Removed the retired `pipeline/legacy/` (dashboard, Dockerfile, both scrapers).
+- M4: `requirements.txt` → `pandas` + `ollama`; module docstrings; `pipeline/README.md`; `docs/UDiff.md` / `docs/Tech Stack.md` updated.
+- M7: added `sync_web_data.py` as the final orchestrator step.
+
 ---
 
 ## 4. Backlog (feature requests, carried from `future_changes.txt`)
@@ -136,6 +186,7 @@
 - Skill detail pages: hover a skill → quick explanation + verified learning resources.
 - Compare a student's current curriculum progress against industry standards (cross-off mastered skills, personal roadmap).
 - UI: more modern design, more interaction/animation, and a better-fitting visual for skill distributions.
+  → **planned as M9–M11** (see [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md)).
 
 ---
 

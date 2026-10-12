@@ -9,20 +9,17 @@ UDiff is two halves: a **Python data pipeline** and a **Next.js web app**. They 
 | Layer | Technology | Used for |
 |---|---|---|
 | Language | **Python 3.x** | All pipeline scripts |
-| Scraping | **Playwright** (sync API, Chromium) | Drive the job board, paginate, click "Next", render lazy content, extract listing fields |
-| HTML parsing | **BeautifulSoup 4** (+ `html.parser`) | Pull the job-description container out of the fetched page |
+| Job data | **JSearch API** (OpenWebNinja) over stdlib `urllib` | Fetch Malaysian job postings + descriptions |
 | Data wrangling | **pandas** | CSV/JSON I/O, de-duplication, group-by aggregation |
 | LLM extraction | **Ollama** running **Qwen3 8B** | Structured skill/context/experience extraction (JSON mode), and course-name generation. Runs locally on an RTX 4060 Ti 8 GB |
-| Std library | `re`, `json`, `hashlib`, `subprocess`, `argparse`, `pathlib`/`os`, `time`, `datetime` | Text cleaning, fingerprinting, orchestration |
-| Legacy dashboard | **Streamlit** + **Plotly** + **WordCloud** + **matplotlib** | The retired prototype dashboard (`pipeline/legacy/dashboard.py`) |
-| Legacy packaging | **Docker** | Used to deploy the retired Streamlit dashboard |
+| Std library | `re`, `json`, `hashlib`, `subprocess`, `argparse`, `pathlib`, `urllib`, `time`, `datetime` | Text cleaning, fingerprinting, orchestration |
 
 Data artifacts:
 
 | File | Produced by | Notes |
 |---|---|---|
-| `pipeline/data/raw/job_links.csv` | `scraper.py` | Listing-level records |
-| `pipeline/data/raw/job_details_full.csv` | `scraper_details.py` | Adds full descriptions |
+| `pipeline/data/raw/job_links.csv` | `fetch_jobs.py` | Listing-level records |
+| `pipeline/data/raw/job_details_full.csv` | `fetch_jobs.py` | Adds full descriptions (gitignored) |
 | `pipeline/data/interim/job_analysis_final.json` | `processor.py` | LLM-extracted skills per job |
 | `pipeline/data/output/gap_report.json` | `analyzer.py` | Aggregated market report (consumed by the web app) |
 | `pipeline/data/output/skill_class.json` | `curriculum_generation.py` | Skill→course synonym dictionary (consumed by the web app) |
@@ -39,11 +36,18 @@ Data artifacts:
 | Language | **TypeScript** | Type-safe components and data models (`src/types`) |
 | UI runtime | **React 19** | Component model |
 | Styling | **Tailwind CSS 4** | Utility-first styling |
+| Design system | **Tailwind 4 tokens in `src/app/globals.css`** | Single source of truth for color/radius/type (dark-first). shadcn config: `new-york`, baseColor `slate` |
+| Typography | **Geist Sans + Geist Mono** (`next/font`) | Prose + tabular numbers for metrics |
 | Components | **shadcn/ui** on **Radix UI** primitives | Buttons, cards, tabs, select, checkbox, progress, etc. |
 | Charts | **Recharts** | Bar charts, treemap |
 | Icons | **lucide-react** | UI icons |
 | Data | **JSON bundled in `src/data`** | `gap_report.json`, `skill_class.json`, `roadmaps.json` |
 | Deployment | **Vercel** | Live site (`udiff-web.vercel.app`) |
+
+> **Web UI is mid-revamp.** See [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) for the
+> design direction, style rules, and the Tier 0/1/2 task lists (**milestones M9–M11**).
+> Known debt: components still **hardcode `slate-*` / `blue-*` colors** instead of using the
+> `globals.css` tokens — that parallel palette is the #1 fix, tracked as Tier 0.
 
 > ⚠️ `README.md` badges/claims are **stale** (they say Next.js 14 / Tailwind 3). The actual `package.json` pins **Next.js 16.1.4 / React 19.2 / Tailwind 4** — trust `package.json`.
 

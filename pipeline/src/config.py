@@ -48,7 +48,7 @@ JOB_ANALYSIS_JSON = INTERIM_DIR / "job_analysis_final.json"
 GAP_REPORT_JSON = OUTPUT_DIR / "gap_report.json"
 SKILL_CLASS_JSON = OUTPUT_DIR / "skill_class.json"
 
-# --- Scraper settings ---
+# --- Job search queries (used by fetch_jobs.py) ---
 SEARCH_QUERIES = [
     # Core Engineering
     "Software Engineer", "Backend Developer", "Frontend Developer",
@@ -57,8 +57,6 @@ SEARCH_QUERIES = [
     "Data Scientist", "DevOps Engineer", "Cybersecurity",
     "Embedded Engineer", "QA Engineer",
 ]
-TARGET_PAGES = 15
-HEADLESS = False  # keep False to watch the clicks happen
 
 # --- LLM ---
 MODEL_NAME = "qwen3:8b"  # fits fully on an 8 GB GPU (~5.2 GB, Q4)

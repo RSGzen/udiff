@@ -1,3 +1,5 @@
+"""Extract structured skills from job descriptions using Ollama (qwen3:8b)."""
+
 import pandas as pd
 import ollama
 import json

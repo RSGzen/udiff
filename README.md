@@ -60,7 +60,7 @@ pip install -r pipeline/requirements.txt
 python pipeline/src/pipeline.py                 # full run: fetch -> extract -> analyze -> curriculum
 python pipeline/src/pipeline.py --skip fetch    # reuse existing data
 ```
-> Paths/settings live in `pipeline/src/config.py`; each step streams to `pipeline/pipeline_log.txt`.
+> Paths/settings live in `pipeline/src/config.py`; each step streams to `pipeline/pipeline_log.log`.
 
 ## 📂 Project structure
 
@@ -68,9 +68,8 @@ python pipeline/src/pipeline.py --skip fetch    # reuse existing data
 .
 ├── docs/                     # UDiff.md, Tech Stack.md, Milestones and Logs.md
 ├── pipeline/                 # Python data pipeline
-│   ├── src/                  # scraper, processor, analyzer, curriculum, orchestrator
+│   ├── src/                  # config, fetch_jobs, processor, analyzer, curriculum, orchestrator
 │   ├── data/{raw,interim,output}
-│   ├── legacy/               # retired Streamlit dashboard
 │   └── requirements.txt
 ├── src/                      # Next.js app (app router, components, data, types)
 ├── public/                   # static assets + screenshots
