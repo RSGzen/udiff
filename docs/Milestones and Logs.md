@@ -77,7 +77,7 @@
 - JobStreet scraping is disallowed by its robots.txt (`Disallow: */job/`, `*?`) and ToS cl. 7.d/9.b, so the scrapers were retired and replaced by the **JSearch API** (`fetch_jobs.py`, OpenWebNinja).
 - First MY fetch (12 Oct): **935 Malaysian postings** (salary 100% null). Raw ad text is gitignored.
 - Superseded by the M5.7 multi-country fetch (13 Oct): **2,300 postings** (MY/SG/ID), LLM-extracted and aggregated → `gap_report.json` / `skill_class.json` regenerated.
-- **Still to do (not pipeline):** the live site must consume the new country-nested schema and be redeployed (M6).
+- **Still to do (not pipeline):** the live site must be redeployed with the new data (schema consumption landed in **M9.0**; redeploy pending M6).
 - **Done when:** the live site reflects freshly generated data. ⬜ *(data delivered; deploy pending M6)*
 
 ### M5.5 — Salary estimates `Done (pipeline) 13 Oct 2026`
@@ -193,9 +193,9 @@
     subjects, 0 empty; `my-vs-sg` 25 skill gaps + 51 salary deltas, `my-vs-id` 25 + 40.
   - **Tracing:** `config.get_logger()` → `pipeline/logs/api.log` (every GET) and
     `gpu.log` (every LLM call); also on stdout.
-  - **Web schema break is expected:** `gap_report.json`/`skill_class.json` are v3
-    country-nested. `page.tsx` and `curriculum/page.tsx` must read `countries.my`
-    (M6/web agent).
+  - **Web schema break (resolved in M9.0, 13 Oct):** `gap_report.json`/`skill_class.json` are v3
+    country-nested. `page.tsx` and `curriculum/page.tsx` now read `countries.<cc>` via
+    `src/lib/data.ts` (M9.0).
 
 ### M6 — Web cleanup `Pending`
 - Remove the `as any` casts and unused default assets; ensure types are honest.
@@ -212,26 +212,51 @@
 - Add the UDiff project entry to the résumé (held until docs are finalised).
 - **Done when:** the repo reads cleanly to a reviewer end-to-end.
 
-### M9 — Frontend revamp: Tier 0 (de-slop) `Pending`
-- Kill the "AI-generated" tells **without layout changes**: apply the existing dark tokens
-  (`layout.tsx`), real metadata, swap hardcoded `slate-*`/`blue-*`/cyan/hex for semantic tokens,
-  remove gradient text, replace `transition-all` and inline `transition:'all'`, add button press
-  feedback, fix chart contrast/tooltips, honest salary label, radius consistency.
+### M9 — Frontend revamp: Tier 0 (schema v3 data layer + de-slop) `In progress (13 Oct 2026)`
+- **Goal:** make the web app render the **v3 country-nested schema** and kill the "AI-generated"
+  tells, with **no layout change** and **no new dependencies**.
+- **Sub-steps:**
+  - **M9.0 — Data layer (schema v3)** `Done (13 Oct)` — rewrote `src/types/index.ts` to v3; added
+    `src/lib/data.ts` as the single data gateway (`getCountry`, `getRoles`, `getLevelBucket`,
+    `getSkillClass`, `getComparison`); repointed `page.tsx` + `curriculum/page.tsx` (both were
+    crashing on the old v2 shape); salary card now reads `salary_estimate` (was `N/A`); added a
+    dashboard **country switcher**; removed the `@ts-ignore`s in curriculum. Also fixed header wrap
+    (dropped the redundant `" Engineer"` suffix, badge moved beside the switcher) and truncated long
+    chart labels in `SkillChart`.
+  - **M9.1 — Dark tokens + metadata** `Done (13 Oct)` — `className="dark"` +
+    `suppressHydrationWarning` on `<html>`; real page title/description. (The console hydration
+    error was **Dark Reader**, a browser extension — not app code.)
+  - **M9.2 — Token swap** `In progress` — replace hardcoded `slate-*`/`blue-*`/cyan/hex with
+    semantic tokens across all components.
+  - **M9.3 — Remove gradient text** `Todo`
+  - **M9.4 — Motion fixes** `Todo` — `transition-all` → exact props; remove inline `transition:'all'`;
+    shorten `animate-in`.
+  - **M9.5 — Press feedback + chart contrast/tooltips + honesty labels** `Todo`
 - **No new dependencies.** Full task list in [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §5.
-- **Depends on:** M6 (typed/lint-clean base).
+- **Note:** M6 (lint hygiene) has **not** landed; M9.0/M9.1 were done first because the site did not
+  render at all against v3. Run M6 before/with M9.2 to get `npm run lint` green.
 - **Done when:** no palette hardcoding or `transition-all` in components; `npm run build` + `tsc --noEmit` pass; layout visually unchanged.
 
-### M10 — Frontend revamp: Tier 1 (re-skin) `Pending`
-- Token-driven, responsive re-skin: `next-themes` dark theming, a shared `AppShell` used by every
-  route, responsive sidebar (drawer on mobile), Geist type + `tabular-nums`, motion tokens +
-  reduced-motion, tokenized charts + one shared tooltip, re-skinned roadmap/curriculum,
-  `localStorage` roadmap progress, a11y pass.
+### M10 — Frontend revamp: Tier 1 (re-skin + core data views) `Pending`
+- **Shell:** `next-themes` dark theming, a shared `AppShell` used by **every** route, a
+  **collapsible sidebar** (icon rail on desktop, drawer on mobile), Geist type + `tabular-nums`,
+  motion tokens + reduced-motion, tokenized charts + one shared tooltip, `localStorage` roadmap
+  progress, a11y pass.
+- **Country UX (decided):** a **country switcher in the shell** (MY/SG/ID) scoping the dashboard,
+  plus a dedicated **`/compare`** view for `my-vs-sg` / `my-vs-id`.
+- **Core `UDiff.md` §4 views to build** (all Recharts, **no map dependency** — states → ranked bar,
+  companies → ranked list/treemap with a placeholders toggle):
+  soft skills · job distribution · experience split (stacked) · jobs by state · top companies ·
+  salary bands (nominal, monthly) **+ PPP toggle** · country skill/salary deltas (compare view).
+- **Deferred this pass:** posting recency (not aggregated in the pipeline yet); observed-salary
+  scatter (MY-only, country-level only).
 - **New dep:** `next-themes` (optional if dark-only). Plan: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §6.
-- **Done when:** every route shares one responsive shell; build + lint pass; charts use tokens.
+- **Done when:** every route shares one responsive shell; every core §4 view renders for MY/SG/ID; build + lint pass; charts use tokens.
 
 ### M11 — Frontend revamp: Tier 2 (restructure) `Future`
-- Landing/About page, IA + route moves (`/dashboard`, `/methodology`), optional role detail route,
-  mobile drawer, methodology/data page, chart redesign, motion polish, full a11y + performance audit.
+- Landing/About page, IA + route moves (`/` → landing, `/dashboard`, `/methodology`), optional
+  role detail route, mobile drawer, methodology/data page (surface `UDiff.md` §6 limits), chart
+  redesign, motion polish, full a11y + performance audit.
 - **New dep:** `motion` (optional). Plan: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §7.
 - **Done when:** a stranger understands UDiff without context and the app passes an a11y audit.
 
@@ -333,8 +358,33 @@
 - **`observed_salaries`:** MY-only (`RM|MYR` regex); SG/ID strings (`S$`, `Rp`) not mined.
 - All modules: per-module `--self-test` + `ruff` clean; no test framework.
 
-**Did not do (next):** web rendering of the new schema — `page.tsx` / `curriculum/page.tsx`
-still read the old top-level `categories` and are broken against v3. Handoff to the M6/web agent.
+**Did not do (next):** web rendering of the new schema — *(resolved in M9.0 below).*
+
+### 13_10_2026 (web) — M9.0 + M9.1 + dependency bump (assistant)
+**Did:**
+- **Audit:** bumped `next` + `eslint-config-next` 16.1.4 → **16.4.0** (clears the Next *critical* +
+  the postcss/sharp highs). Did **not** run `npm audit fix --force` — it would downgrade
+  `eslint-config-next` to v14. Remaining `braces` is **dev-only** (eslint toolchain, never shipped).
+- **M9.0 (schema v3 data layer):** rewrote `src/types/index.ts` to v3; added `src/lib/data.ts` as the
+  single data gateway; repointed `src/app/page.tsx` + `src/app/curriculum/page.tsx` (both crashed on
+  the old v2 shape → the site did not render); salary card now reads `salary_estimate`; added a
+  dashboard country switcher; removed the curriculum `@ts-ignore`s. Also fixed header wrap (dropped
+  the redundant `" Engineer"` suffix, moved the level badge beside the switcher) and truncated long
+  `SkillChart` labels.
+- **M9.1 (tokens + metadata):** `className="dark"` + `suppressHydrationWarning` on `<html>`;
+  real page title/description.
+- **Files:** `package.json`, `src/types/index.ts`, `src/lib/data.ts` (new), `src/app/page.tsx`,
+  `src/app/curriculum/page.tsx`, `src/app/layout.tsx`, `src/components/dashboard/SkillChart.tsx`.
+
+**Verified:** `npx tsc --noEmit` + `npm run build` pass (all routes); user confirmed MY/SG/ID render.
+**Notes:** the console "hydration" error is the **Dark Reader** browser extension, not app code.
+**Next:** M9.2 (token swap) → M9.3–M9.5 → M10.
+
+**Open items / decisions:**
+- Role headings now show the raw category name (no `" Engineer"` suffix). A `ROLE_LABELS` display map
+  can be added later if proper role titles ("Software Engineer") are wanted.
+- Salary: keep **min–max, monthly, nominal MYR**; **PPP toggle** lands in M10.
+- Sidebar: collapse/rail + mobile drawer confirmed as part of the M10 `AppShell`.
 
 ---
 

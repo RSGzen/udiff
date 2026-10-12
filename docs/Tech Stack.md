@@ -48,10 +48,11 @@ Data artifacts:
 
 > **Web UI is mid-revamp.** See [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) for the
 > design direction, style rules, and the Tier 0/1/2 task lists (**milestones M9–M11**).
-> Known debt: components still **hardcode `slate-*` / `blue-*` colors** instead of using the
-> `globals.css` tokens — that parallel palette is the #1 fix, tracked as Tier 0.
+> Progress: **M9.0** (schema v3 data layer) and **M9.1** (dark tokens + metadata) are done;
+> **M9.2** (token swap) is in progress. Known debt: components still **hardcode `slate-*` / `blue-*`
+> colors** instead of using the `globals.css` tokens — that parallel palette is the #1 remaining fix.
 
-> ⚠️ `README.md` badges/claims are **stale** (they say Next.js 14 / Tailwind 3). The actual `package.json` pins **Next.js 16.1.4 / React 19.2 / Tailwind 4** — trust `package.json`.
+> ⚠️ `README.md` badges/claims are **stale** (they say Next.js 14 / Tailwind 3). The actual `package.json` pins **Next.js 16.4.0 / React 19.2 / Tailwind 4** — trust `package.json`.
 
 ---
 
@@ -109,9 +110,10 @@ The only interface is a set of JSON files. The pipeline emits them into `src/dat
 - `skill_class.json` — `{ generated_at, countries: { "my"|"sg"|"id": { categories: { "<Role>": { "<Skill>": ["CourseName", ...] } } } } }`.
 - `roadmaps.json` — hand-authored career roadmaps (not pipeline-generated).
 
-> ⚠️ **Schema v3 is a breaking change.** `gap_report.json` and `skill_class.json` are
-> now country-nested (they were flat before M5.7). The web app must read
-> `gap_report.countries.my.categories` and `skill_class.countries.my.categories`.
+> ✅ **Schema v3 consumption (M9.0, 13 Oct):** the web reads the country-nested shape through a single
+> gateway, `src/lib/data.ts` (`getCountry`, `getRoles`, `getLevelBucket`, `getSkillClass`,
+> `getComparison`), backed by the v3 types in `src/types/index.ts`. Components must **not** read the
+> JSON directly — go through this layer so the schema lives in one place.
 > `pipeline/data/ppp.json` / `fx.json` are dated static reference tables.
 
 Keeping this contract explicit (and automating the copy step) is a goal of the planned polish (done: `sync_web_data.py`).

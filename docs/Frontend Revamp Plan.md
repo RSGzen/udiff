@@ -1,6 +1,6 @@
 # UDiff — Frontend Revamp Plan
 
-> **Created:** 12 Oct 2026
+> **Created:** 12 Oct 2026 · **Updated:** 13 Oct 2026 (M9.0/M9.1 landed; M10 scope revised)
 > **Owner:** assistant (mentor) + user (junior systems designer)
 > **Status legend:** `Todo` · `In progress` · `Done` · `Deferred`
 > **Related files:** [`Tech Stack.md`](Tech%20Stack.md) (web side) · [`Milestones and Logs.md`](Milestones%20and%20Logs.md) (M6, M9–M11)
@@ -64,60 +64,83 @@ palette color** (only the theme file declares colors).
 ## 4. Relationship to other milestones
 
 - **M6 (Web cleanup)** = *code hygiene* (`as any`, `@ts-ignore`, lint, dead assets).
-  **Run M6 before M9** so the revamp starts from a typed, lint-clean base.
+  Intended to run before M9, but **M9.0/M9.1 landed first** (13 Oct) because the site did not render
+  at all against the v3 schema. Run M6 before/with **M9.2** to get `npm run lint` green.
 - **M9 / M10 / M11** = this plan (*design*).
 - Backlog item *"UI: more modern design…"* is now tracked here (see Milestones §4).
+- **Locked decisions:** scope = re-skin **+ core `UDiff.md` §4 views**; **no map dependency**
+  (states → ranked bar, companies → ranked list/treemap); **shell country switcher + `/compare` view**;
+  salary stays **min–max monthly nominal MYR** with a **PPP toggle** in M10.
 
 ---
 
-## 5. Tier 0 — De-slop pass `Todo`
+## 5. Tier 0 — Data layer + de-slop (`M9`) `In progress`
 
-**Goal:** kill the obvious tells. **No layout changes.** **~1–2 days, low risk.**
-**New dependencies:** none.
+**Goal:** make the app render the v3 data and kill the obvious tells. **No layout changes.**
+**~1–2 days, low risk.** **New dependencies:** none.
 
-- [ ] **Dark mode:** add `className="dark"` to `<html>` in `src/app/layout.tsx` so the existing
-      dark tokens apply (lazy; no `next-themes` yet).
-- [ ] **Metadata:** replace `Create Next App` title/description in `src/app/layout.tsx`.
-- [ ] **Token swap:** replace hardcoded `slate-*` / `blue-*` / cyan / hex with semantic tokens in:
-      `src/app/page.tsx`, `src/components/Sidebar.tsx`, `src/components/dashboard/MetricCard.tsx`,
-      `src/components/dashboard/SkillChart.tsx`, `src/components/dashboard/ContextTreemap.tsx`,
-      `src/app/curriculum/page.tsx`, `src/app/roadmap/page.tsx`.
-- [ ] **Remove gradient text:** `Sidebar.tsx` (logo), `curriculum/page.tsx`, `roadmap/page.tsx`.
-- [ ] **Motion:** replace `transition-all` with explicit properties
-      (`ui/button.tsx`, `app/page.tsx`, `roadmap/page.tsx`, `ui/progress.tsx`); remove inline
-      `transition: 'all 0.3s ease'` (`SkillChart.tsx`, `ContextTreemap.tsx`); shorten
-      `animate-in … duration-500` → ~180ms `ease-out` (`curriculum/page.tsx`).
-- [ ] **Press feedback:** `active:scale-[0.97]` on buttons.
-- [ ] **Chart contrast:** non-top bars must be visible; tooltips use `tabular-nums` and drop the bracket style.
-- [ ] **Data honesty:** salary `N/A` subtitle should say it is absent from the source.
-- [ ] **Radius consistency** in the treemap (`rx`).
+- **M9.0 — Data layer (schema v3)** `Done (13 Oct)` — rewrote `src/types/index.ts`; added
+  `src/lib/data.ts` (single data gateway); repointed `page.tsx` + `curriculum/page.tsx`; salary card
+  reads `salary_estimate`; dashboard country switcher; `@ts-ignore`s removed. *Also: header wrap fix
+  (dropped `" Engineer"`) + `SkillChart` label truncation.*
+- **M9.1 — Dark tokens + metadata** `Done (13 Oct)` — `className="dark"` +
+  `suppressHydrationWarning` on `<html>`; real title/description.
+- **M9.2 — Token swap** `In progress` — replace hardcoded `slate-*` / `blue-*` / cyan / hex with
+  semantic tokens in: `src/app/page.tsx`, `src/components/Sidebar.tsx`,
+  `src/components/dashboard/MetricCard.tsx`, `SkillChart.tsx`, `ContextTreemap.tsx`,
+  `src/app/curriculum/page.tsx`, `src/app/roadmap/page.tsx`.
+- **M9.3 — Remove gradient text** `Todo` — `Sidebar.tsx` (logo), `curriculum/page.tsx`, `roadmap/page.tsx`.
+- **M9.4 — Motion** `Todo` — replace `transition-all` with explicit properties (`ui/button.tsx`,
+  `app/page.tsx`, `roadmap/page.tsx`, `ui/progress.tsx`); remove inline `transition: 'all 0.3s ease'`
+  (`SkillChart.tsx`, `ContextTreemap.tsx`); shorten `animate-in … duration-500` → ~180ms `ease-out`
+  (`curriculum/page.tsx`).
+- **M9.5 — Press feedback + charts + honesty** `Todo` — `active:scale-[0.97]`; non-top bars visible;
+  tooltips use `tabular-nums` and drop the bracket style; honest salary label; radius consistency in
+  the treemap.
 
 **Done when:** no palette hardcoding or `transition-all` remains in components (only in `globals.css`);
 `npm run build` + `npx tsc --noEmit` pass; layout is visually unchanged.
 
 ---
 
-## 6. Tier 1 — Re-skin app-wide `Todo`
+## 6. Tier 1 — Re-skin + core data views (`M10`) `Todo`
 
-**Goal:** consistent, token-driven, responsive app with real dark theming. **~3–5 days, medium risk.**
+**Goal:** a consistent, token-driven, responsive app that renders the **core** `UDiff.md` §4 data
+surface across MY/SG/ID. **~4–7 days, medium risk.**
 
-- [ ] **Theming:** add `next-themes` `ThemeProvider` + `suppressHydrationWarning`; `.dark` on `<html>`.
-      Optional light toggle (dark-only is acceptable if planned).
+**Shell & system**
+- [ ] **Theming:** `next-themes` `ThemeProvider` + `suppressHydrationWarning`; `.dark` on `<html>`
+      (dark-only is acceptable).
 - [ ] **Shared `AppShell`** (`src/components/AppShell.tsx`): sidebar + content grid used by **all** routes.
-      Delete the `pl-64` hack (`page.tsx`) and the per-page "Back to Dashboard" nav (`roadmap`, `curriculum`).
-- [ ] **Responsive sidebar:** collapse to a top bar / `Sheet` drawer below `lg`; mobile nav.
-- [ ] **Type system:** Geist Sans + Geist Mono wired; `tabular-nums` on metrics.
-- [ ] **Motion tokens:** `--ease-out` / `--ease-in-out` + duration scale + `prefers-reduced-motion` in `globals.css`.
+      Delete the `pl-64` hack (`page.tsx`) and the per-page "Back to Dashboard" nav.
+- [ ] **Collapsible sidebar:** icon rail on desktop (collapse toggle) + `Sheet` drawer below `lg`.
+- [ ] **Country switcher in the shell** (MY/SG/ID) — scopes the dashboard (moves the temporary
+      switcher out of the header).
+- [ ] **Type system:** Geist Sans + Geist Mono; `tabular-nums` on metrics.
+- [ ] **Motion tokens:** `--ease-out` / `--ease-in-out` + duration scale + `prefers-reduced-motion`.
 - [ ] **Component polish:** `Card`, `Badge`, `Tabs`, `Select`, `MetricCard` themed through tokens;
-      hover states gated by `@media (hover: hover) and (pointer: fine)`.
-- [ ] **Charts:** colours from `--chart-*`; one shared `ChartTooltip` (name left, `tabular-nums` value right);
-      remove per-cell inline transitions.
-- [ ] **Re-skin** `roadmap` + `curriculum` inside the shell.
-- [ ] **Persist roadmap progress** to `localStorage` (fixes the README "persisted" claim).
-- [ ] **A11y:** focus-visible rings, `aria-label` on icon-only controls, correct heading order.
+      hover gated by `@media (hover: hover) and (pointer: fine)`.
+- [ ] **Charts:** colours from `--chart-*`; one shared `ChartTooltip`; remove per-cell inline transitions.
+- [ ] **Persist roadmap progress** to `localStorage`; **A11y** pass (focus-visible, `aria-label`, heading order).
 
-**Done when:** every route shares one responsive shell; `npm run build` + `npm run lint` pass;
-charts use tokens; sidebar works at 360px.
+**Core `UDiff.md` §4 views to build** (all Recharts; **no map dependency**)
+
+| §4 view | Chart |
+|---|---|
+| Hard skills / technical context | bar / treemap *(exists)* |
+| Soft skills | chips / bar |
+| Job distribution by role | bar |
+| Experience split | stacked bar |
+| Jobs by state | ranked bar (only MY has >1 state) |
+| Top companies | ranked list/bar + placeholders toggle |
+| Salary bands | floating range bar (`min→max`), nominal monthly MYR + **PPP toggle** |
+| Country skill / salary deltas | diverging bars (`/compare` view) |
+
+**Deferred this pass:** posting recency (needs a pipeline aggregate first); observed-salary scatter
+(MY-only, country-level only).
+
+**Done when:** every route shares one responsive shell; every **core** §4 view renders for MY/SG/ID;
+`npm run build` + `npm run lint` pass; charts use tokens; sidebar works at 360px.
 
 ---
 
@@ -143,7 +166,7 @@ charts use tokens; sidebar works at 360px.
 | Tier | Effort | Risk | Milestone | New deps |
 |---|---|---|---|---|
 | 0 — De-slop | ~1–2 days | Very low | M9 | none |
-| 1 — Re-skin | ~3–5 days | Medium | M10 | `next-themes` (optional) |
+| 1 — Re-skin + core views | ~4–7 days | Medium | M10 | `next-themes` (optional) |
 | 2 — Restructure | ~1.5–3 weeks | Medium-high | M11 | `motion` (optional) |
 
 ---
