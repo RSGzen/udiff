@@ -20,8 +20,29 @@ import pandas as pd
 
 import config
 
-SEARCH_ENDPOINT = f"{config.JSEARCH_BASE_URL}/search-v2"
 LINK_COLUMNS = ["search_term", "title", "company", "location", "salary", "link"]
+
+
+def api_url(path, params):
+    """Build a full JSearch URL for an endpoint path and query params."""
+    return f"{config.JSEARCH_BASE_URL}/{path}?{urllib.parse.urlencode(params)}"
+
+
+def api_get(url, attempts=4):
+    """GET a JSearch URL with the API key, retrying transient errors."""
+    request = urllib.request.Request(url, headers={"x-api-key": config.JSEARCH_API_KEY})
+    last_error = None
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(request, timeout=60) as response:
+                return json.loads(response.read())
+        except urllib.error.HTTPError as error:
+            last_error = error
+            if error.code in (429, 500, 502, 503, 504):
+                time.sleep(2 * (attempt + 1))
+                continue
+            raise
+    raise last_error
 
 
 def build_search_url(query, cursor="", pages=None):
@@ -34,7 +55,7 @@ def build_search_url(query, cursor="", pages=None):
     }
     if cursor:
         params["cursor"] = cursor
-    return f"{SEARCH_ENDPOINT}?{urllib.parse.urlencode(params)}"
+    return api_url("search-v2", params)
 
 
 def format_salary(job):
@@ -72,24 +93,9 @@ def to_row(query, job):
     }
 
 
-def fetch_query(query, cursor="", pages=None, attempts=4):
-    """Call the API once, retrying transient gateway/rate-limit errors."""
-    request = urllib.request.Request(
-        build_search_url(query, cursor, pages),
-        headers={"x-api-key": config.JSEARCH_API_KEY},
-    )
-    last_error = None
-    for attempt in range(attempts):
-        try:
-            with urllib.request.urlopen(request, timeout=60) as response:
-                return json.loads(response.read())
-        except urllib.error.HTTPError as error:
-            last_error = error
-            if error.code in (429, 500, 502, 503, 504):
-                time.sleep(2 * (attempt + 1))
-                continue
-            raise
-    raise last_error
+def fetch_query(query, cursor="", pages=None):
+    """Fetch one /search-v2 batch."""
+    return api_get(build_search_url(query, cursor, pages))
 
 
 def fetch_query_pages(query, total_pages):

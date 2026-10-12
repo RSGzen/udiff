@@ -43,6 +43,12 @@ STEPS = [
         "description": "Generating the gap report...",
     },
     {
+        "key": "salary",
+        "name": "Salary Estimates",
+        "file": "salary_estimate.py",
+        "description": "Adding estimated market salaries...",
+    },
+    {
         "key": "curriculum",
         "name": "Curriculum Generator",
         "file": "curriculum_generation.py",
