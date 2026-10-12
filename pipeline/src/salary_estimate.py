@@ -4,7 +4,8 @@ Enrich gap_report.json with estimated market salaries from the JSearch
 
 This is a *separate*, labelled metric: it does NOT replace the posting-derived
 `salary` (which search-v2 rarely provides). Each category's `All`/`Junior`/
-`Mid`/`Senior` block gets a `salary_estimate` dict.
+`Mid`/`Senior` block gets a `salary_estimate` dict — but only when the publisher
+sample is trustworthy (see is_reliable).
 """
 
 import argparse
@@ -41,6 +42,20 @@ LEVEL_YEARS = {
     "Senior": "SEVEN_TO_NINE",
 }
 
+# Keep only estimates the publisher is reasonably sure about.
+MIN_CONFIDENCE = {"HIGH", "VERY_HIGH"}
+MIN_SAMPLE_SIZE = 3
+
+
+def is_reliable(estimate):
+    """True if the publisher sample is large and confident enough to show."""
+    if not estimate:
+        return False
+    return (
+        estimate.get("confidence") in MIN_CONFIDENCE
+        and (estimate.get("sample_size") or 0) >= MIN_SAMPLE_SIZE
+    )
+
 
 def parse_estimate(rows):
     """Turn the endpoint's list response into our salary_estimate dict."""
@@ -74,9 +89,32 @@ def fetch_estimate(title, level):
     return parse_estimate(rows)
 
 
+def load_report():
+    with open(config.GAP_REPORT_JSON, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_report(report):
+    with open(config.GAP_REPORT_JSON, "w", encoding="utf-8") as f:
+        json.dump(report, f, indent=4)
+
+
+def prune(report):
+    """Remove stored estimates that no longer pass the reliability guard."""
+    removed = 0
+    for levels in report["categories"].values():
+        for block in levels.values():
+            if block.get("salary_estimate") and not is_reliable(block["salary_estimate"]):
+                del block["salary_estimate"]
+                removed += 1
+    return removed
+
+
 def main():
     parser = argparse.ArgumentParser(description="Add estimated salaries to gap_report.json.")
     parser.add_argument("--self-test", action="store_true", help="Offline checks.")
+    parser.add_argument("--prune", action="store_true",
+                        help="Drop low-confidence stored estimates (no API call).")
     args = parser.parse_args()
     config.ensure_utf8_stdout()
 
@@ -84,25 +122,32 @@ def main():
         self_test()
         return
 
-    with open(config.GAP_REPORT_JSON, "r", encoding="utf-8") as f:
-        report = json.load(f)
+    report = load_report()
+
+    if args.prune:
+        removed = prune(report)
+        save_report(report)
+        print(f"Pruned {removed} unreliable estimate(s) from {config.GAP_REPORT_JSON}")
+        return
 
     for category, levels in report["categories"].items():
         title = CATEGORY_TITLES.get(category, category)
         for level, block in levels.items():
             estimate = fetch_estimate(title, level)
-            if estimate:
+            if is_reliable(estimate):
                 block["salary_estimate"] = estimate
             median = estimate and estimate.get("median")
-            print(f"{category} / {level}: {median} {estimate and estimate.get('currency')}")
+            conf = estimate and estimate.get("confidence")
+            size = estimate and estimate.get("sample_size")
+            print(f"{category} / {level}: {median} {estimate and estimate.get('currency')} "
+                  f"[{conf}, n={size}]")
 
-    with open(config.GAP_REPORT_JSON, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=4)
+    save_report(report)
     print(f"Saved estimated salaries to {config.GAP_REPORT_JSON}")
 
 
 def self_test():
-    """Offline check of the mapping and parsing (no API call)."""
+    """Offline check of the mapping, parsing and reliability guard."""
     sample = [{
         "location": "Malaysia",
         "job_title": "Backend Developer",
@@ -123,6 +168,12 @@ def self_test():
     assert parse_estimate([]) is None
     assert LEVEL_YEARS["Mid"] == "FOUR_TO_SIX"
     assert "estimated-salary?" in api_url("estimated-salary", {"a": "b"})
+    # reliability guard
+    assert is_reliable({"confidence": "HIGH", "sample_size": 5})
+    assert is_reliable({"confidence": "VERY_HIGH", "sample_size": 600})
+    assert not is_reliable({"confidence": "LOW", "sample_size": 2})
+    assert not is_reliable({"confidence": "HIGH", "sample_size": 1})
+    assert not is_reliable(None)
     print("self-test OK")
 
 

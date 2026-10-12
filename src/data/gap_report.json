@@ -138,7 +138,17 @@
                         "count": 4,
                         "percentage": 6.2
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3916.6666666666665,
+                    "median": 5750,
+                    "max": 8019,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 6007
+                }
             },
             "Junior": {
                 "job_count": 8,
@@ -256,7 +266,17 @@
                         "count": 1,
                         "percentage": 12.5
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3812.5,
+                    "median": 4570,
+                    "max": 5750,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 3549
+                }
             },
             "Mid": {
                 "job_count": 27,
@@ -374,7 +394,17 @@
                         "count": 2,
                         "percentage": 7.4
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 5076.666666666667,
+                    "median": 6466.666666666667,
+                    "max": 8958.333333333334,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 1408
+                }
             },
             "Senior": {
                 "job_count": 23,
@@ -492,7 +522,17 @@
                         "count": 2,
                         "percentage": 8.7
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 5637.5,
+                    "median": 7808.333333333333,
+                    "max": 11554.166666666666,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 329
+                }
             }
         },
         "Network & Infrastructure": {
@@ -612,7 +652,17 @@
                         "count": 1,
                         "percentage": 20.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3250,
+                    "median": 4583.333333333333,
+                    "max": 7666.666666666667,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 438
+                }
             },
             "Mid": {
                 "job_count": 1,
@@ -715,7 +765,17 @@
                         "count": 1,
                         "percentage": 100.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3820.8333333333335,
+                    "median": 5154.166666666667,
+                    "max": 8229.166666666666,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 113
+                }
             },
             "Senior": {
                 "job_count": 4,
@@ -833,7 +893,17 @@
                         "count": 1,
                         "percentage": 25.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4595.833333333333,
+                    "median": 6241.666666666667,
+                    "max": 10525,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 42
+                }
             }
         },
         "Fullstack": {
@@ -953,7 +1023,17 @@
                         "count": 8,
                         "percentage": 13.8
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4416.666666666667,
+                    "median": 5541.666666666667,
+                    "max": 8250,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 317
+                }
             },
             "Junior": {
                 "job_count": 2,
@@ -1061,7 +1141,17 @@
                         "count": 1,
                         "percentage": 50.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3895.8333333333335,
+                    "median": 4516.666666666667,
+                    "max": 6000,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 176
+                }
             },
             "Mid": {
                 "job_count": 32,
@@ -1179,7 +1269,17 @@
                         "count": 4,
                         "percentage": 12.5
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4916.666666666667,
+                    "median": 6600,
+                    "max": 9108.333333333334,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 82
+                }
             },
             "Senior": {
                 "job_count": 22,
@@ -1297,7 +1397,17 @@
                         "count": 3,
                         "percentage": 13.6
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 5668.75,
+                    "median": 7037.5,
+                    "max": 10337.5,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 18
+                }
             }
         },
         "AI & Machine Learning": {
@@ -1417,7 +1527,17 @@
                         "count": 11,
                         "percentage": 10.9
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3791.6666666666665,
+                    "median": 5833.333333333333,
+                    "max": 8204.166666666666,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 40
+                }
             },
             "Junior": {
                 "job_count": 9,
@@ -1535,7 +1655,17 @@
                         "count": 1,
                         "percentage": 11.1
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3900,
+                    "median": 5166.666666666667,
+                    "max": 7250,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 30
+                }
             },
             "Mid": {
                 "job_count": 53,
@@ -1891,7 +2021,17 @@
                         "count": 3,
                         "percentage": 7.9
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3804.1666666666665,
+                    "median": 5115,
+                    "max": 7105,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 112
+                }
             },
             "Junior": {
                 "job_count": 6,
@@ -2009,7 +2149,17 @@
                         "count": 1,
                         "percentage": 16.7
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3797.9166666666665,
+                    "median": 4387.5,
+                    "max": 5620.833333333333,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 77
+                }
             },
             "Mid": {
                 "job_count": 19,
@@ -2127,7 +2277,17 @@
                         "count": 2,
                         "percentage": 10.5
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 5208.333333333333,
+                    "median": 7416.666666666667,
+                    "max": 8583.333333333334,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 19
+                }
             },
             "Senior": {
                 "job_count": 11,
@@ -2245,7 +2405,17 @@
                         "count": 1,
                         "percentage": 9.1
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 6600,
+                    "median": 8508.333333333334,
+                    "max": 19000,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 8
+                }
             }
         },
         "Frontend Web": {
@@ -2365,7 +2535,17 @@
                         "count": 3,
                         "percentage": 11.1
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3850,
+                    "median": 5000,
+                    "max": 7295.833333333333,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 201
+                }
             },
             "Junior": {
                 "job_count": 1,
@@ -2452,7 +2632,17 @@
                         "count": 1,
                         "percentage": 100.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3750,
+                    "median": 4491.666666666667,
+                    "max": 5958.333333333333,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 129
+                }
             },
             "Mid": {
                 "job_count": 12,
@@ -2570,7 +2760,17 @@
                         "count": 1,
                         "percentage": 8.3
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 5250,
+                    "median": 7050,
+                    "max": 8891.666666666666,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 48
+                }
             },
             "Senior": {
                 "job_count": 13,
@@ -2688,7 +2888,17 @@
                         "count": 2,
                         "percentage": 15.4
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 6652.916666666667,
+                    "median": 9333.333333333334,
+                    "max": 10875,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 12
+                }
             }
         },
         "Backend": {
@@ -2808,7 +3018,17 @@
                         "count": 3,
                         "percentage": 7.7
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4229.166666666667,
+                    "median": 5408.333333333333,
+                    "max": 6629.8125,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 155
+                }
             },
             "Junior": {
                 "job_count": 2,
@@ -2926,7 +3146,17 @@
                         "count": 1,
                         "percentage": 50.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3800.0416666666665,
+                    "median": 4791.666666666667,
+                    "max": 6032.708333333333,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 97
+                }
             },
             "Mid": {
                 "job_count": 20,
@@ -3044,7 +3274,17 @@
                         "count": 2,
                         "percentage": 10.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 5208.333333333333,
+                    "median": 6375,
+                    "max": 8450,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 32
+                }
             },
             "Senior": {
                 "job_count": 16,
@@ -3162,7 +3402,17 @@
                         "count": 1,
                         "percentage": 6.2
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 6000,
+                    "median": 8000,
+                    "max": 12000,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "HIGH",
+                    "sample_size": 7
+                }
             }
         },
         "Embedded/Systems": {
@@ -3282,7 +3532,17 @@
                         "count": 2,
                         "percentage": 5.3
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4016.6666666666665,
+                    "median": 4950,
+                    "max": 6145.833333333333,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 45
+                }
             },
             "Junior": {
                 "job_count": 10,
@@ -3400,7 +3660,17 @@
                         "count": 1,
                         "percentage": 10.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3824.1666666666665,
+                    "median": 4525,
+                    "max": 5633.333333333333,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 29
+                }
             },
             "Mid": {
                 "job_count": 14,
@@ -3518,7 +3788,17 @@
                         "count": 1,
                         "percentage": 7.1
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4638.9375,
+                    "median": 6211.737083333333,
+                    "max": 6734.536666666667,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "HIGH",
+                    "sample_size": 6
+                }
             },
             "Senior": {
                 "job_count": 10,
@@ -3756,7 +4036,17 @@
                         "count": 6,
                         "percentage": 5.3
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3179.1666666666665,
+                    "median": 3833.3333333333335,
+                    "max": 5465.166666666667,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 383
+                }
             },
             "Junior": {
                 "job_count": 6,
@@ -3874,7 +4164,17 @@
                         "count": 1,
                         "percentage": 16.7
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3000,
+                    "median": 3588.25,
+                    "max": 4416.666666666667,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 221
+                }
             },
             "Mid": {
                 "job_count": 64,
@@ -3992,7 +4292,17 @@
                         "count": 4,
                         "percentage": 6.2
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3825,
+                    "median": 4510,
+                    "max": 5716.666666666667,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 98
+                }
             },
             "Senior": {
                 "job_count": 31,
@@ -4110,7 +4420,17 @@
                         "count": 2,
                         "percentage": 6.5
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4149.25,
+                    "median": 6012.5,
+                    "max": 8914.25,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 22
+                }
             }
         },
         "Internship & Entry Level": {
@@ -4230,7 +4550,17 @@
                         "count": 2,
                         "percentage": 5.7
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3916.6666666666665,
+                    "median": 5750,
+                    "max": 8019,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 6007
+                }
             },
             "Junior": {
                 "job_count": 25,
@@ -4348,7 +4678,17 @@
                         "count": 2,
                         "percentage": 8.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3812.5,
+                    "median": 4570,
+                    "max": 5750,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 3549
+                }
             },
             "Mid": {
                 "job_count": 7,
@@ -4466,7 +4806,17 @@
                         "count": 1,
                         "percentage": 14.3
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 5076.666666666667,
+                    "median": 6466.666666666667,
+                    "max": 8958.333333333334,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 1408
+                }
             },
             "Senior": {
                 "job_count": 1,
@@ -4552,7 +4902,17 @@
                         "count": 1,
                         "percentage": 100.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 5637.5,
+                    "median": 7808.333333333333,
+                    "max": 11554.166666666666,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 329
+                }
             }
         },
         "Data & Analytics": {
@@ -4672,7 +5032,17 @@
                         "count": 1,
                         "percentage": 6.7
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3541.6666666666665,
+                    "median": 4500,
+                    "max": 6000,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 492
+                }
             },
             "Mid": {
                 "job_count": 9,
@@ -4790,7 +5160,17 @@
                         "count": 1,
                         "percentage": 11.1
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4375,
+                    "median": 5833.333333333333,
+                    "max": 7666.666666666667,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 88
+                }
             },
             "Senior": {
                 "job_count": 3,
@@ -4908,7 +5288,17 @@
                         "count": 1,
                         "percentage": 33.3
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 6316.666666666667,
+                    "median": 7720.833333333333,
+                    "max": 8968.75,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 9
+                }
             }
         },
         "Cloud & DevOps": {
@@ -5028,7 +5418,17 @@
                         "count": 10,
                         "percentage": 11.6
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4959.166666666667,
+                    "median": 7333.333333333333,
+                    "max": 11340.375,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 135
+                }
             },
             "Junior": {
                 "job_count": 2,
@@ -5136,7 +5536,17 @@
                         "count": 1,
                         "percentage": 50.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4520.833333333333,
+                    "median": 6145.833333333333,
+                    "max": 9145.833333333334,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 69
+                }
             },
             "Mid": {
                 "job_count": 46,
@@ -5254,7 +5664,17 @@
                         "count": 5,
                         "percentage": 10.9
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 6079.666666666667,
+                    "median": 9041.666666666666,
+                    "max": 11312.5,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 38
+                }
             },
             "Senior": {
                 "job_count": 34,
@@ -5372,7 +5792,17 @@
                         "count": 3,
                         "percentage": 8.8
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 8583.333333333334,
+                    "median": 10708.333333333334,
+                    "max": 14033.333333333334,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 8
+                }
             }
         },
         "Cybersecurity": {
@@ -5492,7 +5922,17 @@
                         "count": 4,
                         "percentage": 8.3
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3529.1666666666665,
+                    "median": 4630.833333333333,
+                    "max": 6674.166666666667,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 37
+                }
             },
             "Junior": {
                 "job_count": 1,
@@ -5554,7 +5994,17 @@
                         "count": 1,
                         "percentage": 100.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3416.6666666666665,
+                    "median": 4241.666666666667,
+                    "max": 5833.333333333333,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 27
+                }
             },
             "Mid": {
                 "job_count": 21,
@@ -5672,7 +6122,17 @@
                         "count": 3,
                         "percentage": 14.3
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 4958.333333333333,
+                    "median": 6500,
+                    "max": 8966.666666666666,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "HIGH",
+                    "sample_size": 6
+                }
             },
             "Senior": {
                 "job_count": 19,
@@ -5910,7 +6370,17 @@
                         "count": 1,
                         "percentage": 20.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 3948.9583333333335,
+                    "median": 5283.333333333333,
+                    "max": 6816.666666666667,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "VERY_HIGH",
+                    "sample_size": 24
+                }
             },
             "Mid": {
                 "job_count": 1,
@@ -5950,7 +6420,17 @@
                         "count": 1,
                         "percentage": 100.0
                     }
-                ]
+                ],
+                "salary_estimate": {
+                    "min": 5499.3552500000005,
+                    "median": 5779.8205,
+                    "max": 6060.28575,
+                    "currency": "MYR",
+                    "period": "MONTH",
+                    "source": "Glassdoor via JSearch",
+                    "confidence": "HIGH",
+                    "sample_size": 6
+                }
             },
             "Senior": {
                 "job_count": 3,

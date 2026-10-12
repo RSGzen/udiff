@@ -75,11 +75,11 @@
 - **Still to do:** run the LLM + aggregation on the new data and redeploy the site.
 - **Done when:** the live site reflects freshly generated data. ⬜
 
-### M5.5 — Salary estimates (optional) `Pending`
+### M5.5 — Salary estimates `In progress (pipeline done 12 Oct 2026)`
 - `search-v2` returns no salary, so `gap_report.json` salary is `0` / `N/A`.
-- Add a separate enrichment step using `/estimated-salary` (`job_title` + `location` + `years_of_experience`) to produce a **market band** per category × level (~14 × 3 ≈ 42 calls).
-- **Keep it separate from observed pay:** store a clearly-attributed `salary_estimate {min, median, max, currency, period, source, confidence, sample_size}`; do **not** overwrite the posting-derived `salary` — that would change what the metric means.
-- Label the web card "estimated (Glassdoor via JSearch)" and surface `confidence` / `sample_size`.
+- ✅ Added `salary_estimate.py` (a `salary` orchestrator step) using `/estimated-salary` (`job_title` + `location` + years bucket) → a **market band** per category × level. Kept **separate** from observed pay: stored as `salary_estimate {min, median, max, currency, period, source, confidence, sample_size}`; `salary` is untouched.
+- Reliability guard: keeps only `HIGH`/`VERY_HIGH` confidence with `sample_size ≥ 3` (drops noisy publisher outliers). Run result: **48/53 blocks** estimated (e.g. Cloud & DevOps Senior ≈ RM 10,700/mo); synced to the web.
+- ⬜ Label the web card "estimated (Glassdoor via JSearch)" and surface `confidence` / `sample_size` (pairs with the M6/design pass).
 - **Done when:** the dashboard shows a labelled market estimate alongside the honest `N/A` for observed pay.
 
 ### M6 — Web cleanup `Pending`
