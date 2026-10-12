@@ -4,6 +4,9 @@ import { useState } from "react"
 import { MetricCard } from "@/components/dashboard/MetricCard"
 import { SkillChart } from "@/components/dashboard/SkillChart"
 import { ContextTreemap } from "@/components/dashboard/ContextTreemap"
+import { SoftSkills } from "@/components/dashboard/SoftSkills"
+import { JobDistribution } from "@/components/dashboard/JobDistribution"
+import { ExperienceSplit } from "@/components/dashboard/ExperienceSplit"
 import { RolePanel } from "@/components/dashboard/RolePanel"
 import { AppShell } from "@/components/AppShell"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -13,6 +16,8 @@ import {
   getCountryName,
   getRoles,
   getLevelBucket,
+  getCountry,
+  getRole,
 } from "@/lib/data"
 import { Briefcase, DollarSign, PieChart, AlertCircle } from "lucide-react"
 
@@ -40,6 +45,19 @@ export default function Home() {
 
   const totalCategoryJobs = allStats?.job_count ?? 1
   const marketShare = ((jobCount / totalCategoryJobs) * 100).toFixed(1)
+
+  const role = getRole(selectedCountry, selectedCategory)
+  const distribution = getCountry(selectedCountry).job_distribution
+  const expSlices = [
+    { label: "Junior", count: role?.Junior?.job_count ?? 0, varName: "--chart-1" },
+    { label: "Mid", count: role?.Mid?.job_count ?? 0, varName: "--chart-2" },
+    { label: "Senior", count: role?.Senior?.job_count ?? 0, varName: "--chart-3" },
+    {
+      label: "Unknown",
+      count: typeof role?.unknown_level === "number" ? role.unknown_level : 0,
+      varName: "--muted-foreground",
+    },
+  ]
 
   const hasData = jobCount > 0
 
@@ -162,10 +180,17 @@ export default function Home() {
 
             {/* CHECK: Do we have data? */}
             {hasData ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <SkillChart data={stats?.top_hard_skills ?? []} />
-                <ContextTreemap data={stats?.top_technical_context ?? []} />
-              </div>
+              <>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                  <SkillChart data={stats?.top_hard_skills ?? []} />
+                  <ContextTreemap data={stats?.top_technical_context ?? []} />
+                </div>
+                <SoftSkills data={stats?.top_soft_skills ?? []} />
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <JobDistribution data={distribution} selectedRole={selectedCategory} />
+                  <ExperienceSplit slices={expSlices} />
+                </div>
+              </>
             ) : (
               <div className="bg-card/50 border border-border rounded-xl p-12 text-center text-muted-foreground flex flex-col items-center">
                 <AlertCircle className="h-12 w-12 text-muted-foreground/60 mb-4" />

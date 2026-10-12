@@ -49,7 +49,7 @@ export function SkillChart({ data }: SkillChartProps) {
         <CardTitle className="text-foreground">Top Required Technologies</CardTitle>
       </CardHeader>
       <CardContent className="pl-2">
-        <div className="h-[350px] w-full">
+        <div className="h-[350px] w-full" onMouseLeave={() => setActiveIndex(null)}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={chartData} 
@@ -75,9 +75,7 @@ export function SkillChart({ data }: SkillChartProps) {
               <Bar 
                 dataKey="percentage" 
                 radius={[0, 4, 4, 0]}
-                // These events control the "Master Switch"
                 onMouseEnter={(_, index) => setActiveIndex(index)}
-                onMouseLeave={() => setActiveIndex(null)}
               >
                 {chartData.map((entry, index) => {
                   const isHovered = activeIndex === index
@@ -97,7 +95,6 @@ export function SkillChart({ data }: SkillChartProps) {
                       key={`cell-${index}`} 
                       fill={finalColor}
                       fillOpacity={finalOpacity}
-                      style={{ transition: 'fill 150ms ease-out, opacity 150ms ease-out' }}
                       stroke="none"
                     />
                   )

@@ -64,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar (collapsible to icon rail) */}
       <aside
         className={cn(
-          "hidden lg:flex flex-col border-r border-border bg-background h-screen sticky top-0 shrink-0 overflow-hidden transition-[width] duration-200",
+          "hidden lg:flex flex-col border-r border-border bg-background h-screen sticky top-0 shrink-0 overflow-hidden transition-[width] duration-200 ease-out",
           collapsed ? "w-[4.5rem]" : "w-64"
         )}
       >
@@ -110,10 +110,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div
-            className="absolute inset-0 bg-background/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-background/70 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute left-0 top-0 bottom-0 w-64 bg-background border-r border-border flex flex-col">
+          <div className="absolute left-0 top-0 bottom-0 w-64 bg-background border-r border-border flex flex-col animate-in slide-in-from-left duration-200 ease-out">
             <div className="flex items-center justify-between px-6 py-6 border-b border-border shrink-0">
               <span className="text-xl font-bold text-primary">UDiff</span>
               <Button variant="ghost" size="icon" onClick={() => setMobileOpen(false)} aria-label="Close menu">

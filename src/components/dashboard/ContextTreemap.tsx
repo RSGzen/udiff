@@ -66,8 +66,7 @@ const CustomContent = (props: any) => {
           fill: bgColor,
           stroke: borderColor,
           strokeWidth: isHovered ? 3 : 2, // Thicker border on hover
-          opacity: opacity,
-          transition: 'fill 150ms ease-out, opacity 150ms ease-out, stroke 150ms ease-out'
+          opacity: opacity
         }}
         rx={6}
       />

@@ -61,7 +61,7 @@ export interface RoleCategory {
   Junior?: LevelBucket;
   Mid?: LevelBucket;
   Senior?: LevelBucket;
-  unknown_level?: LevelBucket;
+  unknown_level?: number;
 }
 
 export interface CountryReport {
