@@ -57,22 +57,23 @@
 - **Result:** `pipeline/src/config.py` is the single source of truth; all six scripts resolve paths from `Path(__file__)`. `pipeline.py`'s dead `SCRIPTS` folder names are handled under M3.
 - **Done when:** scripts run identically from the repo root regardless of cwd. ✅
 
-### M3 — Single robust entrypoint `In progress`
-- Extend `pipeline/src/pipeline.py` to include **step 5 (curriculum generation)** and expose step selection flags (`--steps`, `--skip-scrape`).
+### M3 — Single robust entrypoint `Done (12 Oct 2026)`
+- Extend `pipeline/src/pipeline.py` to include **step 5 (curriculum generation)** and expose step selection flags.
 - Add resume/checkpointing, retries, and clear failure messages.
-- **Done when:** one command runs the full pipeline (or a chosen subset) and fails gracefully.
+- **Result:** 4-step orchestrator (`fetch → extract → analyze → curriculum`) with `--steps`, `--skip`, `--skip-scrape`, `--dry-run`, `--list`; logs to `pipeline/pipeline_log.txt`. Resume/checkpointing deferred (steps are re-runnable).
+- **Done when:** one command runs the full pipeline (or a chosen subset) and fails gracefully. ✅
 
 ### M4 — Documentation `In progress`
 - ✅ `docs/UDiff.md`, `docs/Tech Stack.md`, this file.
-- ⬜ Fix `pipeline/requirements.txt` (add `playwright`, `beautifulsoup4`, `ollama`; consider a `pyproject.toml`).
+- ⬜ Fix `pipeline/requirements.txt` (add `ollama` + `pandas`; playwright/bs4 are now legacy-only; consider a `pyproject.toml`).
 - ⬜ Add module docstrings + a short `pipeline/README.md`.
 - ⬜ Add an architecture diagram to the top-level `README.md` (partially done).
 
-### M5 — Data refresh `Pending`
-- **Preferred:** fix the scraper for the current JobStreet DOM, then attempt a **full re-scrape** and regenerate all data + the website.
-- **Fallback:** if re-scraping fails, re-run only the downstream steps (`processor.py → analyzer.py → curriculum_generation.py`) on the committed raw CSV.
-- Rebuild/redeploy the web app with the refreshed JSONs.
-- **Done when:** the live site reflects freshly generated data (or a documented fallback run).
+### M5 — Data refresh `In progress (fetch done 12 Oct 2026)`
+- JobStreet scraping is disallowed by its robots.txt (`Disallow: */job/`, `*?`) and ToS cl. 7.d/9.b, so the scrapers were retired to `pipeline/legacy/` and replaced by the **JSearch API** (`fetch_jobs.py`, OpenWebNinja).
+- Fetched **935 Malaysian postings** (all with descriptions; salary 100% null). Raw ad text is now gitignored.
+- **Still to do:** run the LLM + aggregation on the new data and redeploy the site.
+- **Done when:** the live site reflects freshly generated data. ⬜
 
 ### M6 — Web cleanup `Pending`
 - Remove the `as any` casts and unused default assets; ensure types are honest.
@@ -118,6 +119,14 @@
 **Did not do (next):** M3 orchestrator repair; M4 `requirements.txt`; M5 re-scrape; M6 web cleanup.
 **Open items:** planned order changed to M5 (re-scrape) before finishing M4/M3, because refreshing data gates the value of the run.
 
+### 12_10_2026 (later) — M5 data source + M3 orchestrator (assistant)
+**Did:**
+- M5: retired the JobStreet scrapers to `pipeline/legacy/` (robots.txt/ToS forbid scraping) and added `fetch_jobs.py` for the JSearch API; fetched **935 MY postings**; gitignored `job_details_full.csv`.
+- Probed the API: `search-v2` returns **no** structured skills/seniority, so the LLM extraction stays; salary is always null.
+- M3: rewrote `pipeline.py` as a 4-step orchestrator (`fetch → extract → analyze → curriculum`) with `--steps/--skip/--skip-scrape/--dry-run/--list`.
+
+**Next:** run the pipeline on the new data (LLM extract ≈ 80 min), then M4 `requirements.txt`, M6 web cleanup, M7 data-contract sync.
+
 ---
 
 ## 4. Backlog (feature requests, carried from `future_changes.txt`)
@@ -130,18 +139,18 @@
 
 ---
 
-## 5. How to run (current, pre-refactor)
+## 5. How to run
 
 ```bash
 # Web (from repo root)
 npm install
 npm run dev            # http://localhost:3000
 
-# Pipeline (paths resolve from the repo root; run from anywhere after `pip install -r`)
-# requires: Python 3.x, Ollama running the qwen3:8b model
+# Pipeline (single entrypoint; settings from pipeline/src/config.py)
+# requires: Python 3.x, Ollama running qwen3:8b, JSEARCH_API_KEY in pipeline/.env
 pip install -r pipeline/requirements.txt
-python pipeline/src/pipeline.py --skip-scrape   # steps 1-4 (orchestrator repair = M3)
-python pipeline/src/curriculum_generation.py    # step 5
+python pipeline/src/pipeline.py                 # full run
+python pipeline/src/pipeline.py --skip fetch    # reuse existing data
 ```
 
-> Expect path fixes in M2–M3; the above reflects the current prototype.
+> The above reflects the post-M2/M3 state.

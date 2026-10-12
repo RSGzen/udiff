@@ -1,158 +1,172 @@
+"""
+UDiff pipeline orchestrator.
+
+Runs the whole pipeline (or a chosen subset) as subprocesses, streaming each
+step's output to the console and to a log file.
+
+    python pipeline/src/pipeline.py                          # full run
+    python pipeline/src/pipeline.py --steps analyze,curriculum
+    python pipeline/src/pipeline.py --skip fetch             # reuse existing data
+    python pipeline/src/pipeline.py --dry-run                # show what would run
+    python pipeline/src/pipeline.py --list                   # list steps
+"""
+
+import argparse
+import datetime
 import subprocess
 import sys
 import time
-import argparse
-import datetime
-import os
+from pathlib import Path
 
-# --- CONFIGURATION ---
-FOLDER_NAME = 'pipelining'
-LOG_FILE = "pipeline_log.txt"
+import config
 
-# Scripts must be in-order
-SCRIPTS = [
+SRC_DIR = Path(__file__).resolve().parent
+LOG_FILE = config.PIPELINE_DIR / "pipeline_log.txt"
+
+STEPS = [
     {
-        "name": "Job Scraper",
-        "folder": "jobstreet_scraper",
-        "file": "scraper.py", 
-        "description": "Fetching job links from web..."
+        "key": "fetch",
+        "name": "Job Fetcher",
+        "file": "fetch_jobs.py",
+        "description": "Fetching job postings from the JSearch API...",
     },
     {
-        "name": "Detail Fetcher",
-        "folder": "jobstreet_scraper",
-        "file": "scraper_details.py",
-        "description": "Visiting each link to get descriptions..."
-    },
-    {
-        "name": "Llama Processor",
-        "folder": "info_extract",
+        "key": "extract",
+        "name": "Skill Extractor",
         "file": "processor.py",
-        "description": "Extracting skills using Llama 3.1..."
+        "description": "Extracting skills with Ollama...",
     },
     {
+        "key": "analyze",
         "name": "Market Analyzer",
-        "folder": "analyzer",
         "file": "analyzer.py",
-        "description": "Generating Gap Analysis Report..."
-    }
+        "description": "Generating the gap report...",
+    },
+    {
+        "key": "curriculum",
+        "name": "Curriculum Generator",
+        "file": "curriculum_generation.py",
+        "description": "Generating curriculum synonyms...",
+    },
 ]
-# ---------------------
+
 
 def tee_output(process, log_handle):
-    """
-    Reads stdout from a subprocess line-by-line.
-    - File: Always saves pure UTF-8 (Emojis intact).
-    - Console: Tries to print UTF-8, but strips emojis if Windows complains.
-    """
-    for line in iter(process.stdout.readline, ''):
-        if line:
-            # 1. Safe Print to Console
-            try:
-                # Try printing normally
-                print(line.rstrip())
-            except UnicodeEncodeError:
-                # If Windows crashes on an emoji, strip it and print the ASCII version
-                # This ensures the pipeline keeps running even if the display is ugly
-                safe_text = line.encode('ascii', 'ignore').decode('ascii')
-                print(safe_text.rstrip())
-            
-            # 2. Write to File (Always works because we opened it with encoding='utf-8')
-            try:
-                log_handle.write(line)
-                log_handle.flush()
-            except Exception as e:
-                print(f"[Log Error: {e}]")
+    """Stream a subprocess's stdout to both the console and the log file."""
+    for line in iter(process.stdout.readline, ""):
+        if not line:
+            continue
+        try:
+            print(line.rstrip())
+        except UnicodeEncodeError:
+            print(line.encode("ascii", "ignore").decode("ascii").rstrip())
+        log_handle.write(line)
+        log_handle.flush()
 
-def run_step(script_info, log_handle):
-    """Runs a script and streams output to both targets"""
-    header = f"\n{'='*60}\n🚀 STEP: {script_info['name']}\nℹ️  {script_info['description']}\n{'='*60}\n"
-    
-    # Write Header to both
-    print(header, end='')
+
+def run_step(step, log_handle):
+    """Run one step as a subprocess; return True on success."""
+    header = f"\n{'=' * 60}\nSTEP: {step['name']}\n{step['description']}\n{'=' * 60}\n"
+    print(header, end="")
     log_handle.write(header)
-    
-    start_time = time.time()
-    
-    # Create file path
-    execution_file_path = os.path.join(os.getcwd(), script_info['folder'], script_info['file'])
 
+    script = SRC_DIR / step["file"]
+    start = time.time()
     try:
-        # Popen allows us to stream output in real-time
-        # bufsize=1 means line-buffered (smooth output)
         process = subprocess.Popen(
-            [sys.executable, execution_file_path], 
-            stdout=subprocess.PIPE, 
-            stderr=subprocess.STDOUT, # Redirect errors to standard output so they get logged too
+            [sys.executable, str(script)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
-            encoding='utf-8', # Force UTF-8 for emoji support
-            errors='replace'
+            encoding="utf-8",
+            errors="replace",
         )
-        
-        # Start the dual-streamer
         tee_output(process, log_handle)
-        
-        # Wait for finish
-        return_code = process.wait()
-        
-        duration = time.time() - start_time
-        footer = f"\n✅ {script_info['name']} COMPLETED in {duration:.2f} seconds.\n"
-        
-        if return_code == 0:
-            print(footer)
-            log_handle.write(footer)
-            return True
-        else:
-            error_msg = f"\n❌ ERROR: {script_info['name']} failed with exit code {return_code}.\n"
-            print(error_msg)
-            log_handle.write(error_msg)
-            return False
-            
+        code = process.wait()
     except FileNotFoundError:
-        msg = f"\n❌ ERROR: Could not find file '{script_info['file']}'.\n"
-        print(msg)
-        log_handle.write(msg)
+        message = f"ERROR: could not find {script}\n"
+        print(message, end="")
+        log_handle.write(message)
         return False
 
+    duration = time.time() - start
+    if code == 0:
+        line = f"{step['name']} completed in {duration:.1f}s\n"
+        print(line, end="")
+        log_handle.write(line)
+        return True
+    line = f"ERROR: {step['name']} failed (exit code {code}) after {duration:.1f}s\n"
+    print(line, end="")
+    log_handle.write(line)
+    return False
+
+
+def select_steps(args):
+    """Apply --steps/--skip/--skip-scrape to choose which steps run."""
+    keys = [step["key"] for step in STEPS]
+
+    if args.steps:
+        wanted = [k.strip() for k in args.steps.split(",") if k.strip()]
+        unknown = [k for k in wanted if k not in keys]
+        if unknown:
+            raise SystemExit(f"Unknown step(s): {', '.join(unknown)}. Valid: {', '.join(keys)}")
+        return [step for step in STEPS if step["key"] in wanted]
+
+    skipped = {k.strip() for k in (args.skip or "").split(",") if k.strip()}
+    if args.skip_scrape:
+        skipped.add("fetch")
+    unknown = [k for k in skipped if k not in keys]
+    if unknown:
+        raise SystemExit(f"Unknown step(s): {', '.join(unknown)}. Valid: {', '.join(keys)}")
+    return [step for step in STEPS if step["key"] not in skipped]
+
+
 def main():
-    parser = argparse.ArgumentParser(description="UDiff Data Pipeline")
-    parser.add_argument("--skip-scrape", action="store_true", help="Skip the scraping step.")
+    parser = argparse.ArgumentParser(description="UDiff data pipeline")
+    parser.add_argument("--steps", help="Comma-separated steps to run (fetch,extract,analyze,curriculum).")
+    parser.add_argument("--skip", help="Comma-separated steps to skip.")
+    parser.add_argument("--skip-scrape", action="store_true", help="Alias for --skip fetch.")
+    parser.add_argument("--dry-run", action="store_true", help="Print steps that would run, then exit.")
+    parser.add_argument("--list", action="store_true", help="List steps and exit.")
     args = parser.parse_args()
 
-    # Create file path
-    log_file_path = os.path.join(os.getcwd(), FOLDER_NAME, LOG_FILE)
+    if args.list:
+        for step in STEPS:
+            print(f"{step['key']:<10} {step['name']:<20} {step['description']}")
+        return
 
-    # Open the log file once at the start
-    # 'a' mode appends to history. Use 'w' if you want to overwrite every time.
-    with open(log_file_path, 'w', encoding='utf-8') as log_file:
-        
-        # Timestamp the run
-        start_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        intro = f"🤖 STARTING UDIFF PIPELINE RUN AT {start_timestamp}\n"
-        print(intro)
-        log_file.write(intro)
-        
-        total_start = time.time()
-        
-        for script in SCRIPTS:
-            if args.skip_scrape and "scraper" in script['file'].lower():
-                skip_msg = f"\n⏭️  Skipping {script['name']} (User requested skip)...\n"
-                print(skip_msg)
-                log_file.write(skip_msg)
-                continue
-                
-            success = run_step(script, log_file)
-            if not success:
-                print("🛑 Pipeline stopped due to error.")
-                log_file.write("🛑 Pipeline stopped due to error.\n")
+    steps = select_steps(args)
+    if not steps:
+        raise SystemExit("No steps selected.")
+
+    if args.dry_run:
+        for step in steps:
+            print(f"would run: {step['key']} ({step['file']})")
+        return
+
+    config.ensure_utf8_stdout()
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(LOG_FILE, "w", encoding="utf-8") as log:
+        start = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        intro = f"UDiff pipeline started at {start}\n"
+        print(intro, end="")
+        log.write(intro)
+
+        total = time.time()
+        for step in steps:
+            if not run_step(step, log):
+                print("Pipeline stopped due to an error.")
+                log.write("Pipeline stopped due to an error.\n")
                 sys.exit(1)
 
-        total_duration = time.time() - total_start
-        outro = f"\n{'='*60}\n🎉 PIPELINE FINISHED SUCCESSFULLY\n⏱️  Total Run Time: {total_duration/60:.2f} minutes\n{'='*60}\n"
-        print(outro)
-        log_file.write(outro)
+        elapsed = (time.time() - total) / 60
+        outro = f"\n{'=' * 60}\nPipeline finished in {elapsed:.1f} minutes\n{'=' * 60}\n"
+        print(outro, end="")
+        log.write(outro)
 
-    print(f"\n📄 Full log saved to: {LOG_FILE}")
+    print(f"Full log saved to {LOG_FILE}")
+
 
 if __name__ == "__main__":
     main()

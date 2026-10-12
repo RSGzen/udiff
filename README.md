@@ -53,14 +53,14 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-### Data pipeline (run from the repo ROOT)
+### Data pipeline
 ```bash
-# requires Python 3.x and Ollama running the 'qwen3:8b' model
+# requires Python 3.x, Ollama running 'qwen3:8b', and JSEARCH_API_KEY in pipeline/.env
 pip install -r pipeline/requirements.txt
-python pipeline/src/pipeline.py --skip-scrape   # steps 1-4
-python pipeline/src/curriculum_generation.py    # step 5 (not yet in the orchestrator)
+python pipeline/src/pipeline.py                 # full run: fetch -> extract -> analyze -> curriculum
+python pipeline/src/pipeline.py --skip fetch    # reuse existing data
 ```
-> Paths resolve from the repo root via `pipeline/src/config.py` (M2, done). The orchestrator (`pipeline.py`) is still being repaired (M3) — run the individual steps for now.
+> Paths/settings live in `pipeline/src/config.py`; each step streams to `pipeline/pipeline_log.txt`.
 
 ## 📂 Project structure
 
