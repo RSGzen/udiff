@@ -75,6 +75,13 @@
 - **Still to do:** run the LLM + aggregation on the new data and redeploy the site.
 - **Done when:** the live site reflects freshly generated data. ⬜
 
+### M5.5 — Salary estimates (optional) `Pending`
+- `search-v2` returns no salary, so `gap_report.json` salary is `0` / `N/A`.
+- Add a separate enrichment step using `/estimated-salary` (`job_title` + `location` + `years_of_experience`) to produce a **market band** per category × level (~14 × 3 ≈ 42 calls).
+- **Keep it separate from observed pay:** store a clearly-attributed `salary_estimate {min, median, max, currency, period, source, confidence, sample_size}`; do **not** overwrite the posting-derived `salary` — that would change what the metric means.
+- Label the web card "estimated (Glassdoor via JSearch)" and surface `confidence` / `sample_size`.
+- **Done when:** the dashboard shows a labelled market estimate alongside the honest `N/A` for observed pay.
+
 ### M6 — Web cleanup `Pending`
 - Remove the `as any` casts and unused default assets; ensure types are honest.
 - Verify `npm run build` + `npm run lint`; add a screenshot/GIF to the README.
