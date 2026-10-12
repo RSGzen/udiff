@@ -54,7 +54,7 @@ def format_salary(job):
 
 def to_row(query, job):
     """Map one JSearch job object onto our CSV row."""
-    location = ", ".join(
+    location = job.get("job_location") or ", ".join(
         part
         for part in (job.get("job_city"), job.get("job_state"), job.get("job_country"))
         if part
@@ -93,6 +93,9 @@ def fetch_all():
         print(f"Searching '{query}'...", end=" ", flush=True)
         payload = fetch_query(query)
         data = payload.get("data")
+
+        jobs = []
+
         jobs = data.get("jobs") if isinstance(data, dict) else (data or [])
         new = 0
         for job in jobs:
@@ -118,8 +121,9 @@ def self_test():
     sample = {
         "job_title": "Backend Developer",
         "employer_name": "Acme",
+        "job_location": "Kuala Lumpur, Malaysia",
         "job_city": "Kuala Lumpur",
-        "job_country": "Malaysia",
+        "job_country": "MY",
         "job_min_salary": 5000,
         "job_max_salary": 7000,
         "job_salary_currency": "MYR",
@@ -132,7 +136,9 @@ def self_test():
     assert row["location"] == "Kuala Lumpur, Malaysia"
     assert row["salary"] == "MYR 5,000 - 7,000 per month", row["salary"]
     assert row["description"] == "Python and AWS."
+    # job_location is preferred; city/state/country is the fallback.
     assert to_row("x", {})["company"] == "Confidential"
+    assert to_row("x", {"job_city": "Penang"})["location"] == "Penang"
     assert format_salary({}) == "Not Specified"
     assert "search-v2?" in build_search_url("x")
     print("self-test OK")
