@@ -18,9 +18,14 @@ interface ContextTreemapProps {
 // We pass activeIndex and setActiveIndex down to each block
 const CustomContent = (props: any) => {
   const { 
-    x, y, width, height, name, percentage, index, // Recharts injected props
+    x, y, width, height, name, percentage, index, depth, // Recharts injected props
     activeIndex, setActiveIndex // Our custom props
   } = props
+
+  // Recharts renders the root node (depth 0) through this content too. It has no
+  // name/percentage and covers the whole area — skip it (avoids a stray "%" and a
+  // full-area tint behind every tile).
+  if (depth === 0) return null
   
   // A. Interaction Logic (Focus & Dim)
   const isHovered = index === activeIndex

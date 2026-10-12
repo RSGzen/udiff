@@ -1,13 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { LayoutDashboard, GraduationCap, Briefcase, Search, Settings } from "lucide-react"
+import { Briefcase, Search } from "lucide-react"
 
-interface SidebarProps {
+interface RolePanelProps {
   categories: string[]
   selectedCategory: string
   onSelectCategory: (cat: string) => void
@@ -15,39 +14,25 @@ interface SidebarProps {
   onSelectLevel: (level: string) => void
 }
 
-export function Sidebar({
+export function RolePanel({
   categories,
   selectedCategory,
   onSelectCategory,
   selectedLevel,
-  onSelectLevel
-}: SidebarProps) {
-
-  const router = useRouter()
-
-  // 1. Local State for Search
+  onSelectLevel,
+}: RolePanelProps) {
   const [searchTerm, setSearchTerm] = useState("")
 
-  // 2. Filter Logic
-  const filteredCategories = categories.filter(cat =>
+  const filteredCategories = categories.filter((cat) =>
     cat.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
-    <div className="w-64 border-r border-border bg-background flex flex-col h-screen fixed left-0 top-0">
-
-      {/* --- HEADER SECTION (Fixed) --- */}
-      <div className="p-6 border-b border-border shrink-0">
-        <h1 className="text-2xl font-bold text-primary">
-          UDiff
-        </h1>
-        <p className="text-muted-foreground text-xs mt-1">Student to Founder</p>
-      </div>
-
+    <aside className="hidden lg:flex w-64 shrink-0 border-r border-border flex-col h-screen sticky top-0">
       <div className="px-4 pt-6 shrink-0 space-y-4">
-        {/* Experience Slider */}
+        {/* Experience Level */}
         <div>
-           <h3 className="mb-2 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          <h3 className="mb-2 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Experience Level
           </h3>
           <Tabs defaultValue="All" value={selectedLevel} onValueChange={onSelectLevel} className="w-full">
@@ -60,7 +45,7 @@ export function Sidebar({
           </Tabs>
         </div>
 
-        {/* Search Bar */}
+        {/* Search */}
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -72,7 +57,7 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* --- SCROLLABLE LIST (Flex Grow) --- */}
+      {/* Career Paths */}
       <div className="flex-1 py-4 px-4 overflow-y-auto min-h-0">
         <h3 className="mb-2 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           Career Paths
@@ -101,30 +86,6 @@ export function Sidebar({
           )}
         </div>
       </div>
-
-      {/* --- FOOTER SECTION (Pinned Bottom) --- */}
-      <div className="p-4 border-t border-border bg-background shrink-0">
-        <h3 className="mb-2 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-          Tools
-        </h3>
-        <div className="space-y-1">
-          <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground"
-          onClick={() => router.push('/roadmap')}>
-            <LayoutDashboard className="mr-2 h-4 w-4" />
-            My Roadmap
-          </Button>
-          <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground"
-          onClick={() => router.push('/curriculum')}>
-            <GraduationCap className="mr-2 h-4 w-4" />
-            Curriculum Check
-          </Button>
-           <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </Button>
-        </div>
-      </div>
-
-    </div>
+    </aside>
   )
 }

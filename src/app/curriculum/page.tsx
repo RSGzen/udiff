@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, XCircle, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react"
+import { AppShell } from "@/components/AppShell"
+import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react"
 
 // 1. Read the skill→course dictionary through the schema layer
 import { DEFAULT_COUNTRY, getSkillClassRoles, getSkillClass } from "@/lib/data"
@@ -18,8 +18,6 @@ const ROLES = getSkillClassRoles(DEFAULT_COUNTRY)
 const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9\s]/g, "")
 
 export default function CurriculumCheckPage() {
-  const router = useRouter()
-
   // --- STATE ---
   // Default to first role in the dictionary
   const [selectedRole, setSelectedRole] = useState(ROLES[0] ?? "")
@@ -91,13 +89,11 @@ export default function CurriculumCheckPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background text-foreground p-8">
+    <AppShell>
+      <main className="p-8">
 
       {/* HEADER */}
       <div className="max-w-4xl mx-auto mb-8">
-        <Button variant="ghost" className="text-muted-foreground pl-0 hover:text-foreground mb-4" onClick={() => router.push('/')}>
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
-        </Button>
         <h1 className="text-3xl font-bold text-foreground">
           Curriculum Gap Analyzer
         </h1>
@@ -243,6 +239,7 @@ export default function CurriculumCheckPage() {
         </div>
 
       </div>
-    </main>
+      </main>
+    </AppShell>
   )
 }

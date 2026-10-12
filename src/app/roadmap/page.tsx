@@ -1,21 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft } from "lucide-react"
+import { AppShell } from "@/components/AppShell"
 
 // Import the MASTER data
 import allRoadmaps from "@/data/roadmaps.json"
 
 export default function RoadmapPage() {
-  const router = useRouter()
-
   // 1. State for selected Role (Default to Backend)
   const [selectedRoleKey, setSelectedRoleKey] = useState("Backend")
 
@@ -48,14 +44,11 @@ export default function RoadmapPage() {
   const totalPercentage = Math.round((totalCollected / totalSkills) * 100)
 
   return (
-    <main className="min-h-screen bg-background text-foreground p-8">
+    <AppShell>
+      <main className="p-8">
 
       {/* NAVIGATION HEADER */}
-      <div className="max-w-3xl mx-auto mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <Button variant="ghost" className="text-muted-foreground pl-0 hover:text-foreground" onClick={() => router.push('/')}>
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
-        </Button>
-
+      <div className="max-w-3xl mx-auto mb-8 flex flex-col md:flex-row md:items-center justify-end gap-4">
         {/* ROLE SELECTOR */}
         <div className="flex items-center gap-3">
             <span className="text-muted-foreground text-sm font-medium">Career Path:</span>
@@ -150,6 +143,7 @@ export default function RoadmapPage() {
           )
         })}
       </div>
-    </main>
+      </main>
+    </AppShell>
   )
 }
