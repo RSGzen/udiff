@@ -1,0 +1,12 @@
+{
+    "_what": "World Bank PPP conversion factor, private consumption (LCU per international $). Used as: ppp_myr = salary_local / factor[local] * factor['my'].",
+    "_where_to_put": "Replace the 0 in 'factor' with the latest available value per country. Do not change the keys.",
+    "source": "World Bank indicator PA.NUS.PRVT.PP",
+    "year": 2025,
+    "factor": {
+        "my": 1.43,
+        "sg": 1.02,
+        "id": 5065.97,
+        "vn": 7203.37
+    }
+}

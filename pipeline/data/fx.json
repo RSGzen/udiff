@@ -1,0 +1,12 @@
+{
+    "_what": "Local currency units per 1 MYR. Used as: nominal_myr = salary_local / per_myr[local].",
+    "_where_to_put": "Replace the 0 in 'per_myr' with the rate for that currency. Keep 'my' at 1.0. Set 'as_of' to the rate date and 'source' to where you got it.",
+    "source": "https://wise.com/gb/currency-converter/",
+    "as_of": "13-10-2026",
+    "per_myr": {
+        "my": 1.0,
+        "sg": 0.31,
+        "id": 4391,
+        "vn": 6346
+    }
+}
