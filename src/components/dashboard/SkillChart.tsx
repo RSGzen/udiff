@@ -32,8 +32,8 @@ export function SkillChart({ data }: SkillChartProps) {
       if (!isMatchingRow) return null;
 
       return (
-        <div className="bg-slate-950 border border-slate-800 p-3 rounded-lg shadow-xl">
-          <p className="text-cyan-400 font-mono text-sm font-bold">
+        <div className="bg-popover border border-border p-3 rounded-lg shadow-xl">
+          <p className="text-primary font-mono text-sm font-bold tabular-nums">
             [ {label} : {payload[0].value}% ]
           </p>
         </div>
@@ -43,9 +43,9 @@ export function SkillChart({ data }: SkillChartProps) {
   }
 
   return (
-    <Card className="col-span-4 bg-slate-900 border-slate-800">
+    <Card className="col-span-4 bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-slate-200">Top Required Technologies</CardTitle>
+        <CardTitle className="text-foreground">Top Required Technologies</CardTitle>
       </CardHeader>
       <CardContent className="pl-2">
         <div className="h-[350px] w-full">
@@ -58,8 +58,9 @@ export function SkillChart({ data }: SkillChartProps) {
               <YAxis 
                 dataKey="name" 
                 type="category" 
-                width={100} 
-                tick={{ fill: '#94a3b8', fontSize: 12 }} 
+                width={150} 
+                tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }} 
+                tickFormatter={(value: string) => value.length > 20 ? `${value.slice(0, 19)}…` : value}
                 axisLine={false}
                 tickLine={false}
               />
@@ -81,11 +82,11 @@ export function SkillChart({ data }: SkillChartProps) {
                   const isHovered = activeIndex === index
                   const isAnythingHovered = activeIndex !== null
                   
-                  let finalColor = index < 3 ? '#3b82f6' : '#1e293b' 
+                  let finalColor = index < 3 ? 'var(--chart-1)' : 'var(--muted)'
                   let finalOpacity = 1
 
                   if (isHovered) {
-                    finalColor = '#22d3ee'
+                    finalColor = 'var(--chart-1)'
                     finalOpacity = 1
                   } else if (isAnythingHovered) {
                     finalOpacity = 0.3

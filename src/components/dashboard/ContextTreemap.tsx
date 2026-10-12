@@ -29,17 +29,16 @@ const CustomContent = (props: any) => {
 
   // B. Color Logic
   const isTop = index < 2
-  // If hovered: Bright Cyan. If Top: Blue. Else: Slate.
-  let bgColor = isTop ? '#1e40af' : '#1e293b' 
-  let borderColor = isTop ? '#60a5fa' : '#475569'
+  let bgColor = isTop ? 'var(--chart-1)' : 'var(--muted)'
+  let borderColor = 'var(--border)'
   let opacity = 0.9
 
   if (isHovered) {
-    bgColor = '#22d3ee'   // Cyan Pop
-    borderColor = '#cffafe' // White-ish border
+    bgColor = 'var(--chart-1)'
+    borderColor = 'var(--primary-foreground)'
     opacity = 1
   } else if (isDimmed) {
-    opacity = 0.3         // Fade out
+    opacity = 0.3
   }
 
   // C. Text Collision Logic
@@ -76,7 +75,7 @@ const CustomContent = (props: any) => {
             x={x + width / 2}
             y={y + height / 2}
             textAnchor="middle"
-            fill={isHovered ? "#0f172a" : "#fff"} // Dark text on Cyan, White on Dark
+            fill="var(--primary-foreground)"
             stroke="none"
             fontSize={14}
             fontWeight="bold"
@@ -89,7 +88,7 @@ const CustomContent = (props: any) => {
             x={x + width / 2}
             y={y + height / 2}
             textAnchor="middle"
-            fill={isHovered ? "#1e293b" : "#cbd5e1"}
+            fill="var(--muted-foreground)"
             stroke="none"
             fontSize={11}
             dy={12}
@@ -115,9 +114,9 @@ export function ContextTreemap({ data }: ContextTreemapProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
   return (
-    <Card className="col-span-3 bg-slate-900 border-slate-800">
+    <Card className="col-span-3 bg-card border-border">
       <CardHeader>
-        <CardTitle className="text-slate-200">Technical Context</CardTitle>
+        <CardTitle className="text-foreground">Technical Context</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[350px] w-full">
@@ -126,8 +125,8 @@ export function ContextTreemap({ data }: ContextTreemapProps) {
               data={treeData}
               dataKey="size"
               aspectRatio={4 / 3}
-              stroke="#fff" 
-              fill="#1e293b"
+              stroke="var(--border)" 
+              fill="var(--muted)"
               // Pass our Custom Component WITH the state props
               content={
                 <CustomContent 
@@ -142,8 +141,8 @@ export function ContextTreemap({ data }: ContextTreemapProps) {
                   if (active && payload && payload.length) {
                     const d = payload[0].payload
                     return (
-                      <div className="bg-slate-950 border border-slate-800 p-2 rounded shadow-xl z-50">
-                        <p className="text-cyan-400 font-mono text-xs font-bold">
+                      <div className="bg-popover border border-border p-2 rounded shadow-xl z-50">
+                        <p className="text-primary font-mono text-xs font-bold tabular-nums">
                           [ {d.name}: {d.percentage}% ]
                         </p>
                       </div>

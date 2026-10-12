@@ -9,8 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, XCircle, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react"
 
-// 1. Import your new "Brain" file
-import skillClassData from "@/data/skill_class.json"
+// 1. Read the skill→course dictionary through the schema layer
+import { DEFAULT_COUNTRY, getSkillClassRoles, getSkillClass } from "@/lib/data"
+
+const ROLES = getSkillClassRoles(DEFAULT_COUNTRY)
 
 // Helper: Normalize text (lowercase, remove special chars) for robust matching
 const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9\s]/g, "")
@@ -19,11 +21,11 @@ export default function CurriculumCheckPage() {
   const router = useRouter()
 
   // --- STATE ---
-  // Default to first category in your JSON
-  const [selectedRole, setSelectedRole] = useState("General Software Engineering") 
+  // Default to first role in the dictionary
+  const [selectedRole, setSelectedRole] = useState(ROLES[0] ?? "")
   const [inputText, setInputText] = useState("")
   const [isAnalyzed, setIsAnalyzed] = useState(false)
-  
+
   // Analysis Results
   const [foundSkills, setFoundSkills] = useState<string[]>([])
   const [missingSkills, setMissingSkills] = useState<string[]>([])
@@ -34,9 +36,8 @@ export default function CurriculumCheckPage() {
     if (!inputText.trim()) return
 
     // 1. Get the Dictionary for the selected Role
-    // @ts-ignore
-    const roleData = skillClassData.categories[selectedRole]
-    
+    const roleData = getSkillClass(DEFAULT_COUNTRY, selectedRole)
+
     if (!roleData) {
       console.error("No data found for role:", selectedRole)
       return
@@ -52,16 +53,15 @@ export default function CurriculumCheckPage() {
     // 2. Iterate through each Target Skill
     targetSkills.forEach((skillName) => {
       let isMatch = false
-      
+
       // Check A: Does the exact skill name appear? (e.g. "Python")
       if (userTextClean.includes(normalize(skillName))) {
         isMatch = true
-      } 
-      
-      // Check B: Do any of the Synonyms/Class Names appear? 
+      }
+
+      // Check B: Do any of the Synonyms/Class Names appear?
       // (e.g. "Intro to Programming", "Applied Machine Learning")
       if (!isMatch) {
-        // @ts-ignore
         const synonyms = roleData[skillName] || []
         // Check if ANY synonym exists in the user text
         const foundSynonym = synonyms.find((syn: string) => userTextClean.includes(normalize(syn)))
@@ -91,51 +91,51 @@ export default function CurriculumCheckPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white p-8">
-      
+    <main className="min-h-screen bg-background text-foreground p-8">
+
       {/* HEADER */}
       <div className="max-w-4xl mx-auto mb-8">
-        <Button variant="ghost" className="text-slate-400 pl-0 hover:text-white mb-4" onClick={() => router.push('/')}>
+        <Button variant="ghost" className="text-muted-foreground pl-0 hover:text-foreground mb-4" onClick={() => router.push('/')}>
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
         </Button>
         <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
           Curriculum Gap Analyzer
         </h1>
-        <p className="text-slate-400 mt-2">
-          Paste your university syllabus, course list, or resume below. 
-          We will check if it matches the market demands for 
-          <span className="text-blue-400 font-bold"> {selectedRole}</span>.
+        <p className="text-muted-foreground mt-2">
+          Paste your university syllabus, course list, or resume below.
+          We will check if it matches the market demands for
+          <span className="text-primary font-bold"> {selectedRole}</span>.
         </p>
       </div>
 
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        
+
         {/* LEFT COLUMN: INPUT */}
         <div className="md:col-span-2 space-y-6">
 
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 flex gap-3 items-start mb-4">
-            <AlertCircle className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
-            <div className="text-sm text-slate-300">
-              <span className="font-bold text-blue-400">Beta Feature:</span> This tool uses keyword matching. 
-              It might miss course titles that use unique naming conventions. 
+          <div className="bg-muted/30 border border-border rounded-lg p-3 flex gap-3 items-start mb-4">
+            <AlertCircle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+            <div className="text-sm text-foreground/90">
+              <span className="font-bold text-primary">Beta Feature:</span> This tool uses keyword matching.
+              It might miss course titles that use unique naming conventions.
               <br/>
-              <span className="text-xs text-slate-500 mt-1 block">
+              <span className="text-xs text-muted-foreground mt-1 block">
                 (Tip: For best results, paste your detailed course syllabus, not just the titles.)
               </span>
             </div>
           </div>
-          
+
           {/* Controls */}
-          <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-center gap-4">
+          <div className="bg-card border border-border p-4 rounded-xl flex flex-col sm:flex-row items-center gap-4">
             <div className="flex-1 w-full">
-              <label className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 block">Target Role</label>
+              <label className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-1 block">Target Role</label>
               <Select value={selectedRole} onValueChange={(val) => { setSelectedRole(val); setIsAnalyzed(false); }}>
-                <SelectTrigger className="bg-slate-950 border-slate-700 text-white w-full">
+                <SelectTrigger className="bg-background border-border text-foreground w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-900 border-slate-700 text-white max-h-[300px]">
-                   {/* Dynamically load categories from the NEW JSON file */}
-                   {Object.keys(skillClassData.categories).sort().map(cat => (
+                <SelectContent className="bg-popover border-border text-popover-foreground max-h-[300px]">
+                   {/* Dynamically load roles from the dictionary */}
+                   {ROLES.map(cat => (
                      <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                    ))}
                 </SelectContent>
@@ -143,11 +143,11 @@ export default function CurriculumCheckPage() {
             </div>
             <div className="flex items-end w-full sm:w-auto">
               {!isAnalyzed ? (
-                <Button onClick={handleAnalyze} className="bg-blue-600 hover:bg-blue-500 w-full sm:w-auto">
+                <Button onClick={handleAnalyze} className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto">
                   Run Analysis <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
-                <Button onClick={handleReset} variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800 w-full sm:w-auto">
+                <Button onClick={handleReset} variant="outline" className="border-border text-foreground hover:bg-muted w-full sm:w-auto">
                   Reset
                 </Button>
               )}
@@ -155,14 +155,14 @@ export default function CurriculumCheckPage() {
           </div>
 
           {/* Text Area */}
-          <Card className="bg-slate-900 border-slate-800">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-lg text-slate-200">Your Curriculum</CardTitle>
+              <CardTitle className="text-lg text-foreground">Your Curriculum</CardTitle>
             </CardHeader>
             <CardContent>
-              <Textarea 
+              <Textarea
                 placeholder="Paste course descriptions here... (e.g. 'CS101: Introduction to Object Oriented Programming using Java...')"
-                className="min-h-[400px] bg-slate-950 border-slate-800 text-slate-300 font-mono text-sm"
+                className="min-h-[400px] bg-background border-border text-foreground font-mono text-sm"
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 disabled={isAnalyzed}
@@ -175,53 +175,53 @@ export default function CurriculumCheckPage() {
         <div className="md:col-span-1">
           {isAnalyzed ? (
             <div className="space-y-6 animate-in fade-in slide-in-from-right duration-500">
-              
+
               {/* Score Card */}
-              <Card className="bg-slate-900 border-slate-800 text-center py-6">
-                <div className="text-slate-400 text-sm font-medium uppercase tracking-wider mb-2">Readiness Score</div>
-                <div className={`text-5xl font-bold ${score > 70 ? 'text-green-400' : score > 40 ? 'text-yellow-400' : 'text-red-400'}`}>
+              <Card className="bg-card border-border text-center py-6">
+                <div className="text-muted-foreground text-sm font-medium uppercase tracking-wider mb-2">Readiness Score</div>
+                <div className={`text-5xl font-bold tabular-nums ${score > 70 ? 'text-success' : score > 40 ? 'text-warning' : 'text-destructive'}`}>
                   {score}%
                 </div>
-                <div className="text-xs text-slate-500 mt-2 px-4">
+                <div className="text-xs text-muted-foreground mt-2 px-4">
                   Based on matches against top market skills for this role.
                 </div>
               </Card>
 
               {/* Missing Skills (The Gap) */}
-              <Card className="bg-slate-900 border-slate-800 border-l-4 border-l-red-500">
+              <Card className="bg-card border-border">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-red-400 flex items-center gap-2 text-lg">
+                  <CardTitle className="text-destructive flex items-center gap-2 text-lg">
                     <AlertCircle className="h-5 w-5" /> Missing Skills
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {missingSkills.length > 0 ? missingSkills.map(skill => (
-                      <Badge key={skill} variant="outline" className="border-red-900 bg-red-950/30 text-red-200 hover:bg-red-900/50">
+                      <Badge key={skill} variant="outline" className="border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20">
                         {skill}
                       </Badge>
                     )) : (
-                      <span className="text-slate-500 text-sm">None! You are fully covered.</span>
+                      <span className="text-muted-foreground text-sm">None! You are fully covered.</span>
                     )}
                   </div>
                 </CardContent>
               </Card>
 
               {/* Found Skills */}
-              <Card className="bg-slate-900 border-slate-800 border-l-4 border-l-green-500">
+              <Card className="bg-card border-border">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-green-400 flex items-center gap-2 text-lg">
+                  <CardTitle className="text-success flex items-center gap-2 text-lg">
                     <CheckCircle2 className="h-5 w-5" /> Covered
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {foundSkills.length > 0 ? foundSkills.map(skill => (
-                      <Badge key={skill} variant="outline" className="border-green-900 bg-green-950/30 text-green-200">
+                      <Badge key={skill} variant="outline" className="border-success/30 bg-success/10 text-success">
                         {skill}
                       </Badge>
                     )) : (
-                      <span className="text-slate-500 text-sm">No matches found. Try pasting more detailed descriptions.</span>
+                      <span className="text-muted-foreground text-sm">No matches found. Try pasting more detailed descriptions.</span>
                     )}
                   </div>
                 </CardContent>
@@ -230,7 +230,7 @@ export default function CurriculumCheckPage() {
             </div>
           ) : (
             // Empty State
-            <div className="h-full flex items-center justify-center border-2 border-dashed border-slate-800 rounded-xl p-6 text-center text-slate-500">
+            <div className="h-full flex items-center justify-center border-2 border-dashed border-border rounded-xl p-6 text-center text-muted-foreground">
               <div>
                 <AlertCircle className="h-10 w-10 mx-auto mb-4 opacity-50" />
                 <p className="text-sm">
