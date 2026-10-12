@@ -24,11 +24,13 @@ The system is a **batch data pipeline** that feeds a **static web dashboard**. D
 
 ```mermaid
 flowchart LR
-    A[JSearch API] -->|fetch_jobs.py| C[job_details_full.csv]
+    A[JSearch API] -->|fetch_jobs.py · MY/SG/ID| C[job_details_full.csv]
     C -->|clean / dedupe / parse| D[Qwen3 8B via Ollama]
     D --> E[job_analysis_final.json]
-    E -->|categorize + aggregate| F[gap_report.json]
-    F --> G[LLM curriculum generator]
+    E -->|categorize + aggregate per country| F[gap_report.json]
+    F -->|/estimated-salary + PPP/FX| S[salary_estimate.py]
+    S -->|my-vs-sg / my-vs-id| X[comparisons.py]
+    X --> G[LLM curriculum generator]
     G --> H[skill_class.json]
     F --> W[Next.js dashboard]
     H --> W
@@ -37,20 +39,25 @@ flowchart LR
 
 | Step | Module | Input → Output | What it does |
 |---|---|---|---|
-| 1. Fetch jobs | `pipeline/src/fetch_jobs.py` | JSearch API → `job_links.csv`, `job_details_full.csv` | Queries the JSearch API (OpenWebNinja, "Google for Jobs") per role keyword; maps title, company, location, salary, link and the full description; de-duplicates by job id |
-| 2. Extract skills | `pipeline/src/processor.py` | CSV → `job_analysis_final.json` | Cleans text, parses salary, normalizes location, de-duplicates (URL + content hash), then asks **Qwen3 8B** (Ollama, JSON mode) for `hard_skills`, `soft_skills`, `technical_context`, `experience_level` |
-| 3. Analyze market | `pipeline/src/analyzer.py` | JSON → `gap_report.json` | Buckets job titles into role categories via keyword heuristics; aggregates top skills/contexts and salary stats per category × experience level |
-| 4. Curriculum generator | `pipeline/src/curriculum_generation.py` | `gap_report.json` → `skill_class.json` | For each category's top skills, asks the LLM to generate plausible university course names → a skill→course synonym dictionary |
+| 1. Fetch jobs | `pipeline/src/fetch_jobs.py` | JSearch API → `job_links.csv`, `job_details_full.csv` | Loops `config.COUNTRIES` (MY, SG, ID); queries the JSearch API per role keyword **with the location in the query**; maps title, company, location, salary, link, country, full description and `posted_at`; de-duplicates by (country, job id) |
+| 2. Extract skills | `pipeline/src/processor.py` | CSV → `job_analysis_final.json` | Cleans text, parses salary, normalises location (`locations.py`), de-duplicates, then asks **Qwen3 8B** (Ollama, JSON mode) for `hard_skills`, `soft_skills`, `technical_context`, `experience_level`. Resumable (`--country`, checkpoints) |
+| 3. Analyze market | `pipeline/src/analyzer.py` | JSON → `gap_report.json` | Buckets titles into role categories, then aggregates per **country** × category × level: top skills/contexts, `states`, `top_companies`, soft-skill counts, `distinct_skills`, salary stats, `observed_salaries` |
+| 3b. Salary estimates | `pipeline/src/salary_estimate.py` | gap_report → gap_report | Calls JSearch `/estimated-salary` per category × level × country (reliability-guarded); adds nominal-MYR + PPP-MYR views from `ppp.json`/`fx.json`. Never overwrites observed `salary` |
+| 3c. Comparisons | `pipeline/src/comparisons.py` | gap_report → gap_report | Emits `my-vs-sg` / `my-vs-id`: skill-gap % deltas and nominal/PPP salary deltas |
+| 4. Curriculum generator | `pipeline/src/curriculum_generation.py` | `gap_report.json` → `skill_class.json` | Per country, for each category's top skills, asks the LLM for plausible university course names (retry + salvage) → a skill→course synonym dictionary |
 | 5. Sync + dashboard | `pipeline/src/sync_web_data.py` + `src/` (Next.js) | JSONs → website | Copies the outputs into the app, which renders the gap report, roadmaps, and curriculum checker |
 
 Supporting files:
-- `pipeline/src/pipeline.py` — orchestrator that chains every step (fetch → extract → analyze → curriculum → sync) as subprocesses.
-- `pipeline/src/config.py` — paths, settings, and the `.env` secret loader.
+- `pipeline/src/pipeline.py` — orchestrator that chains every step (fetch → extract → analyze → salary → compare → curriculum → sync) as subprocesses.
+- `pipeline/src/config.py` — paths, settings, `COUNTRIES`, and the `.env` secret loader; also `get_logger()`.
+- `pipeline/src/locations.py` — raw location → MY state / country region.
+- `pipeline/src/companies.py` — employer → `company` vs `placeholder` (recruiter/confidential).
+- `pipeline/src/probe_countries.py` — Phase-0 probe for English yield / field coverage per country.
 - `pipeline/src/inspect_others.py` — dev utility that prints unclassified job titles (helps tune the category heuristics).
 
 ## 4. Data
 
-What the dashboard surfaces and how each view is meant to be used. Rows marked `*` are produced by **M5.6** (data enrichment); `†` by **M5.7** (SEA expansion — MY, SG, ID, VN). Unmarked rows are live today.
+What the dashboard surfaces and how each view is meant to be used. Rows marked `*` are produced by **M5.6** (data enrichment); `†` by **M5.7** (SEA expansion — **MY, SG, ID**; VN was dropped, see below). Unmarked rows are live today.
 
 | Data / comparison | Data type | Chart type | Aim of data |
 |---|---|---|---|
@@ -77,14 +84,16 @@ What the dashboard surfaces and how each view is meant to be used. Rows marked `
 - A **live, interactive dashboard** showing, for each role and experience level, the most in-demand hard skills, the technical contexts they appear in, and average salary ranges.
 - **Gamified career roadmaps** (foundation → core → advanced) for 15+ roles.
 - A **curriculum gap checker** that maps course/skill keywords to market demand via a pre-computed synonym dictionary.
-- A reusable, explainable dataset of Malaysian tech job-market demand (a point-in-time snapshot).
+- A reusable, explainable dataset of Malaysian, Singaporean and Indonesian tech job-market demand (a point-in-time snapshot).
 
 ## 6. Limitations (honest)
 
 - **Data source:** postings come from the **JSearch API** (a Google-for-Jobs aggregator); coverage, and especially salary fields, depend on it — salary is frequently absent.
+- **Regional coverage:** MY, SG and ID only. **Vietnam was dropped** — with `language=en` the API returns no VN postings (Phase-0 probe). Non-US queries also require the location *inside* the query, or results fall back to the US.
+- **Currency conversion:** `nominal_myr` uses a dated FX table and `ppp_myr` the World Bank PPP conversion factor (*private consumption*, an economy-wide basket — not expat cost-of-living). Both live hand-filled in `pipeline/data/ppp.json` / `fx.json` and go stale.
 - **Point-in-time data:** the dataset is a snapshot; there is no scheduler or live refresh.
 - **No ground truth for LLM extraction:** skill/context extraction is prompt-based and unvalidated; quality varies per posting. Category assignment is keyword heuristics and is brittle (see `inspect_others.py`).
-- **Salary sparsity:** many postings hide salary, so salary averages are noisy.
+- **Salary sparsity:** many postings hide salary, so salary averages are noisy. The `salary_estimate` is a publisher estimate for a *representative title per category*, not per posting; `observed_salaries` (text-mined) only matches `RM`/`MYR`, so SG/ID salary strings are not captured.
 - **`skill_class.json` is synthetic:** its course names are LLM-generated, not scraped from real university curricula — treat it as illustrative, not authoritative.
 - **Matching is lexical, not semantic:** the curriculum checker uses keyword/synonym matching, not embeddings.
-- **Code quality:** mixed human + AI-assisted code. Paths were centralised in `pipeline/src/config.py` (M2) and the orchestrator repaired (M3); there are still no automated tests.
+- **Code quality:** mixed human + AI-assisted code. Paths were centralised in `pipeline/src/config.py` (M2) and the orchestrator repaired (M3); there are still no automated tests beyond per-module `--self-test`s.

@@ -8,6 +8,10 @@
 
 ## 1. Repository status — old vs. new (read this first)
 
+> **Snapshot dated 11 Oct 2026.** This section is the pre-polish baseline. Most of the
+> "old" items below have since been refactored or removed (M0–M7, all done); see the
+> milestone results in §2 and the work log in §3 for the current state.
+
 **Newly written on 11 Oct 2026 (the only "new" content):**
 
 - `docs/` — this file, `UDiff.md`, `Tech Stack.md`
@@ -69,23 +73,24 @@
 - ✅ Module docstrings + a short `pipeline/README.md`.
 - ✅ Architecture reflected in `README.md` and the mermaid diagram in `docs/UDiff.md`.
 
-### M5 — Data refresh `In progress (fetch done 12 Oct 2026)`
-- JobStreet scraping is disallowed by its robots.txt (`Disallow: */job/`, `*?`) and ToS cl. 7.d/9.b, so the scrapers were retired to `pipeline/legacy/` and replaced by the **JSearch API** (`fetch_jobs.py`, OpenWebNinja).
-- Fetched **935 Malaysian postings** (all with descriptions; salary 100% null). Raw ad text is now gitignored.
-- **Still to do:** run the LLM + aggregation on the new data and redeploy the site.
-- **Done when:** the live site reflects freshly generated data. ⬜
+### M5 — Data refresh `Done (data) 13 Oct 2026`
+- JobStreet scraping is disallowed by its robots.txt (`Disallow: */job/`, `*?`) and ToS cl. 7.d/9.b, so the scrapers were retired and replaced by the **JSearch API** (`fetch_jobs.py`, OpenWebNinja).
+- First MY fetch (12 Oct): **935 Malaysian postings** (salary 100% null). Raw ad text is gitignored.
+- Superseded by the M5.7 multi-country fetch (13 Oct): **2,300 postings** (MY/SG/ID), LLM-extracted and aggregated → `gap_report.json` / `skill_class.json` regenerated.
+- **Still to do (not pipeline):** the live site must consume the new country-nested schema and be redeployed (M6).
+- **Done when:** the live site reflects freshly generated data. ⬜ *(data delivered; deploy pending M6)*
 
-### M5.5 — Salary estimates `In progress (pipeline done 12 Oct 2026)`
+### M5.5 — Salary estimates `Done (pipeline) 13 Oct 2026`
 - **Problem:** `search-v2` returns no salary, so the posting-derived `salary` in `gap_report.json` is `0` / `N/A`.
 - **Approach:** add a **separate, attributed** market estimate — never overwrite `salary` (doing so would change what the metric means).
-- ✅ Added `pipeline/src/salary_estimate.py` as the `salary` orchestrator step. It calls `/estimated-salary` per category (representative title via `CATEGORY_TITLES`) × level (years bucket via `LEVEL_YEARS`: `All→ALL`, `Junior→ONE_TO_THREE`, `Mid→FOUR_TO_SIX`, `Senior→SEVEN_TO_NINE`), `location=Malaysia`, `location_type=COUNTRY`.
-- Stored as `salary_estimate {min, median, max, currency, period, source, confidence, sample_size}` inside each category→level block; `salary` is untouched. Reuses `fetch_jobs.api_url` / `api_get`.
+- ✅ Added `pipeline/src/salary_estimate.py` as the `salary` orchestrator step. It calls `/estimated-salary` per category (representative title via `CATEGORY_TITLES`) × level (years bucket via `LEVEL_YEARS`: `All→ALL`, `Junior→ONE_TO_THREE`, `Mid→FOUR_TO_SIX`, `Senior→SEVEN_TO_NINE`), `location_type=COUNTRY`. Under M5.7 this runs **per country** (`location` = "Malaysia" / "Singapore" / "Indonesia").
+- Stored as `salary_estimate {min, median, max, currency, period, source, confidence, sample_size, fetched_at}` inside each category→level block; `salary` is untouched. Reuses `fetch_jobs.api_url` / `api_get`. M5.7 adds `nominal_myr` and `ppp_myr` (`{min,median,max}`) via `ppp.json`/`fx.json`.
 - **Reliability guard:** keep only `confidence ∈ {HIGH, VERY_HIGH}` with `sample_size ≥ 3`; a `--prune` flag drops stored estimates that fail the guard **without an API call**.
-- **Run (12 Oct):** 48/53 blocks estimated (e.g. Cloud & DevOps Senior ≈ RM 10,700/mo); noisy outliers dropped (a RM 41k `Hardware Engineer` with `confidence=LOW`, n=2).
-- ⬜ **Web task (M6/design):** render the estimate as a labelled **"market estimate (Glassdoor via JSearch)"** card alongside the honest `N/A`, surfacing `confidence` / `sample_size`.
-- **Done when:** the dashboard shows the labelled market estimate alongside the observed-pay `N/A`. ⬜
+- **Run (13 Oct, per country):** MY 53 / SG 55 / ID 43 blocks estimated; noisy outliers (e.g. a LOW-confidence `Solutions Engineer` at 520M IDR) dropped by the guard.
+- ⬜ **Web task (M6/design):** render the estimate as a labelled **"market estimate (Glassdoor via JSearch)"** card alongside the honest `N/A`, surfacing `confidence` / `sample_size`. Pipeline side is done.
+- **Done when:** the dashboard shows the labelled market estimate alongside the observed-pay `N/A`. ⬜ (web pending — M6)
 
-### M5.6 — Data enrichment (P1–P9) `Approved — handoff ready`
+### M5.6 — Data enrichment (P1–P9) `Done (pipeline) 13 Oct 2026`
 - **Goal:** fill the weak/empty data sections (see `docs/UDiff.md` §4 "Data") so the sections are real *before* scaling to SEA. Works off the **existing MY outputs**; only **P8** needs a re-fetch.
 - **Tasks:**
   - **P1 — Salary from text:** regex `(?:RM|MYR)\s?[\d,]{3,}` over `description` → heuristic `salary_text` per posting (82/935 MY ads matched). Clearly label it as text-mined, not authoritative.
@@ -97,24 +102,36 @@
   - **P7 — Soft skills + breadth:** store soft-skill counts/percentages; add a `distinct_skills` count per category.
   - **P8 — Recency:** map `job_posted_at_datetime_utc` → a `posted_at` column + a "% posted in last 30 days" metric. **The column does not exist in the current CSV, so this lands with the M5.7 re-fetch.**
   - **P9 — Companies:** `top_companies: [{name, count, kind}]` per category, where `kind ∈ {company, placeholder}`. Placeholder = `confidential` + a recruiter/staffing name list (Michael Page, superjobs, Randstad, Hays, …). New `pipeline/src/companies.py`.
-- **Bubble-map contract (P9, for the web agent):** toggle **OFF** → top-15 `company` bubbles; toggle **ON** → those + one aggregated `placeholder` bubble (centre). Use `sqrt`/`log` **area** scaling (or a separate panel) so the aggregate doesn't dwarf the rest.
-- **Files:** `processor.py` (P1), `analyzer.py` (P2–P4, P7, P9), `salary_estimate.py` (P5), `curriculum_generation.py` (P6), `fetch_jobs.py` (P8), new `companies.py`.
+- **Bubble-map contract (P9, for the web agent):** toggle **OFF** → top-15 `company` bubbles; toggle **ON** → those + one aggregated `placeholder` bubble (centre). Use `sqrt`/`log` **area** scaling (or a separate panel) so the aggregate doesn't dwarf the rest. *(Emitter side: `top_companies` (top-15 `company`) + `placeholder_companies` aggregate.)*
+- **Files:** `processor.py` (P1 moved to analyzer), `analyzer.py` (P1–P4, P7, P9), `salary_estimate.py` (P5), `curriculum_generation.py` (P6), `fetch_jobs.py` (P8), new `companies.py` + `locations.py`.
 - **Verification:** module `--self-test`s, `ruff` E/W/F, then confirm the new sections exist and are sane after a run.
 - **Done when:** the MY `gap_report.json` carries `states`, `top_companies`, soft-skill counts, `distinct_skills`, text-mined salary; `IT Support` / `Project & Sales Engineering` are present; curriculum empty-lists ≈ 0.
+- **Result (13 Oct 2026):** all P1–P9 landed. `states` uses the full MY state map in the new
+  `locations.py` (recomputed from `location`; also fixes the old `kl`→"Klang" bug).
+  Soft skills are now `{name,count,percentage}`; `distinct_skills`, `low_sample`,
+  `unknown_level`, `top_companies`/`placeholder_companies` (`companies.py`),
+  text-mined `observed_salaries` (82/935 ads match — P1), and `schema_version` added.
+  `salary_estimate` gets an `All`-bucket fallback flagged `broad_estimate` (P5).
+  `curriculum_generation` retry + regex-salvage took empty lists **13.1% → 0.0%** (P6).
+  Categories with 1 job (`Project & Sales Engineering`) now appear — the milestone's
+  `<2` floor would still have dropped them, so the floor is "≥1".
+  **Verify:** every module has an offline `--self-test`; `ruff` E/W/F clean. P8
+  (`posted_at`) landed with the M5.7 re-fetch.
 
-### M5.7 — SEA expansion + country comparisons `Approved — handoff ready (after M5.6)`
+### M5.7 — SEA expansion + country comparisons `Done (pipeline) 13 Oct 2026`
 - **Goal:** extend UDiff across SEA and add cross-country comparisons.
 - **Scope (phase 1):** **MY, SG, ID, VN** (TH, PH later). ~**1,000 jobs/country**, `language=en`.
 - **Currency:** each salary shown **two ways** — **nominal MYR** (FX) and **PPP-adjusted MYR**. PPP formula: `ppp_myr = salary_local / ppp_factor_local × ppp_factor_my`, where `ppp_factor` = *World Bank PPP conversion factor, private consumption (LCU per international $)*. Reads as "what this salary buys in Malaysia's prices".
 - **PPP/FX source:** dated **static** tables — `pipeline/data/ppp.json` and `pipeline/data/fx.json` (record source + date; note PPP is an economy-wide basket, not expat cost-of-living).
 - **Phase 0 — verify (~$0.03):** 1 page per country with `language=en` → measure English yield, salary presence, description language → finalise caps and confirm ID/VN viability.
 - **Phase 1 — country-aware:** `config.py` adds `COUNTRIES` (GDP order), `LANGUAGE="en"`, per-country cap, PPP/FX paths; `fetch_jobs.py` loops countries and adds a **`country`** column; `processor.py` carries `country` (+ `posted_at`).
-- **Phase 2 — analysis + comparison:** `analyzer.py` groups by country → `countries: {iso: {…}}` (reuses the existing per-country shape so web components can be reused); new `comparisons.py` emits deltas of **every market vs MY** (`my-vs-sg`, `my-vs-id`, `my-vs-vn`).
+- **Phase 2 — analysis + comparison:** `analyzer.py` groups by country → `countries: {iso: {…}}` (reuses the existing per-country shape so web components can be reused); new `comparisons.py` emits deltas of **every market vs MY** (`my-vs-sg`, `my-vs-id`; VN dropped — see Result).
 - **Phase 3 — salary + curriculum:** `salary_estimate.py` runs per country and computes nominal MYR + PPP-MYR (same confidence guard); `curriculum_generation.py` per country.
 - **Phase 4 — sync + contract:** `sync_web_data.py` syncs the new schema; publish the type contract for the M6/web agent.
-- **Data model:**
+- **Data model (planned; the delivered v3 adds `name`, `low_sample`, `distinct_skills`, `unknown_level`, `placeholder_companies`, `observed_salaries`, `fetched_at`, and `nominal_myr`/`ppp_myr` as `{min,median,max}` dicts — see `docs/Tech Stack.md` §3 for the final shape):**
   ```jsonc
   gap_report.json {
+    "schema_version": 3,
     "generated_at": "...",
     "countries": {
       "my": {
@@ -128,35 +145,57 @@
               "job_count": 0,
               "salary": { "avg_min": 0, "avg_max": 0 },
               "salary_estimate": { "min": 0, "median": 0, "max": 0,
-                "nominal_myr": 0, "ppp_myr": 0,
+                "nominal_myr": { "min": 0, "median": 0, "max": 0 },
+                "ppp_myr": { "min": 0, "median": 0, "max": 0 },
                 "currency": "", "period": "", "source": "",
-                "confidence": "", "sample_size": 0 },
+                "confidence": "", "sample_size": 0, "fetched_at": "" },
               "top_hard_skills": [{ "name": "", "count": 0, "percentage": 0 }],
               "top_soft_skills": [{ "name": "", "count": 0, "percentage": 0 }],
-              "top_technical_context": [{ "name": "", "count": 0, "percentage": 0 }]
-            }
+              "top_technical_context": [{ "name": "", "count": 0, "percentage": 0 }],
+              "distinct_skills": 0
+            },
+            "unknown_level": 0
           }
         }
       },
-      "sg": { "...": "same shape" }, "id": {}, "vn": {}
+      "sg": { "...": "same shape" }, "id": {}
     },
     "comparisons": {
-      "my-vs-sg": {   // one key per peer market: my-vs-sg | my-vs-id | my-vs-vn
-        "skill_gaps": [{ "skill": "", "my_pct": 0, "sg_pct": 0, "delta": 0 }],
-        "salary_delta_nominal": { "role": "", "level": "", "my": 0, "peer": 0 },
-        "salary_delta_ppp":     { "role": "", "level": "", "my": 0, "peer": 0 }
+      "my-vs-sg": {   // one key per peer market: my-vs-sg | my-vs-id
+        "skill_gaps": [{ "skill": "", "my_pct": 0, "peer_pct": 0, "delta": 0 }],
+        "salary_delta_nominal": [{ "role": "", "level": "", "my": 0, "peer": 0, "delta": 0 }],
+        "salary_delta_ppp":     [{ "role": "", "level": "", "my": 0, "peer": 0, "delta": 0 }]
       }
     }
   }
   ```
   ```jsonc
   skill_class.json { "generated_at": "...",
-    "countries": { "my": { "categories": { "<Role>": { "<Skill>": ["CourseName", "..."] } } }, "sg": {}, "id": {}, "vn": {} } }
+    "countries": { "my": { "categories": { "<Role>": { "<Skill>": ["CourseName", "..."] } } }, "sg": {}, "id": {} } }
   ```
-- **Budget/time (4 markets, ~1,000/country):** fetch ≈ $2.0; salary estimates ≈ $1.1 (**≈ $3 API total**, inside the $20 budget); GPU extraction ≈ 3.5–4 h; curriculum ≈ 30–40 min.
-- **Risks:** non-English leakage (mitigated by `language=en`); uneven per-country coverage (ID/VN may yield <1,000 — take what exists); PPP/FX staleness; schema handoff to the web agent.
+- **Budget/time (4 markets, ~1,000/country):** fetch ≈ $2.0; salary estimates ≈ $1.1 (**≈ $3 API total**, inside the $20 budget); GPU extraction ≈ 3.5–4 h; curriculum ≈ 30–40 min. *(Actual 3 markets: fetch ≈ $1.5, ~2.5 h extraction.)*
+- **Risks:** non-English leakage (mitigated by `language=en`); uneven per-country coverage (take what exists); PPP/FX staleness; schema handoff to the web agent.
 - **Execution order:** M5.6 → Phase 0 probe → Phases 1–4.
 - **Done when:** `gap_report.json` is country-aware with `comparisons`, salary shows nominal + PPP, and the web contract is published.
+- **Result (13 Oct 2026):**
+  - **Phase 0 found the milestone's key assumption wrong:** non-US queries need the
+    location **inside the query** and `country`+`language` together, or results fall
+    back to the US. Post-fix, MY/SG/ID yield clean English pages; **VN returns 0 under
+    `language=en`** (vi-only ads) → VN dropped. Structured skill fields are confirmed
+    **absent** live, so LLM extraction stays.
+  - `config.COUNTRIES = my, sg, id`; fetch loops countries and adds `country` +
+    `posted_at`; `processor.py` is now **resumable** (per-country, checkpoints every 25).
+  - `analyzer.py` groups by country → `countries`; new **`comparisons.py`** emits
+    `my-vs-sg` / `my-vs-id` (skill-gap % deltas + nominal & PPP salary deltas as arrays);
+    `salary_estimate.py` computes `nominal_myr` + `ppp_myr` (per min/median/max) from
+    `ppp.json`/`fx.json`; `curriculum_generation.py` is per country.
+  - **Run:** 2,300 fetched → **1,701 analysed** (MY 651, SG 575, ID 475); 632 curriculum
+    subjects, 0 empty; `my-vs-sg` 25 skill gaps + 51 salary deltas, `my-vs-id` 25 + 40.
+  - **Tracing:** `config.get_logger()` → `pipeline/logs/api.log` (every GET) and
+    `gpu.log` (every LLM call); also on stdout.
+  - **Web schema break is expected:** `gap_report.json`/`skill_class.json` are v3
+    country-nested. `page.tsx` and `curriculum/page.tsx` must read `countries.my`
+    (M6/web agent).
 
 ### M6 — Web cleanup `Pending`
 - Remove the `as any` casts and unused default assets; ensure types are honest.
@@ -260,6 +299,43 @@
 - M4: `requirements.txt` → `pandas` + `ollama`; module docstrings; `pipeline/README.md`; `docs/UDiff.md` / `docs/Tech Stack.md` updated.
 - M7: added `sync_web_data.py` as the final orchestrator step.
 
+### 13_10_2026 — M5.5 + M5.6 + M5.7 (assistant)
+**Did:**
+- **Logger (M5.7 ask):** `config.get_logger()` writes to stdout AND a file; wired into
+  `fetch_jobs.api_get` (`pipeline/logs/api.log`) and the GPU calls in `processor.py` /
+  `curriculum_generation.py` (`pipeline/logs/gpu.log`). The orchestrator's existing stdout
+  tee (`pipeline_log.log`) still covers whole-run output.
+- **M5.5:** `salary_estimate` now stamped `fetched_at`; `All`-bucket fallback (P5, `broad_estimate`).
+- **M5.6:** `locations.py` (full MY state map — `Other` 54→36, fixes `kl`→"Klang");
+  `companies.py` (P9 `company`/`placeholder`); analyzer emits `states`, `top_companies`,
+  `placeholder_companies`, `observed_salaries`, soft-skill objects, `distinct_skills`,
+  `low_sample`, `unknown_level`, `schema_version`; curriculum retry+salvage (empty 13.1%→0%).
+  Corrected the milestone's `<2` floor so 1-job categories (`Project & Sales Engineering`) show.
+- **M5.7 Phase 0:** discovered non-US queries need the location **in the query** +
+  `country`+`language` (else US fallback). SG/ID viable; **VN not** (`language=en` → 0). VN dropped.
+- **M5.7:** `config.COUNTRIES=my,sg,id`; per-country fetch (`country`+`posted_at`, location in query);
+  resumable `processor.py` (`--country`, checkpoints); country-nested `analyzer.py`;
+  new `comparisons.py` (`my-vs-sg`/`my-vs-id`); per-country `salary_estimate.py` with
+  `nominal_myr`+`ppp_myr` (from hand-filled `ppp.json`/`fx.json`, 2025/13-10-2026); per-country
+  curriculum; `compare` step added to `pipeline.py`.
+- **Run:** 2,300 raw → 1,701 analysed (MY 651, SG 575, ID 475); 632 curriculum subjects,
+  0 empty. `my-vs-sg`/`my-vs-id` each carry 25 skill gaps + salary deltas (51 and 40 rows).
+  Fetch cost ≈ $1.5 (300 pages); salary estimates ≈ 150 calls.
+- **Static tables:** `ppp.json` (World Bank PA.NUS.PRVT.PP, 2025: my 1.43, sg 1.02,
+  id 5065.97); `fx.json` (wise.com, 13-10-2026: sg 0.31, id 4391 per MYR). `vn` keys
+  remain but are unused.
+- **New files:** `locations.py`, `companies.py`, `comparisons.py`, `probe_countries.py`.
+- Docs updated (`UDiff.md`, `Tech Stack.md`, `README.md`, `pipeline/README.md`, `AGENTS.md`, this file).
+
+**Open items / decisions:**
+- **VN:** dropped for now (no English postings); the comparison schema is ready if VN is
+  added later via `language=vi` or no language filter.
+- **`observed_salaries`:** MY-only (`RM|MYR` regex); SG/ID strings (`S$`, `Rp`) not mined.
+- All modules: per-module `--self-test` + `ruff` clean; no test framework.
+
+**Did not do (next):** web rendering of the new schema — `page.tsx` / `curriculum/page.tsx`
+still read the old top-level `categories` and are broken against v3. Handoff to the M6/web agent.
+
 ---
 
 ## 4. Backlog (feature requests, carried from `future_changes.txt`)
@@ -285,6 +361,11 @@ npm run dev            # http://localhost:3000
 pip install -r pipeline/requirements.txt
 python pipeline/src/pipeline.py                 # full run
 python pipeline/src/pipeline.py --skip fetch    # reuse existing data
+python pipeline/src/pipeline.py --list          # list steps
+python pipeline/src/pipeline.py --steps analyze,salary,compare,curriculum,sync
 ```
 
-> The above reflects the post-M2/M3 state.
+> Steps: `fetch → extract → analyze → salary → compare → curriculum → sync`. Each
+> step streams to stdout + `pipeline/pipeline_log.log`; API GET calls and LLM calls
+> also go to `pipeline/logs/api.log` and `pipeline/logs/gpu.log`.
+> The single-country helper scripts accept `--self-test` for offline checks.
