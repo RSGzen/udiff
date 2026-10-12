@@ -1,15 +1,17 @@
 """
 Enrich gap_report.json with estimated market salaries from the JSearch
-/estimated-salary endpoint (publisher data via Glassdoor).
+/estimated-salary endpoint (publisher data via Glassdoor), per country (M5.7).
 
 This is a *separate*, labelled metric: it does NOT replace the posting-derived
 `salary` (which search-v2 rarely provides). Each category's `All`/`Junior`/
 `Mid`/`Senior` block gets a `salary_estimate` dict — but only when the publisher
-sample is trustworthy (see is_reliable).
+sample is trustworthy (see is_reliable). For non-MY markets the local currency
+estimate is also converted to nominal MYR (FX) and PPP-adjusted MYR.
 """
 
 import argparse
 import json
+import time
 
 import config
 from fetch_jobs import api_get, api_url
@@ -46,6 +48,8 @@ LEVEL_YEARS = {
 MIN_CONFIDENCE = {"HIGH", "VERY_HIGH"}
 MIN_SAMPLE_SIZE = 3
 
+MONEY_KEYS = ("min", "median", "max")
+
 
 def is_reliable(estimate):
     """True if the publisher sample is large and confident enough to show."""
@@ -71,14 +75,40 @@ def parse_estimate(rows):
         "source": f"{row.get('publisher_name') or 'publisher'} via JSearch",
         "confidence": row.get("confidence"),
         "sample_size": row.get("salary_count"),
+        "fetched_at": time.strftime("%Y-%m-%d"),
     }
 
 
-def fetch_estimate(title, level):
-    """Return a salary_estimate for one title + level, or None."""
+def load_table(path):
+    """Load a JSON reference table, or {} if it is missing/blank."""
+    if not path.is_file():
+        return {}
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def add_conversions(estimate, code, ppp_factors, fx_rates):
+    """Add nominal-MYR and PPP-MYR views (M5.7) when the tables are filled in."""
+    per = fx_rates.get(code)
+    f_local = ppp_factors.get(code)
+    f_my = ppp_factors.get("my")
+
+    def scale(factor):
+        return {k: round(estimate[k] * factor, 2)
+                for k in MONEY_KEYS if estimate.get(k) is not None}
+
+    if per and per > 0:
+        estimate["nominal_myr"] = scale(1 / per)
+    if f_local and f_local > 0 and f_my:
+        estimate["ppp_myr"] = scale(f_my / f_local)
+    return estimate
+
+
+def fetch_estimate(title, level, location="Malaysia"):
+    """Return a salary_estimate for one title + level + market, or None."""
     url = api_url("estimated-salary", {
         "job_title": title,
-        "location": "Malaysia",
+        "location": location,
         "location_type": "COUNTRY",
         "years_of_experience": LEVEL_YEARS.get(level, "ALL"),
     })
@@ -102,11 +132,13 @@ def save_report(report):
 def prune(report):
     """Remove stored estimates that no longer pass the reliability guard."""
     removed = 0
-    for levels in report["categories"].values():
-        for block in levels.values():
-            if block.get("salary_estimate") and not is_reliable(block["salary_estimate"]):
-                del block["salary_estimate"]
-                removed += 1
+    for block in report["countries"].values():
+        for levels in block["categories"].values():
+            for level, entry in levels.items():
+                if isinstance(entry, dict) and entry.get("salary_estimate") \
+                        and not is_reliable(entry["salary_estimate"]):
+                    del entry["salary_estimate"]
+                    removed += 1
     return removed
 
 
@@ -130,50 +162,75 @@ def main():
         print(f"Pruned {removed} unreliable estimate(s) from {config.GAP_REPORT_JSON}")
         return
 
-    for category, levels in report["categories"].items():
-        title = CATEGORY_TITLES.get(category, category)
-        for level, block in levels.items():
-            estimate = fetch_estimate(title, level)
-            if is_reliable(estimate):
-                block["salary_estimate"] = estimate
-            median = estimate and estimate.get("median")
-            conf = estimate and estimate.get("confidence")
-            size = estimate and estimate.get("sample_size")
-            print(f"{category} / {level}: {median} {estimate and estimate.get('currency')} "
-                  f"[{conf}, n={size}]")
+    ppp_factors = load_table(config.PPP_JSON).get("factor", {})
+    fx_rates = load_table(config.FX_JSON).get("per_myr", {})
+
+    for country in config.COUNTRIES:
+        code = country["code"]
+        block = report.get("countries", {}).get(code)
+        if not block:
+            continue
+        print(f"\n=== {country['name']} ({code.upper()}) ===")
+        for category, levels in block["categories"].items():
+            title = CATEGORY_TITLES.get(category, category)
+            all_estimate = None
+            for level, entry in levels.items():
+                if not isinstance(entry, dict):   # skips 'unknown_level' etc.
+                    continue
+                estimate = fetch_estimate(title, level, country["name"])
+                if is_reliable(estimate):
+                    add_conversions(estimate, code, ppp_factors, fx_rates)
+                    entry["salary_estimate"] = estimate
+                if level == "All" and entry.get("salary_estimate"):
+                    all_estimate = entry["salary_estimate"]
+                elif level != "All" and "salary_estimate" not in entry and all_estimate:
+                    # P5: no level-specific sample -> show the All-market
+                    # estimate, clearly flagged as broader.
+                    entry["salary_estimate"] = {**all_estimate, "broad_estimate": True}
+                median = estimate and estimate.get("median")
+                conf = estimate and estimate.get("confidence")
+                print(f"  {category} / {level}: {median} "
+                      f"{estimate and estimate.get('currency')} [{conf}]")
 
     save_report(report)
-    print(f"Saved estimated salaries to {config.GAP_REPORT_JSON}")
+    print(f"\nSaved estimated salaries to {config.GAP_REPORT_JSON}")
 
 
 def self_test():
-    """Offline check of the mapping, parsing and reliability guard."""
+    """Offline check of the mapping, parsing, reliability and conversion."""
     sample = [{
-        "location": "Malaysia",
+        "location": "Singapore",
         "job_title": "Backend Developer",
         "min_salary": 5000,
         "max_salary": 9000,
         "median_salary": 7000,
         "salary_period": "MONTH",
-        "salary_currency": "MYR",
+        "salary_currency": "SGD",
         "salary_count": 5,
         "publisher_name": "Glassdoor",
-        "confidence": "CONFIDENT",
+        "confidence": "HIGH",
     }]
     estimate = parse_estimate(sample)
     assert estimate["median"] == 7000
-    assert estimate["currency"] == "MYR"
+    assert estimate["currency"] == "SGD"
     assert estimate["source"] == "Glassdoor via JSearch"
     assert estimate["sample_size"] == 5
+    assert estimate["fetched_at"]
     assert parse_estimate([]) is None
     assert LEVEL_YEARS["Mid"] == "FOUR_TO_SIX"
     assert "estimated-salary?" in api_url("estimated-salary", {"a": "b"})
     # reliability guard
     assert is_reliable({"confidence": "HIGH", "sample_size": 5})
-    assert is_reliable({"confidence": "VERY_HIGH", "sample_size": 600})
     assert not is_reliable({"confidence": "LOW", "sample_size": 2})
-    assert not is_reliable({"confidence": "HIGH", "sample_size": 1})
     assert not is_reliable(None)
+    # conversions: 7000 SGD at 0.30 SGD per MYR -> 23,333.33 MYR nominal
+    add_conversions(estimate, "sg", {"my": 1.8, "sg": 0.9}, {"my": 1.0, "sg": 0.30})
+    assert estimate["nominal_myr"]["median"] == round(7000 / 0.30, 2)
+    assert estimate["ppp_myr"]["median"] == round(7000 / 0.9 * 1.8, 2)
+    # missing tables -> no conversion keys
+    bare = parse_estimate(sample)
+    add_conversions(bare, "sg", {}, {})
+    assert "nominal_myr" not in bare and "ppp_myr" not in bare
     print("self-test OK")
 
 

@@ -1,10 +1,11 @@
 """
-Fetch Malaysian tech job postings from JSearch (OpenWebNinja) into the
-pipeline data contract. Replaces the retired JobStreet scrapers.
+Fetch tech job postings from JSearch (OpenWebNinja) into the pipeline data
+contract, across config.COUNTRIES (M5.7). Replaces the retired JobStreet scrapers.
 
-Reads config.SEARCH_QUERIES, calls the /search-v2 API, and writes:
-    data/raw/job_links.csv         search_term,title,company,location,salary,link
-    data/raw/job_details_full.csv  the same columns + description
+Reads config.SEARCH_QUERIES and config.COUNTRIES, calls the /search-v2 API, and
+writes:
+    data/raw/job_links.csv         search_term,title,company,location,salary,link,country
+    data/raw/job_details_full.csv  the same columns + description + posted_at
 
 Requires JSEARCH_API_KEY (environment or pipeline/.env).
 """
@@ -20,7 +21,9 @@ import pandas as pd
 
 import config
 
-LINK_COLUMNS = ["search_term", "title", "company", "location", "salary", "link"]
+LINK_COLUMNS = ["search_term", "title", "company", "location", "salary", "link", "country"]
+
+log = config.get_logger("api", "api.log")
 
 
 def api_url(path, params):
@@ -29,29 +32,48 @@ def api_url(path, params):
 
 
 def api_get(url, attempts=4):
-    """GET a JSearch URL with the API key, retrying transient errors."""
+    """GET a JSearch URL with the API key, retrying transient errors.
+
+    Every attempt is logged to stdout and pipeline/logs/api.log. The API key
+    travels in the header, so the logged URL is safe to keep.
+    """
     request = urllib.request.Request(url, headers={"x-api-key": config.JSEARCH_API_KEY})
     last_error = None
-    for attempt in range(attempts):
+    for attempt in range(1, attempts + 1):
+        started = time.time()
         try:
             with urllib.request.urlopen(request, timeout=60) as response:
-                return json.loads(response.read())
+                body = response.read()
+                log.info(
+                    "GET %s -> %s (%d bytes, %.0f ms, attempt %d/%d)",
+                    url, response.status, len(body),
+                    (time.time() - started) * 1000, attempt, attempts,
+                )
+                return json.loads(body)
         except urllib.error.HTTPError as error:
             last_error = error
+            log.warning("GET %s -> HTTP %s (attempt %d/%d)",
+                        url, error.code, attempt, attempts)
             if error.code in (429, 500, 502, 503, 504):
-                time.sleep(2 * (attempt + 1))
+                time.sleep(2 * attempt)
                 continue
             raise
+        except urllib.error.URLError as error:
+            last_error = error
+            log.warning("GET %s -> %s (attempt %d/%d)",
+                        url, error.reason, attempt, attempts)
+            time.sleep(2 * attempt)
     raise last_error
 
 
-def build_search_url(query, cursor="", pages=None):
+def build_search_url(query, cursor="", pages=None, country=None):
     """Build the /search-v2 URL for one query batch (one page = one credit)."""
     params = {
         "query": query,
-        "country": config.JSEARCH_COUNTRY,
+        "country": country or config.JSEARCH_COUNTRY,
         "num_pages": pages or config.JSEARCH_PAGES_PER_QUERY,
         "date_posted": config.JSEARCH_DATE_POSTED,
+        "language": config.LANGUAGE,   # required with `country` for non-US results
     }
     if cursor:
         params["cursor"] = cursor
@@ -75,7 +97,7 @@ def format_salary(job):
     return f"{value} per {period}" if period else value
 
 
-def to_row(query, job):
+def to_row(query, job, country="my"):
     """Map one JSearch job object onto our CSV row."""
     location = job.get("job_location") or ", ".join(
         part
@@ -86,26 +108,28 @@ def to_row(query, job):
         "search_term": query,
         "title": job.get("job_title") or "",
         "company": job.get("employer_name") or "Confidential",
-        "location": location or "Malaysia",
+        "location": location or "Unknown",
         "salary": format_salary(job),
         "link": job.get("job_apply_link") or job.get("job_google_link") or "",
+        "country": country,
         "description": job.get("job_description") or "",
+        "posted_at": job.get("job_posted_at_datetime_utc") or "",
     }
 
 
-def fetch_query(query, cursor="", pages=None):
+def fetch_query(query, cursor="", pages=None, country=None):
     """Fetch one /search-v2 batch."""
-    return api_get(build_search_url(query, cursor, pages))
+    return api_get(build_search_url(query, cursor, pages, country))
 
 
-def fetch_query_pages(query, total_pages):
+def fetch_query_pages(query, total_pages, country=None):
     """Fetch up to total_pages for one query, chunked via the cursor."""
     jobs = []
     cursor = ""
     fetched = 0
     while fetched < total_pages:
         chunk = min(config.JSEARCH_PAGES_PER_REQUEST, total_pages - fetched)
-        payload = fetch_query(query, cursor=cursor, pages=chunk)
+        payload = fetch_query(query, cursor=cursor, pages=chunk, country=country)
         data = payload.get("data") or {}
         if not isinstance(data, dict):
             jobs.extend(data)
@@ -118,8 +142,12 @@ def fetch_query_pages(query, total_pages):
     return jobs
 
 
-def fetch_all(queries=None, pages=None):
-    """Run the given queries and return a de-duplicated DataFrame."""
+def fetch_all(queries=None, pages=None, countries=None):
+    """Run the given queries for every country; return a de-duplicated DataFrame.
+
+    De-dup key is (country, job_id) so the same posting can legitimately appear
+    in two markets.
+    """
     if not config.JSEARCH_API_KEY:
         raise SystemExit(
             "JSEARCH_API_KEY is not set. Add it to pipeline/.env or the environment."
@@ -128,19 +156,25 @@ def fetch_all(queries=None, pages=None):
     target = pages or config.JSEARCH_PAGES_PER_QUERY
     rows = []
     seen = set()
-    for query in queries or config.SEARCH_QUERIES:
-        print(f"Searching '{query}'...", end=" ", flush=True)
-        jobs = fetch_query_pages(query, target)
-        new = 0
-        for job in jobs:
-            key = job.get("job_id") or job.get("job_apply_link")
-            if not key or key in seen:
-                continue
-            seen.add(key)
-            rows.append(to_row(query, job))
-            new += 1
-        print(f"{new} new (total {len(rows)})")
-    return pd.DataFrame(rows, columns=LINK_COLUMNS + ["description"])
+    for country in countries or config.COUNTRIES:
+        code, place = country["code"], country["location"]
+        country_total = 0
+        for role in queries or config.SEARCH_QUERIES:
+            query = f"{role} in {place}"
+            print(f"[{code.upper()}] Searching '{query}'...", end=" ", flush=True)
+            jobs = fetch_query_pages(query, target, country=code)
+            new = 0
+            for job in jobs:
+                key = job.get("job_id") or job.get("job_apply_link")
+                if not key or (code, key) in seen:
+                    continue
+                seen.add((code, key))
+                rows.append(to_row(query, job, code))
+                new += 1
+            country_total += new
+            print(f"{new} new (country {country_total})")
+        print(f"[{code.upper()}] {country['name']}: {country_total} jobs")
+    return pd.DataFrame(rows, columns=LINK_COLUMNS + ["description", "posted_at"])
 
 
 def save(df):
@@ -170,11 +204,14 @@ def self_test():
     assert row["location"] == "Kuala Lumpur, Malaysia"
     assert row["salary"] == "MYR 5,000 - 7,000 per month", row["salary"]
     assert row["description"] == "Python and AWS."
+    assert "posted_at" in row
     # job_location is preferred; city/state/country is the fallback.
     assert to_row("x", {})["company"] == "Confidential"
     assert to_row("x", {"job_city": "Penang"})["location"] == "Penang"
+    assert to_row("x", {}, "sg")["country"] == "sg"
     assert format_salary({}) == "Not Specified"
-    assert "search-v2?" in build_search_url("x")
+    assert "country=my" in build_search_url("x")
+    assert "language=en" in build_search_url("x")
     print("self-test OK")
 
 
@@ -183,6 +220,7 @@ def main():
     parser.add_argument("--self-test", action="store_true", help="Offline mapping checks.")
     parser.add_argument("--pages", type=int, help="Pages per query (default from config; 1-20).")
     parser.add_argument("--only", help="Comma-separated subset of search queries to run.")
+    parser.add_argument("--countries", help="Comma-separated country codes (default: all).")
     args = parser.parse_args()
 
     config.ensure_utf8_stdout()
@@ -191,11 +229,17 @@ def main():
         return
 
     queries = args.only.split(",") if args.only else None
-    df = fetch_all(queries=queries, pages=args.pages)
-    if df.empty:
+    wanted = args.countries.split(",") if args.countries else None
+    countries = [c for c in config.COUNTRIES if not wanted or c["code"] in wanted]
+    # Save after each country so a long run can't lose everything on a timeout.
+    frames = []
+    for country in countries:
+        frame = fetch_all(queries=queries, pages=args.pages, countries=[country])
+        if not frame.empty:
+            frames.append(frame)
+            save(pd.concat(frames, ignore_index=True))
+    if not frames:
         print("No jobs fetched.")
-        return
-    save(df)
 
 
 if __name__ == "__main__":

@@ -49,6 +49,12 @@ STEPS = [
         "description": "Adding estimated market salaries...",
     },
     {
+        "key": "compare",
+        "name": "Country Comparisons",
+        "file": "comparisons.py",
+        "description": "Computing cross-country gap comparisons...",
+    },
+    {
         "key": "curriculum",
         "name": "Curriculum Generator",
         "file": "curriculum_generation.py",
