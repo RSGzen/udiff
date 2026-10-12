@@ -109,7 +109,7 @@
 - **PPP/FX source:** dated **static** tables — `pipeline/data/ppp.json` and `pipeline/data/fx.json` (record source + date; note PPP is an economy-wide basket, not expat cost-of-living).
 - **Phase 0 — verify (~$0.03):** 1 page per country with `language=en` → measure English yield, salary presence, description language → finalise caps and confirm ID/VN viability.
 - **Phase 1 — country-aware:** `config.py` adds `COUNTRIES` (GDP order), `LANGUAGE="en"`, per-country cap, PPP/FX paths; `fetch_jobs.py` loops countries and adds a **`country`** column; `processor.py` carries `country` (+ `posted_at`).
-- **Phase 2 — analysis + comparison:** `analyzer.py` groups by country → `countries: {iso: {…}}` (reuses the existing per-country shape so web components can be reused); new `comparisons.py` emits pairwise deltas.
+- **Phase 2 — analysis + comparison:** `analyzer.py` groups by country → `countries: {iso: {…}}` (reuses the existing per-country shape so web components can be reused); new `comparisons.py` emits deltas of **every market vs MY** (`my-vs-sg`, `my-vs-id`, `my-vs-vn`).
 - **Phase 3 — salary + curriculum:** `salary_estimate.py` runs per country and computes nominal MYR + PPP-MYR (same confidence guard); `curriculum_generation.py` per country.
 - **Phase 4 — sync + contract:** `sync_web_data.py` syncs the new schema; publish the type contract for the M6/web agent.
 - **Data model:**
@@ -141,7 +141,7 @@
       "sg": { "...": "same shape" }, "id": {}, "vn": {}
     },
     "comparisons": {
-      "my-vs-sg": {
+      "my-vs-sg": {   // one key per peer market: my-vs-sg | my-vs-id | my-vs-vn
         "skill_gaps": [{ "skill": "", "my_pct": 0, "sg_pct": 0, "delta": 0 }],
         "salary_delta_nominal": { "role": "", "level": "", "my": 0, "peer": 0 },
         "salary_delta_ppp":     { "role": "", "level": "", "my": 0, "peer": 0 }
