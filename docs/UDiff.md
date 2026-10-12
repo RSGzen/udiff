@@ -48,14 +48,38 @@ Supporting files:
 - `pipeline/src/config.py` — paths, settings, and the `.env` secret loader.
 - `pipeline/src/inspect_others.py` — dev utility that prints unclassified job titles (helps tune the category heuristics).
 
-## 4. Expected outcome
+## 4. Data
+
+What the dashboard surfaces and how each view is meant to be used. Rows marked `*` are produced by **M5.6** (data enrichment); `†` by **M5.7** (SEA expansion — MY, SG, ID, VN). Unmarked rows are live today.
+
+| Data / comparison | Data type | Chart type | Aim of data |
+|---|---|---|---|
+| Top hard skills (per role × level) | ranked categorical + % | horizontal bar | Most-demanded technologies for a role |
+| Technical context / domains | weighted categories | treemap | Which application areas skills are used in (NLP, Android, Spring…) |
+| Soft skills `*` | ranked list + count/% | bar / chips | Non-technical demand (communication, ownership) |
+| Job distribution by role | category counts | bar / donut | Market composition — which roles have the most openings |
+| Experience split (All / Junior / Mid / Senior) | ordinal buckets | stacked bar | Demand by seniority, incl. junior-market size |
+| Jobs by state `*` | geographic category | bar / choropleth | Where hiring is concentrated (KL, Selangor, Penang…) |
+| Top hiring companies `*` | ranked category + `kind` flag | bubble map (toggle placeholders) | Who is hiring; recruiter/confidential share |
+| Salary estimate — nominal (MYR) | range per role × level | range / box bar | Market pay bands (estimated, attributed) |
+| Salary estimate — PPP-adjusted (MYR) | range per role × level | dual range bar | Real purchasing power (cost-of-living adjusted) |
+| Observed salary mentions `*` | sparse per-posting values | scatter / histogram | Best-effort observed-pay signal from ad text |
+| Distinct skills `*` | scalar | metric card | Breadth of demand for a role |
+| Posting recency `*` | time series | line / bar | Data freshness ("% posted in last 30 days") |
+| Curriculum skill→course map | lookup dictionary | table / checker UI | Match a syllabus against demanded skills |
+| Country skill gap (e.g. MY vs SG) `†` | signed deltas | diverging bar | Skills the local market is missing vs a peer |
+| Country salary delta (nominal & PPP) `†` | signed deltas / ranges | dumbbell / diverging bar | Pay comparison between countries |
+| Regional role distribution `†` | multi-category counts | grouped / stacked bar | Market composition across SEA |
+| Career roadmaps | hand-authored phases | timeline / checklist | Guided learning path per role |
+
+## 5. Expected outcome
 
 - A **live, interactive dashboard** showing, for each role and experience level, the most in-demand hard skills, the technical contexts they appear in, and average salary ranges.
 - **Gamified career roadmaps** (foundation → core → advanced) for 15+ roles.
 - A **curriculum gap checker** that maps course/skill keywords to market demand via a pre-computed synonym dictionary.
 - A reusable, explainable dataset of Malaysian tech job-market demand (a point-in-time snapshot).
 
-## 5. Limitations (honest)
+## 6. Limitations (honest)
 
 - **Data source:** postings come from the **JSearch API** (a Google-for-Jobs aggregator); coverage, and especially salary fields, depend on it — salary is frequently absent.
 - **Point-in-time data:** the dataset is a snapshot; there is no scheduler or live refresh.
@@ -63,4 +87,4 @@ Supporting files:
 - **Salary sparsity:** many postings hide salary, so salary averages are noisy.
 - **`skill_class.json` is synthetic:** its course names are LLM-generated, not scraped from real university curricula — treat it as illustrative, not authoritative.
 - **Matching is lexical, not semantic:** the curriculum checker uses keyword/synonym matching, not embeddings.
-- **Code quality:** mixed human + AI-assisted code. Path resolution was centralised in `pipeline/src/config.py` during M2 (scripts no longer depend on `os.getcwd()`); the orchestrator still needs repair (M3) and there are no tests yet.
+- **Code quality:** mixed human + AI-assisted code. Paths were centralised in `pipeline/src/config.py` (M2) and the orchestrator repaired (M3); there are still no automated tests.
