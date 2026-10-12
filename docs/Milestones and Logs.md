@@ -242,21 +242,29 @@
 - **Result (13 Oct 2026):** Tier 0 complete. `npm run build` + `npx tsc --noEmit` pass; no palette
   hardcoding, gradient text, or `transition-all` left in components. ✅
 
-### M10 — Frontend revamp: Tier 1 (re-skin + core data views) `Pending`
-- **Shell:** `next-themes` dark theming, a shared `AppShell` used by **every** route, a
-  **collapsible sidebar** (icon rail on desktop, drawer on mobile), Geist type + `tabular-nums`,
-  motion tokens + reduced-motion, tokenized charts + one shared tooltip, `localStorage` roadmap
-  progress, a11y pass.
-- **Country UX (decided):** a **country switcher in the shell** (MY/SG/ID) scoping the dashboard,
-  plus a dedicated **`/compare`** view for `my-vs-sg` / `my-vs-id`.
-- **Core `UDiff.md` §4 views to build** (all Recharts, **no map dependency** — states → ranked bar,
-  companies → ranked list/treemap with a placeholders toggle):
-  soft skills · job distribution · experience split (stacked) · jobs by state · top companies ·
-  salary bands (nominal, monthly) **+ PPP toggle** · country skill/salary deltas (compare view).
-- **Deferred this pass:** posting recency (not aggregated in the pipeline yet); observed-salary
+### M10 — Frontend revamp: Tier 1 (re-skin + core data views) `Done (13 Oct 2026)`
+- **Result:** every route shares one responsive `AppShell`; all **core `UDiff.md` §4 views** render for
+  MY/SG/ID; `npm run build` + `npx tsc --noEmit` pass. Dark-only theming kept (no `next-themes` — not
+  needed); **no map dependency** (geo shown as ranked bars).
+- **Sub-steps:**
+  - **M10.1 — AppShell + nav** `Done` — shared shell (Dashboard · Compare · Roadmap · Curriculum) on
+    every route; dashboard role list split into `RolePanel`; old `Sidebar` deleted; `/compare` stub.
+  - **M10.2 — Collapsible nav** `Done` — icon rail (desktop) + mobile top bar/drawer; `overflow-hidden`
+    during the width transition (no scrollbar flash).
+  - **M10.3 — Motion/type tokens** `Done` — `--ease-out`/`--ease-in-out`/`--ease-drawer`;
+    `prefers-reduced-motion`; drawer enter animation.
+  - **M10.4 — Core §4 views** `Done` — soft skills (arrow bars), openings by role, experience split
+    (donut), jobs by location, top hiring companies (+ recruiters toggle), salary estimate
+    (nominal/PPP toggle). Dashboard **sectioned** (`SectionHeading`) to separate `role × level` cards
+    from `country only` cards.
+  - **M10.5 — `/compare`** `Done` — peer toggle (SG/ID) + skill-gap and salary **diverging bars**.
+  - **M10.6 — Polish** `Done` — shared `ChartTooltip`; `localStorage` roadmap progress (fixes the
+    README claim); a11y (`aria-label`, single `h1` per page).
+- **Decisions:** the country switcher stays in the dashboard header (not the shell); `/compare` is a
+  separate route. **Deferred:** posting recency (not aggregated in the pipeline yet); observed-salary
   scatter (MY-only, country-level only).
-- **New dep:** `next-themes` (optional if dark-only). Plan: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §6.
-- **Done when:** every route shares one responsive shell; every core §4 view renders for MY/SG/ID; build + lint pass; charts use tokens.
+- **Note:** M6 (lint hygiene) still **pending**.
+- Full detail: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §6.
 
 ### M11 — Frontend revamp: Tier 2 (restructure) `Future`
 - Landing/About page, IA + route moves (`/` → landing, `/dashboard`, `/methodology`), optional
@@ -409,6 +417,29 @@
 
 **Verified:** `npx tsc --noEmit` + `npm run build` pass; user reviewed each increment live.
 **Next:** M10 (Tier 1) — shell + country switcher + core `UDiff.md` §4 views.
+
+### 13_10_2026 (web, M10) — Tier 1: shell + core §4 views (assistant)
+**Did (incremental, reviewed live each step):**
+- **M10.1:** added `AppShell` (global nav: Dashboard · Compare · Roadmap · Curriculum) used by every
+  route; split the dashboard role list into `RolePanel`; deleted the old `Sidebar`; added the
+  `/compare` route.
+- **M10.2:** collapsible nav → icon rail on desktop; mobile top bar + slide-in drawer; compact mobile
+  dashboard filter row (role/level/country). Fixed a scrollbar flash with `overflow-hidden`.
+- **M10.3:** motion tokens (`--ease-out`/`--ease-in-out`/`--ease-drawer`) + `prefers-reduced-motion`;
+  drawer enter animation.
+- **M10.4:** built the core §4 views — Top Soft Skills (arrow-tipped bars), Openings by Role,
+  Experience Split (donut), Jobs by Location, Top Hiring Companies (+ recruiters checkbox), Salary
+  Estimate (nominal/PPP toggle). Added `SectionHeading` to group `role × level` vs `country only`
+  cards. (Fixed the bar-chart hover flash: dropped the `null` between bars.)
+- **M10.5:** `/compare` — peer toggle (SG/ID) + skill-gap and salary **diverging bars** (nominal/PPP).
+- **M10.6:** shared `ChartTooltip`; `localStorage` roadmap progress; a11y (`aria-label`, single `h1`).
+- **Data types:** `placeholder_companies` corrected to a single object; `unknown_level` is a number.
+
+**Verified:** `npx tsc --noEmit` + `npm run build` pass (routes `/`, `/compare`, `/curriculum`,
+`/roadmap`); user reviewed each increment.
+**Decisions:** dark-only (no `next-themes`); no map dependency; country switcher in the dashboard header.
+**Deferred:** posting recency (needs a pipeline aggregate); observed-salary scatter (MY-only).
+**Next:** M6 (lint hygiene) → M11 (Tier 2: landing, route moves, methodology, motion polish).
 
 ---
 

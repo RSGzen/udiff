@@ -1,6 +1,6 @@
 # UDiff — Frontend Revamp Plan
 
-> **Created:** 12 Oct 2026 · **Updated:** 13 Oct 2026 (M9.0/M9.1 landed; M10 scope revised)
+> **Created:** 12 Oct 2026 · **Updated:** 13 Oct 2026 (M9 **Tier 0** and M10 **Tier 1** done; M11 next)
 > **Owner:** assistant (mentor) + user (junior systems designer)
 > **Status legend:** `Todo` · `In progress` · `Done` · `Deferred`
 > **Related files:** [`Tech Stack.md`](Tech%20Stack.md) (web side) · [`Milestones and Logs.md`](Milestones%20and%20Logs.md) (M6, M9–M11)
@@ -64,13 +64,13 @@ palette color** (only the theme file declares colors).
 ## 4. Relationship to other milestones
 
 - **M6 (Web cleanup)** = *code hygiene* (`as any`, `@ts-ignore`, lint, dead assets).
-  Intended to run before M9, but **M9.0/M9.1 landed first** (13 Oct) because the site did not render
-  at all against the v3 schema. Run M6 before/with **M9.2** to get `npm run lint` green.
-- **M9 / M10 / M11** = this plan (*design*).
+  Intended to run before M9, but **M9/M10 landed first** (13 Oct) because the site did not render
+  at all against the v3 schema. **M6 is still pending** — run it to get `npm run lint` green.
+- **M9 / M10 / M11** = this plan (*design*). **M9 + M10 done**; M11 remains.
 - Backlog item *"UI: more modern design…"* is now tracked here (see Milestones §4).
 - **Locked decisions:** scope = re-skin **+ core `UDiff.md` §4 views**; **no map dependency**
-  (states → ranked bar, companies → ranked list/treemap); **shell country switcher + `/compare` view**;
-  salary stays **min–max monthly nominal MYR** with a **PPP toggle** in M10.
+  (states → ranked bar, companies → ranked list); **country switcher in the dashboard header +
+  `/compare` route**; salary = median + range bar, **nominal / PPP toggle**; **dark-only** (no `next-themes`).
 
 ---
 
@@ -101,44 +101,43 @@ palette color** (only the theme file declares colors).
 
 ---
 
-## 6. Tier 1 — Re-skin + core data views (`M10`) `Todo`
+## 6. Tier 1 — Re-skin + core data views (`M10`) `Done (13 Oct 2026)`
 
 **Goal:** a consistent, token-driven, responsive app that renders the **core** `UDiff.md` §4 data
-surface across MY/SG/ID. **~4–7 days, medium risk.**
+surface across MY/SG/ID.
 
-**Shell & system**
-- [ ] **Theming:** `next-themes` `ThemeProvider` + `suppressHydrationWarning`; `.dark` on `<html>`
-      (dark-only is acceptable).
-- [ ] **Shared `AppShell`** (`src/components/AppShell.tsx`): sidebar + content grid used by **all** routes.
-      Delete the `pl-64` hack (`page.tsx`) and the per-page "Back to Dashboard" nav.
-- [ ] **Collapsible sidebar:** icon rail on desktop (collapse toggle) + `Sheet` drawer below `lg`.
-- [ ] **Country switcher in the shell** (MY/SG/ID) — scopes the dashboard (moves the temporary
-      switcher out of the header).
-- [ ] **Type system:** Geist Sans + Geist Mono; `tabular-nums` on metrics.
-- [ ] **Motion tokens:** `--ease-out` / `--ease-in-out` + duration scale + `prefers-reduced-motion`.
-- [ ] **Component polish:** `Card`, `Badge`, `Tabs`, `Select`, `MetricCard` themed through tokens;
-      hover gated by `@media (hover: hover) and (pointer: fine)`.
-- [ ] **Charts:** colours from `--chart-*`; one shared `ChartTooltip`; remove per-cell inline transitions.
-- [ ] **Persist roadmap progress** to `localStorage`; **A11y** pass (focus-visible, `aria-label`, heading order).
+**Shell & system** *(all done)*
+- [x] **Theming:** dark-only — kept `className="dark"` + `suppressHydrationWarning`; `next-themes` not needed.
+- [x] **Shared `AppShell`** (`src/components/AppShell.tsx`) — sidebar + content on **all** routes; the `pl-64` hack and per-page "Back to Dashboard" nav are gone.
+- [x] **Collapsible sidebar** — icon rail (desktop) + slide-in drawer below `lg`.
+- [x] **Country switcher** — lives in the dashboard header; `/compare` is its own route.
+- [x] **Type system** — Geist Sans + Geist Mono; `tabular-nums` on metrics.
+- [x] **Motion tokens** — `--ease-out` / `--ease-in-out` / `--ease-drawer` + `prefers-reduced-motion`.
+- [x] **Component polish** — cards/controls themed through tokens.
+- [x] **Charts** — colours from `--chart-*`; one shared `ChartTooltip`; per-cell inline transitions removed.
+- [x] **Persist roadmap progress** (`localStorage`); **a11y** (focus-visible, `aria-label`, single `h1`).
 
-**Core `UDiff.md` §4 views to build** (all Recharts; **no map dependency**)
+**Core `UDiff.md` §4 views built** (all Recharts; **no map dependency**)
 
 | §4 view | Chart |
 |---|---|
-| Hard skills / technical context | bar / treemap *(exists)* |
-| Soft skills | chips / bar |
-| Job distribution by role | bar |
-| Experience split | stacked bar |
-| Jobs by state | ranked bar (only MY has >1 state) |
-| Top companies | ranked list/bar + placeholders toggle |
-| Salary bands | floating range bar (`min→max`), nominal monthly MYR + **PPP toggle** |
-| Country skill / salary deltas | diverging bars (`/compare` view) |
+| Hard skills / technical context | bar / treemap |
+| Soft skills | arrow-tipped bars |
+| Job distribution by role | bar (selected role highlighted) |
+| Experience split | **donut** |
+| Jobs by location | ranked bar (MY 13 states; SG/ID one region) |
+| Top companies | ranked list + recruiters toggle |
+| Salary estimate | median + range bar, **nominal / PPP toggle** |
+| Country skill / salary deltas | diverging bars (`/compare`) |
+
+**Also:** the dashboard is **sectioned** (`SectionHeading`) into `role × level` and `country only`
+groups; fixed the bar-chart hover flash.
 
 **Deferred this pass:** posting recency (needs a pipeline aggregate first); observed-salary scatter
 (MY-only, country-level only).
 
-**Done when:** every route shares one responsive shell; every **core** §4 view renders for MY/SG/ID;
-`npm run build` + `npm run lint` pass; charts use tokens; sidebar works at 360px.
+**Result:** ✅ every route shares one responsive shell; every **core** §4 view renders for MY/SG/ID;
+`npm run build` + `npx tsc --noEmit` pass. Next: **M6** (lint) → **M11**.
 
 ---
 
