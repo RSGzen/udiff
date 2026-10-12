@@ -21,7 +21,7 @@ from pathlib import Path
 import config
 
 SRC_DIR = Path(__file__).resolve().parent
-LOG_FILE = config.PIPELINE_DIR / "pipeline_log.txt"
+LOG_FILE = config.PIPELINE_DIR / "pipeline_log.log"
 
 STEPS = [
     {
@@ -47,6 +47,12 @@ STEPS = [
         "name": "Curriculum Generator",
         "file": "curriculum_generation.py",
         "description": "Generating curriculum synonyms...",
+    },
+    {
+        "key": "sync",
+        "name": "Web Data Sync",
+        "file": "sync_web_data.py",
+        "description": "Copying the outputs into the web app...",
     },
 ]
 
