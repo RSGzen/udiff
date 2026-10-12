@@ -32,10 +32,11 @@ export function SkillChart({ data }: SkillChartProps) {
       if (!isMatchingRow) return null;
 
       return (
-        <div className="bg-popover border border-border p-3 rounded-lg shadow-xl">
-          <p className="text-primary font-mono text-sm font-bold tabular-nums">
-            [ {label} : {payload[0].value}% ]
-          </p>
+        <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-xl">
+          <div className="flex items-center justify-between gap-4 text-xs">
+            <span className="text-muted-foreground">{label}</span>
+            <span className="font-medium text-foreground tabular-nums">{payload[0].value}%</span>
+          </div>
         </div>
       )
     }
@@ -82,14 +83,13 @@ export function SkillChart({ data }: SkillChartProps) {
                   const isHovered = activeIndex === index
                   const isAnythingHovered = activeIndex !== null
                   
-                  let finalColor = index < 3 ? 'var(--chart-1)' : 'var(--muted)'
-                  let finalOpacity = 1
+                  const finalColor = 'var(--chart-1)'
+                  let finalOpacity = index < 3 ? 1 : 0.35
 
                   if (isHovered) {
-                    finalColor = 'var(--chart-1)'
                     finalOpacity = 1
                   } else if (isAnythingHovered) {
-                    finalOpacity = 0.3
+                    finalOpacity = 0.2
                   }
 
                   return (
@@ -97,7 +97,7 @@ export function SkillChart({ data }: SkillChartProps) {
                       key={`cell-${index}`} 
                       fill={finalColor}
                       fillOpacity={finalOpacity}
-                      style={{ transition: 'all 0.3s ease' }}
+                      style={{ transition: 'fill 150ms ease-out, opacity 150ms ease-out' }}
                       stroke="none"
                     />
                   )

@@ -33,6 +33,9 @@ export default function Home() {
   const salaryDisplay = estimate
     ? `RM ${Math.round(estimate.nominal_myr.min).toLocaleString()} - ${Math.round(estimate.nominal_myr.max).toLocaleString()}`
     : "N/A"
+  const salarySubtext = estimate
+    ? "Market estimate · monthly (MYR)"
+    : "Not reported in source data"
 
   const totalCategoryJobs = allStats?.job_count ?? 1
   const marketShare = ((jobCount / totalCategoryJobs) * 100).toFixed(1)
@@ -50,7 +53,7 @@ export default function Home() {
         onSelectLevel={setSelectedLevel}
       />
 
-      <div className="pl-64 transition-all duration-300">
+      <div className="pl-64 transition-[padding] duration-300">
 
         {/* Header Bar */}
         <div className="border-b border-border p-8 flex flex-wrap justify-between items-start gap-4">
@@ -103,7 +106,7 @@ export default function Home() {
             <MetricCard
               title="Estimated Base Salary"
               value={salaryDisplay}
-              subtext="Estimated monthly (MYR)"
+              subtext={salarySubtext}
               icon={DollarSign}
             />
             <MetricCard

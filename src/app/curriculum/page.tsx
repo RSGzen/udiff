@@ -98,7 +98,7 @@ export default function CurriculumCheckPage() {
         <Button variant="ghost" className="text-muted-foreground pl-0 hover:text-foreground mb-4" onClick={() => router.push('/')}>
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
         </Button>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold text-foreground">
           Curriculum Gap Analyzer
         </h1>
         <p className="text-muted-foreground mt-2">
@@ -174,7 +174,7 @@ export default function CurriculumCheckPage() {
         {/* RIGHT COLUMN: RESULTS */}
         <div className="md:col-span-1">
           {isAnalyzed ? (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right duration-500">
+            <div className="space-y-6 animate-in fade-in slide-in-from-right duration-200 ease-out">
 
               {/* Score Card */}
               <Card className="bg-card border-border text-center py-6">

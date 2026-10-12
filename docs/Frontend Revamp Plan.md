@@ -74,32 +74,30 @@ palette color** (only the theme file declares colors).
 
 ---
 
-## 5. Tier 0 — Data layer + de-slop (`M9`) `In progress`
+## 5. Tier 0 — Data layer + de-slop (`M9`) `Done (13 Oct 2026)`
 
 **Goal:** make the app render the v3 data and kill the obvious tells. **No layout changes.**
 **~1–2 days, low risk.** **New dependencies:** none.
 
-- **M9.0 — Data layer (schema v3)** `Done (13 Oct)` — rewrote `src/types/index.ts`; added
-  `src/lib/data.ts` (single data gateway); repointed `page.tsx` + `curriculum/page.tsx`; salary card
-  reads `salary_estimate`; dashboard country switcher; `@ts-ignore`s removed. *Also: header wrap fix
+- **M9.0 — Data layer (schema v3)** `Done` — rewrote `src/types/index.ts`; added `src/lib/data.ts`
+  (single data gateway); repointed `page.tsx` + `curriculum/page.tsx`; salary card reads
+  `salary_estimate`; dashboard country switcher; `@ts-ignore`s removed. *Also: header wrap fix
   (dropped `" Engineer"`) + `SkillChart` label truncation.*
-- **M9.1 — Dark tokens + metadata** `Done (13 Oct)` — `className="dark"` +
-  `suppressHydrationWarning` on `<html>`; real title/description.
-- **M9.2 — Token swap** `In progress` — replace hardcoded `slate-*` / `blue-*` / cyan / hex with
-  semantic tokens in: `src/app/page.tsx`, `src/components/Sidebar.tsx`,
-  `src/components/dashboard/MetricCard.tsx`, `SkillChart.tsx`, `ContextTreemap.tsx`,
-  `src/app/curriculum/page.tsx`, `src/app/roadmap/page.tsx`.
-- **M9.3 — Remove gradient text** `Todo` — `Sidebar.tsx` (logo), `curriculum/page.tsx`, `roadmap/page.tsx`.
-- **M9.4 — Motion** `Todo` — replace `transition-all` with explicit properties (`ui/button.tsx`,
-  `app/page.tsx`, `roadmap/page.tsx`, `ui/progress.tsx`); remove inline `transition: 'all 0.3s ease'`
-  (`SkillChart.tsx`, `ContextTreemap.tsx`); shorten `animate-in … duration-500` → ~180ms `ease-out`
-  (`curriculum/page.tsx`).
-- **M9.5 — Press feedback + charts + honesty** `Todo` — `active:scale-[0.97]`; non-top bars visible;
-  tooltips use `tabular-nums` and drop the bracket style; honest salary label; radius consistency in
-  the treemap.
+- **M9.1 — Dark tokens + metadata** `Done` — `className="dark"` + `suppressHydrationWarning` on
+  `<html>`; real title/description.
+- **M9.2 — Token swap** `Done` — hardcoded `slate-*`/`blue-*`/cyan/hex → semantic tokens across
+  `page.tsx`, `Sidebar.tsx`, `MetricCard.tsx`, `SkillChart.tsx`, `ContextTreemap.tsx`,
+  `curriculum/page.tsx`, `roadmap/page.tsx`; blue `--primary`; added `--success`/`--warning`;
+  curriculum left-strips removed.
+- **M9.3 — Remove gradient text** `Done` — logo → blue, page titles → `text-foreground`.
+- **M9.4 — Motion** `Done` — `transition-all` → exact props; inline `transition:'all'` removed;
+  `animate-in` 500ms → 200ms.
+- **M9.5 — Press feedback + charts + honesty** `Done` — `active:scale-[0.97]`; single-hue bars/tiles
+  with visible track; bracket-free `tabular-nums` tooltips; market-estimate salary label; MetricCard
+  value `text-4xl` + vertically centred.
 
-**Done when:** no palette hardcoding or `transition-all` remains in components (only in `globals.css`);
-`npm run build` + `npx tsc --noEmit` pass; layout is visually unchanged.
+**Result:** ✅ no palette hardcoding, gradient text, or `transition-all` left in components;
+`npm run build` + `npx tsc --noEmit` pass. Next: **M10**.
 
 ---
 

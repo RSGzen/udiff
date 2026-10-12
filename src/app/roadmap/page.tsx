@@ -74,7 +74,7 @@ export default function RoadmapPage() {
 
       {/* ROADMAP HEADER */}
       <div className="max-w-3xl mx-auto mb-12">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-4">
+        <h1 className="text-4xl font-bold text-foreground mb-4">
           {currentRoadmap.role} Roadmap
         </h1>
         <div className="flex items-center gap-4 mb-2">
@@ -102,9 +102,9 @@ export default function RoadmapPage() {
           const isLocked = index > 0 && (prevCollected / previousPhase.skills.length) < 0.5
 
           return (
-            <Card key={phase.id} className={`bg-card/80 border-border relative transition-all duration-500 ${isLocked ? 'opacity-50 grayscale' : ''}`}>
+            <Card key={phase.id} className={`bg-card/80 border-border relative transition-[opacity,filter] duration-300 ${isLocked ? 'opacity-50 grayscale' : ''}`}>
 
-              <div className={`absolute -left-9 top-6 h-6 w-6 rounded-full border-4 border-background flex items-center justify-center transition-colors duration-500 ${
+              <div className={`absolute -left-9 top-6 h-6 w-6 rounded-full border-4 border-background flex items-center justify-center transition-colors duration-300 ${
                 isPhaseComplete ? 'bg-primary' : isLocked ? 'bg-muted' : 'bg-foreground'
               }`}>
                  {isPhaseComplete && <span className="text-primary-foreground text-xs font-bold">✓</span>}

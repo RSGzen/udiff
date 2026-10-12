@@ -38,7 +38,7 @@ export function Sidebar({
 
       {/* --- HEADER SECTION (Fixed) --- */}
       <div className="p-6 border-b border-border shrink-0">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold text-primary">
           UDiff
         </h1>
         <p className="text-muted-foreground text-xs mt-1">Student to Founder</p>

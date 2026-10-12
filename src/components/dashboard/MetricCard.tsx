@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react"; // Default icon library in Next.js
 
 interface MetricCardProps {
@@ -6,26 +6,23 @@ interface MetricCardProps {
   value: string | number;
   subtext?: string;
   icon?: LucideIcon;
-  trend?: "up" | "down" | "neutral";
 }
 
-export function MetricCard({ title, value, subtext, icon: Icon, trend }: MetricCardProps) {
+export function MetricCard({ title, value, subtext, icon: Icon }: MetricCardProps) {
   return (
-    <Card className="bg-card border-border">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
-          {title}
-        </CardTitle>
-        {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-foreground tabular-nums">{value}</div>
-        {subtext && (
-          <p className="text-xs text-muted-foreground mt-1">
-            {subtext}
-          </p>
-        )}
-      </CardContent>
+    <Card className="relative bg-card border-border">
+      <CardTitle className="absolute top-6 left-6 text-base font-medium text-muted-foreground">
+        {title}
+      </CardTitle>
+      {Icon && <Icon className="absolute top-6 right-6 h-4 w-4 text-muted-foreground" />}
+      <div className="flex min-h-[7rem] items-center px-6">
+        <div className="text-4xl font-bold text-foreground tabular-nums">{value}</div>
+      </div>
+      {subtext && (
+        <p className="absolute bottom-6 left-6 text-sm text-muted-foreground">
+          {subtext}
+        </p>
+      )}
     </Card>
   );
 }

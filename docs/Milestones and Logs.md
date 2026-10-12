@@ -212,7 +212,7 @@
 - Add the UDiff project entry to the résumé (held until docs are finalised).
 - **Done when:** the repo reads cleanly to a reviewer end-to-end.
 
-### M9 — Frontend revamp: Tier 0 (schema v3 data layer + de-slop) `In progress (13 Oct 2026)`
+### M9 — Frontend revamp: Tier 0 (schema v3 data layer + de-slop) `Done (13 Oct 2026)`
 - **Goal:** make the web app render the **v3 country-nested schema** and kill the "AI-generated"
   tells, with **no layout change** and **no new dependencies**.
 - **Sub-steps:**
@@ -226,16 +226,21 @@
   - **M9.1 — Dark tokens + metadata** `Done (13 Oct)` — `className="dark"` +
     `suppressHydrationWarning` on `<html>`; real page title/description. (The console hydration
     error was **Dark Reader**, a browser extension — not app code.)
-  - **M9.2 — Token swap** `In progress` — replace hardcoded `slate-*`/`blue-*`/cyan/hex with
-    semantic tokens across all components.
-  - **M9.3 — Remove gradient text** `Todo`
-  - **M9.4 — Motion fixes** `Todo` — `transition-all` → exact props; remove inline `transition:'all'`;
-    shorten `animate-in`.
-  - **M9.5 — Press feedback + chart contrast/tooltips + honesty labels** `Todo`
+  - **M9.2 — Token swap** `Done (13 Oct)` — hardcoded `slate-*`/`blue-*`/cyan/hex replaced with
+    semantic tokens across every component; brand accent set to a blue `--primary`; added `--success`
+    / `--warning` tokens; removed the colored left-strips on the curriculum result cards and
+    neutralised the beta notice.
+  - **M9.3 — Remove gradient text** `Done (13 Oct)` — logo → solid blue, page titles → `text-foreground`.
+  - **M9.4 — Motion fixes** `Done (13 Oct)` — `transition-all` → exact props (button/tabs/progress/
+    page/roadmap); inline chart `transition:'all'` → `fill/opacity` 150ms; `animate-in` 500ms → 200ms.
+  - **M9.5 — Press feedback + charts + honesty** `Done (13 Oct)` — `active:scale-[0.97]` on buttons;
+    bars/tiles now single-hue with a visible low-opacity track; tooltips drop the bracket style and use
+    `tabular-nums`; salary card labelled as a market estimate; MetricCard values bumped to `text-4xl`
+    and vertically centred.
 - **No new dependencies.** Full task list in [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §5.
-- **Note:** M6 (lint hygiene) has **not** landed; M9.0/M9.1 were done first because the site did not
-  render at all against v3. Run M6 before/with M9.2 to get `npm run lint` green.
-- **Done when:** no palette hardcoding or `transition-all` in components; `npm run build` + `tsc --noEmit` pass; layout visually unchanged.
+- **Note:** M6 (lint hygiene) still **pending** — Tier 0 landed without it; get `npm run lint` green in M6.
+- **Result (13 Oct 2026):** Tier 0 complete. `npm run build` + `npx tsc --noEmit` pass; no palette
+  hardcoding, gradient text, or `transition-all` left in components. ✅
 
 ### M10 — Frontend revamp: Tier 1 (re-skin + core data views) `Pending`
 - **Shell:** `next-themes` dark theming, a shared `AppShell` used by **every** route, a
@@ -386,6 +391,25 @@
 - Salary: keep **min–max, monthly, nominal MYR**; **PPP toggle** lands in M10.
 - Sidebar: collapse/rail + mobile drawer confirmed as part of the M10 `AppShell`.
 
+### 13_10_2026 (web, later) — M9.2–M9.5 (Tier 0 complete) (assistant)
+**Did:**
+- **M9.2 (token swap):** replaced every hardcoded `slate-*`/`blue-*`/cyan/hex color in the components
+  with semantic tokens (`bg-background`, `bg-card`, `border-border`, `text-muted-foreground`, …); set
+  the dark `--primary`/`--ring` to a blue brand accent; added `--success`/`--warning` tokens (+ `@theme`
+  mappings); removed the colored left-strips on the curriculum *Missing*/*Covered* cards and
+  neutralised the beta notice.
+- **M9.3:** removed the three gradient headings (logo → solid blue, page titles → `text-foreground`).
+- **M9.4:** `transition-all` → explicit properties (button, tabs, progress, page, roadmap); inline
+  chart `transition:'all'` → `fill/opacity` 150 ms; `animate-in` 500 ms → 200 ms.
+- **M9.5:** `active:scale-[0.97]` on buttons; chart bars/tiles single-hue with a visible low-opacity
+  track; tooltips drop the `[ name : % ]` bracket style and use `tabular-nums`; salary card labelled
+  "market estimate"; MetricCard value bumped to `text-4xl` and vertically centred on the card.
+- **Files:** `src/app/globals.css`, `page.tsx`, `curriculum/page.tsx`, `roadmap/page.tsx`,
+  `Sidebar.tsx`, `dashboard/{MetricCard,SkillChart,ContextTreemap}.tsx`, `ui/{button,tabs,progress}.tsx`.
+
+**Verified:** `npx tsc --noEmit` + `npm run build` pass; user reviewed each increment live.
+**Next:** M10 (Tier 1) — shell + country switcher + core `UDiff.md` §4 views.
+
 ---
 
 ## 4. Backlog (feature requests, carried from `future_changes.txt`)
@@ -395,7 +419,7 @@
 - Skill detail pages: hover a skill → quick explanation + verified learning resources.
 - Compare a student's current curriculum progress against industry standards (cross-off mastered skills, personal roadmap).
 - UI: more modern design, more interaction/animation, and a better-fitting visual for skill distributions.
-  → **planned as M9–M11** (see [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md)).
+  → **M9 (Tier 0) done; M10/M11 planned** (see [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md)).
 
 ---
 

@@ -29,16 +29,15 @@ const CustomContent = (props: any) => {
 
   // B. Color Logic
   const isTop = index < 2
-  let bgColor = isTop ? 'var(--chart-1)' : 'var(--muted)'
+  const bgColor = 'var(--chart-1)'
   let borderColor = 'var(--border)'
-  let opacity = 0.9
+  let opacity = isTop ? 0.9 : 0.35
 
   if (isHovered) {
-    bgColor = 'var(--chart-1)'
     borderColor = 'var(--primary-foreground)'
     opacity = 1
   } else if (isDimmed) {
-    opacity = 0.3
+    opacity = 0.2
   }
 
   // C. Text Collision Logic
@@ -63,7 +62,7 @@ const CustomContent = (props: any) => {
           stroke: borderColor,
           strokeWidth: isHovered ? 3 : 2, // Thicker border on hover
           opacity: opacity,
-          transition: 'all 0.3s ease' // Smooth animation
+          transition: 'fill 150ms ease-out, opacity 150ms ease-out, stroke 150ms ease-out'
         }}
         rx={6}
       />
@@ -141,10 +140,11 @@ export function ContextTreemap({ data }: ContextTreemapProps) {
                   if (active && payload && payload.length) {
                     const d = payload[0].payload
                     return (
-                      <div className="bg-popover border border-border p-2 rounded shadow-xl z-50">
-                        <p className="text-primary font-mono text-xs font-bold tabular-nums">
-                          [ {d.name}: {d.percentage}% ]
-                        </p>
+                      <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-xl z-50">
+                        <div className="flex items-center justify-between gap-4 text-xs">
+                          <span className="text-muted-foreground">{d.name}</span>
+                          <span className="font-medium text-foreground tabular-nums">{d.percentage}%</span>
+                        </div>
                       </div>
                     )
                   }
