@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell, TooltipProps } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartTooltip } from "@/components/dashboard/ChartTooltip"
 
 interface Skill {
   name: string
@@ -31,14 +32,7 @@ export function SkillChart({ data }: SkillChartProps) {
       const isMatchingRow = payload[0].payload.name === chartData[activeIndex]?.name
       if (!isMatchingRow) return null;
 
-      return (
-        <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-xl">
-          <div className="flex items-center justify-between gap-4 text-xs">
-            <span className="text-muted-foreground">{label}</span>
-            <span className="font-medium text-foreground tabular-nums">{payload[0].value}%</span>
-          </div>
-        </div>
-      )
+      return <ChartTooltip label={label} value={`${payload[0].value}%`} />
     }
     return null
   }

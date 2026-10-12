@@ -94,9 +94,9 @@ export default function CurriculumCheckPage() {
 
       {/* HEADER */}
       <div className="max-w-4xl mx-auto mb-8">
-        <h1 className="text-3xl font-bold text-foreground">
+        <h2 className="text-3xl font-bold text-foreground">
           Curriculum Gap Analyzer
-        </h1>
+        </h2>
         <p className="text-muted-foreground mt-2">
           Paste your university syllabus, course list, or resume below.
           We will check if it matches the market demands for

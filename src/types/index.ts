@@ -70,7 +70,7 @@ export interface CountryReport {
   job_distribution: Record<string, number>;
   states: Record<string, number>;
   top_companies: Company[];
-  placeholder_companies: Company[];
+  placeholder_companies: Company;
   observed_salaries: ObservedSalary[];
   categories: Record<string, RoleCategory>;
 }

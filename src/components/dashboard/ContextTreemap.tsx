@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { ResponsiveContainer, Treemap, Tooltip } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartTooltip } from "@/components/dashboard/ChartTooltip"
 
 interface ContextItem {
   name: string
@@ -143,14 +144,7 @@ export function ContextTreemap({ data }: ContextTreemapProps) {
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const d = payload[0].payload
-                    return (
-                      <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-xl z-50">
-                        <div className="flex items-center justify-between gap-4 text-xs">
-                          <span className="text-muted-foreground">{d.name}</span>
-                          <span className="font-medium text-foreground tabular-nums">{d.percentage}%</span>
-                        </div>
-                      </div>
-                    )
+                    return <ChartTooltip label={d.name} value={`${d.percentage}%`} />
                   }
                   return null
                 }}

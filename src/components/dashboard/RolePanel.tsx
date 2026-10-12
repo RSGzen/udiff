@@ -50,6 +50,7 @@ export function RolePanel({
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search roles..."
+            aria-label="Search roles"
             className="pl-8 bg-card border-border text-foreground focus-visible:ring-ring h-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

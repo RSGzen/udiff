@@ -7,6 +7,10 @@ import { ContextTreemap } from "@/components/dashboard/ContextTreemap"
 import { SoftSkills } from "@/components/dashboard/SoftSkills"
 import { JobDistribution } from "@/components/dashboard/JobDistribution"
 import { ExperienceSplit } from "@/components/dashboard/ExperienceSplit"
+import { JobsByState } from "@/components/dashboard/JobsByState"
+import { TopCompanies } from "@/components/dashboard/TopCompanies"
+import { SectionHeading } from "@/components/dashboard/SectionHeading"
+import { SalaryBands } from "@/components/dashboard/SalaryBands"
 import { RolePanel } from "@/components/dashboard/RolePanel"
 import { AppShell } from "@/components/AppShell"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -46,8 +50,9 @@ export default function Home() {
   const totalCategoryJobs = allStats?.job_count ?? 1
   const marketShare = ((jobCount / totalCategoryJobs) * 100).toFixed(1)
 
+  const country = getCountry(selectedCountry)
   const role = getRole(selectedCountry, selectedCategory)
-  const distribution = getCountry(selectedCountry).job_distribution
+  const distribution = country.job_distribution
   const expSlices = [
     { label: "Junior", count: role?.Junior?.job_count ?? 0, varName: "--chart-1" },
     { label: "Mid", count: role?.Mid?.job_count ?? 0, varName: "--chart-2" },
@@ -181,15 +186,26 @@ export default function Home() {
             {/* CHECK: Do we have data? */}
             {hasData ? (
               <>
+                <SectionHeading title="Skills & experience" scope="role × level" />
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                   <SkillChart data={stats?.top_hard_skills ?? []} />
                   <ContextTreemap data={stats?.top_technical_context ?? []} />
                 </div>
-                <SoftSkills data={stats?.top_soft_skills ?? []} />
                 <div className="grid gap-4 lg:grid-cols-2">
-                  <JobDistribution data={distribution} selectedRole={selectedCategory} />
+                  <SoftSkills data={stats?.top_soft_skills ?? []} />
                   <ExperienceSplit slices={expSlices} />
                 </div>
+                <SalaryBands estimate={stats?.salary_estimate} />
+
+                <SectionHeading title="Market overview" scope="country only" />
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <JobDistribution data={distribution} selectedRole={selectedCategory} />
+                  <JobsByState data={country.states} />
+                </div>
+                <TopCompanies
+                  companies={country.top_companies}
+                  placeholder={country.placeholder_companies}
+                />
               </>
             ) : (
               <div className="bg-card/50 border border-border rounded-xl p-12 text-center text-muted-foreground flex flex-col items-center">

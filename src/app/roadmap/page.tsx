@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
@@ -17,6 +17,28 @@ export default function RoadmapPage() {
 
   // 2. State for collected skills (We use a simple object: { "Backend": ["Git", "Java"], "AI": ["Python"] })
   const [userProgress, setUserProgress] = useState<Record<string, string[]>>({})
+  const [loaded, setLoaded] = useState(false)
+
+  // Load persisted progress once on mount (avoids an SSR/hydration mismatch).
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("udiff-roadmap-progress")
+      if (saved) setUserProgress(JSON.parse(saved))
+    } catch {
+      /* ignore malformed storage */
+    }
+    setLoaded(true)
+  }, [])
+
+  // Persist on change, but only after the initial load so we never clobber saved data.
+  useEffect(() => {
+    if (!loaded) return
+    try {
+      localStorage.setItem("udiff-roadmap-progress", JSON.stringify(userProgress))
+    } catch {
+      /* ignore quota errors */
+    }
+  }, [userProgress, loaded])
 
   // Load the data for the current view
   // @ts-ignore
@@ -67,9 +89,9 @@ export default function RoadmapPage() {
 
       {/* ROADMAP HEADER */}
       <div className="max-w-3xl mx-auto mb-12">
-        <h1 className="text-4xl font-bold text-foreground mb-4">
+        <h2 className="text-4xl font-bold text-foreground mb-4">
           {currentRoadmap.role} Roadmap
-        </h1>
+        </h2>
         <div className="flex items-center gap-4 mb-2">
           <Progress value={totalPercentage} className="h-4 bg-muted" />
           <span className="font-bold text-primary min-w-[4rem] tabular-nums">{totalPercentage}%</span>
