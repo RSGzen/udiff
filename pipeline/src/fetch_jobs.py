@@ -11,6 +11,8 @@ Requires JSEARCH_API_KEY (environment or pipeline/.env).
 
 import argparse
 import json
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -70,14 +72,44 @@ def to_row(query, job):
     }
 
 
-def fetch_query(query, cursor="", pages=None):
-    """Call the API once and return the parsed JSON body."""
+def fetch_query(query, cursor="", pages=None, attempts=4):
+    """Call the API once, retrying transient gateway/rate-limit errors."""
     request = urllib.request.Request(
         build_search_url(query, cursor, pages),
         headers={"x-api-key": config.JSEARCH_API_KEY},
     )
-    with urllib.request.urlopen(request, timeout=60) as response:
-        return json.loads(response.read())
+    last_error = None
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(request, timeout=60) as response:
+                return json.loads(response.read())
+        except urllib.error.HTTPError as error:
+            last_error = error
+            if error.code in (429, 500, 502, 503, 504):
+                time.sleep(2 * (attempt + 1))
+                continue
+            raise
+    raise last_error
+
+
+def fetch_query_pages(query, total_pages):
+    """Fetch up to total_pages for one query, chunked via the cursor."""
+    jobs = []
+    cursor = ""
+    fetched = 0
+    while fetched < total_pages:
+        chunk = min(config.JSEARCH_PAGES_PER_REQUEST, total_pages - fetched)
+        payload = fetch_query(query, cursor=cursor, pages=chunk)
+        data = payload.get("data") or {}
+        if not isinstance(data, dict):
+            jobs.extend(data)
+            break
+        jobs.extend(data.get("jobs") or [])
+        fetched += chunk
+        cursor = data.get("cursor")
+        if not cursor:
+            break
+    return jobs
 
 
 def fetch_all(queries=None, pages=None):
@@ -87,16 +119,12 @@ def fetch_all(queries=None, pages=None):
             "JSEARCH_API_KEY is not set. Add it to pipeline/.env or the environment."
         )
 
+    target = pages or config.JSEARCH_PAGES_PER_QUERY
     rows = []
     seen = set()
     for query in queries or config.SEARCH_QUERIES:
         print(f"Searching '{query}'...", end=" ", flush=True)
-        payload = fetch_query(query, pages=pages)
-        data = payload.get("data")
-
-        jobs = []
-
-        jobs = data.get("jobs") if isinstance(data, dict) else (data or [])
+        jobs = fetch_query_pages(query, target)
         new = 0
         for job in jobs:
             key = job.get("job_id") or job.get("job_apply_link")

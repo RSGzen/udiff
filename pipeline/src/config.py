@@ -69,7 +69,8 @@ MAX_DESCRIPTION_CHARS = 3500
 # consumes one API credit (~$0.005 on pay-per-use).
 JSEARCH_BASE_URL = "https://api.openwebninja.com/jsearch"
 JSEARCH_COUNTRY = "my"
-JSEARCH_PAGES_PER_QUERY = 20  # 20 pages x 10 jobs = up to 200 jobs per query
+JSEARCH_PAGES_PER_QUERY = 20  # target pages per query (20 x 10 = up to 200 jobs)
+JSEARCH_PAGES_PER_REQUEST = 5  # pages per HTTP call, to avoid gateway timeouts
 JSEARCH_DATE_POSTED = "all"  # all | today | 3days | week | month
 JSEARCH_API_KEY = load_env_key("JSEARCH_API_KEY")
 
