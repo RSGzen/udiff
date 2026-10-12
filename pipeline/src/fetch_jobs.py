@@ -22,12 +22,12 @@ SEARCH_ENDPOINT = f"{config.JSEARCH_BASE_URL}/search-v2"
 LINK_COLUMNS = ["search_term", "title", "company", "location", "salary", "link"]
 
 
-def build_search_url(query, cursor=""):
+def build_search_url(query, cursor="", pages=None):
     """Build the /search-v2 URL for one query batch (one page = one credit)."""
     params = {
         "query": query,
         "country": config.JSEARCH_COUNTRY,
-        "num_pages": config.JSEARCH_PAGES_PER_QUERY,
+        "num_pages": pages or config.JSEARCH_PAGES_PER_QUERY,
         "date_posted": config.JSEARCH_DATE_POSTED,
     }
     if cursor:
@@ -70,18 +70,18 @@ def to_row(query, job):
     }
 
 
-def fetch_query(query, cursor=""):
+def fetch_query(query, cursor="", pages=None):
     """Call the API once and return the parsed JSON body."""
     request = urllib.request.Request(
-        build_search_url(query, cursor),
+        build_search_url(query, cursor, pages),
         headers={"x-api-key": config.JSEARCH_API_KEY},
     )
     with urllib.request.urlopen(request, timeout=60) as response:
         return json.loads(response.read())
 
 
-def fetch_all():
-    """Run every configured query and return a de-duplicated DataFrame."""
+def fetch_all(queries=None, pages=None):
+    """Run the given queries and return a de-duplicated DataFrame."""
     if not config.JSEARCH_API_KEY:
         raise SystemExit(
             "JSEARCH_API_KEY is not set. Add it to pipeline/.env or the environment."
@@ -89,9 +89,9 @@ def fetch_all():
 
     rows = []
     seen = set()
-    for query in config.SEARCH_QUERIES:
+    for query in queries or config.SEARCH_QUERIES:
         print(f"Searching '{query}'...", end=" ", flush=True)
-        payload = fetch_query(query)
+        payload = fetch_query(query, pages=pages)
         data = payload.get("data")
 
         jobs = []
@@ -147,6 +147,8 @@ def self_test():
 def main():
     parser = argparse.ArgumentParser(description="Fetch jobs from JSearch into the pipeline.")
     parser.add_argument("--self-test", action="store_true", help="Offline mapping checks.")
+    parser.add_argument("--pages", type=int, help="Pages per query (default from config; 1-20).")
+    parser.add_argument("--only", help="Comma-separated subset of search queries to run.")
     args = parser.parse_args()
 
     config.ensure_utf8_stdout()
@@ -154,7 +156,8 @@ def main():
         self_test()
         return
 
-    df = fetch_all()
+    queries = args.only.split(",") if args.only else None
+    df = fetch_all(queries=queries, pages=args.pages)
     if df.empty:
         print("No jobs fetched.")
         return
