@@ -196,6 +196,10 @@
   - **Web schema break (resolved in M9.0, 13 Oct):** `gap_report.json`/`skill_class.json` are v3
     country-nested. `page.tsx` and `curriculum/page.tsx` now read `countries.<cc>` via
     `src/lib/data.ts` (M9.0).
+  - **Follow-up (13 Oct, later):** a data-quality pass normalised salary `period`
+    (`YEAR`→`MONTH`), applied skill aliasing, guarded the broad fallback, made
+    `comparisons` skip broad/non-month rows, and widened `observed_salaries` to all
+    currencies — see the work log.
 
 ### M6 — Web cleanup `Pending`
 - Remove the `as any` casts and unused default assets; ensure types are honest.
@@ -368,7 +372,8 @@
 **Open items / decisions:**
 - **VN:** dropped for now (no English postings); the comparison schema is ready if VN is
   added later via `language=vi` or no language filter.
-- **`observed_salaries`:** MY-only (`RM|MYR` regex); SG/ID strings (`S$`, `Rp`) not mined.
+- **`observed_salaries`:** was MY-only (`RM|MYR` regex) — **fixed later the same day**
+  (all currencies + `likely_annual`; see the data-audit entry below).
 - All modules: per-module `--self-test` + `ruff` clean; no test framework.
 
 **Did not do (next):** web rendering of the new schema — *(resolved in M9.0 below).*
@@ -440,6 +445,34 @@
 **Decisions:** dark-only (no `next-themes`); no map dependency; country switcher in the dashboard header.
 **Deferred:** posting recency (needs a pipeline aggregate); observed-salary scatter (MY-only).
 **Next:** M6 (lint hygiene) → M11 (Tier 2: landing, route moves, methodology, motion polish).
+
+### 13_10_2026 (data audit) — salary/skill irregularities fixed (assistant)
+**Did:**
+- Audited `gap_report.json` + `job_analysis_final.json` (read-only) and fixed 5 irregularities:
+  - **Salary period:** `/estimated-salary` returned `YEAR` for SG `AI & ML Mid` and
+    SG `Project & Sales Eng Mid`, which were being treated as monthly (~12× inflation).
+    `salary_estimate.normalize_period` now converts `YEAR`→`MONTH` and keeps `period_raw`.
+  - **Skill aliasing:** `analyzer.skill_key` / `skill_display` are now applied in
+    `top_items` / `distinct_skills`, so `React.js`/`ReactJS`/`React.JS` → `React` (and
+    `Golang`→`Go`, `NodeJS`→`Node.js`, …). Previously the alias table was dead code.
+  - **Broad-fallback guard:** the `All`-bucket fallback is suppressed when it would
+    invert seniority (**5** cases, e.g. SG Cybersecurity Senior).
+  - **Comparisons:** `salary_deltas` skips `broad_estimate` and non-`MONTH` rows, so the
+    bogus SG AI&ML Mid delta (**−176k MYR**) is gone.
+  - **Observed salaries:** regex widened to `RM|MYR|S$|SGD|Rp|IDR` and now emits
+    `{raw,value,currency,likely_annual}`; SG/ID are populated (were 0).
+- Re-ran `analyze → salary → compare → sync` (no GPU; ~150 salary API calls, ~4 min).
+- **Verification:** all 146 estimates are `MONTH`; no junior>senior inversions; no alias
+  duplicates; every structural check clean (`dist` sums, no missing `All`, skill % ≤ 100).
+
+**Known residual (source data, not a pipeline bug):** SG Cybersecurity Junior (5908, n=34) >
+Mid (4175, n=6) and ID Fullstack Mid ≈ Senior (11.0M vs 10.7M) — upstream
+`/estimated-salary` variance; the pipeline normalises period and suppresses inverting
+fallbacks but does not smooth real reported values.
+
+**Contract change for the web agent:** `observed_salaries` is now multi-country with
+`value`/`currency`/`likely_annual` (the deferred observed-salary scatter can be enabled);
+`salary_estimate` gained `period_raw` (its `period` is always `MONTH`).
 
 ---
 

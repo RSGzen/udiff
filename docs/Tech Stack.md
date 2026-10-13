@@ -73,14 +73,14 @@ The only interface is a set of JSON files. The pipeline emits them into `src/dat
         "states": { "<Region>": 0 },
         "top_companies": [{ "name": "", "count": 0, "kind": "company" }],
         "placeholder_companies": { "name": "Recruiters & confidential", "count": 0 },
-        "observed_salaries": [{ "raw": "", "category": "", "title": "" }],
+        "observed_salaries": [{ "raw": "", "value": 0, "currency": "", "likely_annual": false, "category": "", "title": "" }],
         "categories": {
           "<Role>": {
             "All": {
               "job_count": 0, "low_sample": false,
               "salary": { "avg_min": 0, "avg_max": 0 },
               "salary_estimate": {
-                "min": 0, "median": 0, "max": 0, "currency": "", "period": "",
+                "min": 0, "median": 0, "max": 0, "currency": "", "period": "MONTH", "period_raw": "MONTH",
                 "source": "", "confidence": "", "sample_size": 0, "fetched_at": "",
                 "nominal_myr": { "min": 0, "median": 0, "max": 0 },
                 "ppp_myr": { "min": 0, "median": 0, "max": 0 },
