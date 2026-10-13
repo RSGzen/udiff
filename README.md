@@ -1,110 +1,121 @@
-# UDiff: University Diff
+# UDiff — University Diff
 
-![Next.js](https://img.shields.io/badge/Next.js-16-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue) ![Tailwind](https://img.shields.io/badge/Tailwind-CSS-4-38bdf8) ![Python](https://img.shields.io/badge/Python-3.x-3776AB) ![License](https://img.shields.io/badge/License-MIT-green)
+**Measuring the gap between university curricula and the tech job market.**
 
-**Bridging the gap between Academic Curricula and Industry Reality.**
+UDiff fetches live job postings for **Malaysia, Singapore and Indonesia**, uses a local LLM to
+extract the skills employers actually ask for, and presents the result as an interactive web
+dashboard — the skills, salary bands and hiring spread behind each role, plus a curriculum checker
+that scores a syllabus against market demand.
 
-UDiff is an end-to-end project that fetches live job-market data for **Malaysia, Singapore and Indonesia**, uses an LLM to extract the skills employers demand, and visualises the "gap" between what universities teach and what companies actually hire for.
+Live site: **https://udiff-web.vercel.app**
 
-> ⚠️ **Status: working prototype, pending web polish.** The pipeline is complete
-> (data enrichment + SEA expansion, Oct 2026); the dashboard still needs to consume the
-> country-nested schema (milestone M6). See [`docs/Milestones and Logs.md`](docs/Milestones%20and%20Logs.md).
+## Features
 
-**Docs:** [`docs/UDiff.md`](docs/UDiff.md) (what it is) · [`docs/Tech Stack.md`](docs/Tech%20Stack.md) (how it's built) · [`docs/Milestones and Logs.md`](docs/Milestones%20and%20Logs.md) (plan + logs)
+- **Market dashboard** — in-demand hard skills, technical contexts, soft skills, experience split,
+  salary bands, hiring locations and top companies, per role and experience level, with a country
+  switcher (Malaysia / Singapore / Indonesia).
+- **Compare markets** — skill gaps and salary deltas, Malaysia vs Singapore and Indonesia.
+- **Career roadmaps** — phase-locked learning paths for 15+ roles, with progress saved in your browser.
+- **Curriculum checker** — paste a syllabus and see which in-demand skills it covers and which it misses.
+- **Observed salary mentions** — text-mined pay signals from ad copy, per market.
+- **Methodology and privacy** — how the data is produced, its limits, and what the site does and
+  does not collect.
 
-## 🔗 Live site
-[Have a look for yourself!](https://udiff-web.vercel.app/)
+## How it works
 
-## 🧭 How it works
+Two halves, decoupled by JSON: a Python **data pipeline** that writes the files, and a **Next.js web
+app** that reads them.
 
 ```mermaid
 flowchart LR
-    A[JSearch API] -->|fetch_jobs.py · MY/SG/ID| C[job_details_full.csv]
-    C -->|clean / dedupe / parse| D[Qwen3 8B via Ollama]
+    A[JSearch API] -->|fetch_jobs.py| C[job_details_full.csv]
+    C -->|clean / dedupe| D[Qwen3 8B via Ollama]
     D --> E[job_analysis_final.json]
     E -->|categorize + aggregate per country| F[gap_report.json]
-    F -->|estimated-salary + PPP| S[salary + comparisons]
-    F --> G[LLM curriculum generator]
-    G --> H[skill_class.json]
+    F -->|estimated-salary + PPP/FX| S[salary + comparisons]
+    F -->|LLM curriculum generator| H[skill_class.json]
     F --> W[Next.js dashboard]
     H --> W
     R[roadmaps.json] --> W
 ```
 
-- **Data side (`pipeline/`)** — Python. Fetches postings from the **JSearch API** (OpenWebNinja); pandas cleans/dedupes; a local **Qwen3 8B** (Ollama) extracts hard/soft skills, technical context, and experience level; pandas aggregates a per-country, per-role gap report; JSearch `/estimated-salary` adds attributed pay bands (nominal MYR + PPP-adjusted MYR).
-- **Web side (repo root)** — Next.js 16 / React 19 / TypeScript / Tailwind 4, with Recharts and shadcn/ui, deployed on Vercel.
+- **Pipeline (`pipeline/`)** — Python. Fetches postings from the **JSearch API** (OpenWebNinja),
+  cleans and de-duplicates them, extracts structured skills with a local **Qwen3 8B** model served by
+  **Ollama**, aggregates a per-country gap report, adds attributed salary bands (nominal MYR and
+  PPP-adjusted MYR), compares every market against Malaysia, and generates a skill-to-course dictionary.
+- **Web (repo root `src/`)** — Next.js 16 / React 19 / TypeScript / Tailwind CSS 4, using Recharts,
+  shadcn/ui and lucide-react, deployed on Vercel.
 
-## 🚀 Features
-
-### 1. Market Gap Dashboard
-- **Visualization:** interactive bar charts and treemaps (Recharts) of the most in-demand hard skills and technical contexts.
-- **Smart Filtering:** segment by role (Backend, AI, Security, …) and seniority (Junior, Mid, Senior).
-- **Focus Mode:** interactive "dim & focus" UX to highlight key data points.
-- **Multi-country:** Malaysia, Singapore, Indonesia, with cross-country skill-gap and salary comparisons.
-
-![Dashboard Screenshot](/public/screenshots/main_page1.png)
-
-### 2. Gamified Career Roadmaps
-- A "tech tree" style roadmap for 15+ career paths (foundation → core → advanced), with phase-locking and persisted local progress.
-
-![Roadmap Screenshot](/public/screenshots/career_path1.png)
-
-### 3. Curriculum Gap Analyzer (Beta)
-- Client-side keyword matcher that scans a syllabus against market demand using a pre-computed skill/curriculum dictionary (`skill_class.json`, per country).
-
-![Curriculum Screenshot](/public/screenshots/curriculum_check1.png)
-
-## 📦 Getting started
+## Getting started
 
 ### Web app
+
 ```bash
 npm install
-npm run dev        # http://localhost:3000
+npm run dev      # http://localhost:3000
+npm run build     # production build
+npm run lint      # eslint
 ```
 
 ### Data pipeline
-```bash
-# requires Python 3.x, Ollama running 'qwen3:8b', and JSEARCH_API_KEY in pipeline/.env
-pip install -r pipeline/requirements.txt
-python pipeline/src/pipeline.py                 # fetch -> extract -> analyze -> salary -> compare -> curriculum -> sync
-python pipeline/src/pipeline.py --skip fetch    # reuse existing data
-python pipeline/src/pipeline.py --list          # list the steps
-```
-> Paths/settings live in `pipeline/src/config.py`; each step streams to
-> `pipeline/pipeline_log.log`, and API/LLM calls also go to `pipeline/logs/{api,gpu}.log`.
-> `pipeline/data/ppp.json` / `fx.json` are hand-filled, dated reference tables.
 
-## 📂 Project structure
+Requires **Python 3.x**, a **JSearch API key**, and a **GPU running Ollama with `qwen3:8b`** (the
+local extraction model).
+
+```bash
+cp pipeline/.env.example pipeline/.env    # then set JSEARCH_API_KEY
+pip install -r pipeline/requirements.txt
+
+python pipeline/src/pipeline.py                       # full run
+python pipeline/src/pipeline.py --skip fetch          # reuse existing data
+python pipeline/src/pipeline.py --list                # list the steps
+```
+
+Steps: `fetch → extract → analyze → salary → compare → curriculum → sync`. Paths and settings live in
+`pipeline/src/config.py`. Each step streams to stdout (and `pipeline/pipeline_log.log`); API calls and
+LLM calls also go to `pipeline/logs/{api,gpu}.log`. `pipeline/data/ppp.json` and `fx.json` are dated,
+hand-filled reference tables.
+
+## Project structure
 
 ```
 .
-├── docs/                     # UDiff.md, Tech Stack.md, Milestones and Logs.md
 ├── pipeline/                 # Python data pipeline
 │   ├── src/                  # config, fetch_jobs, processor, analyzer, salary_estimate,
 │   │                         # comparisons, curriculum_generation, companies, locations,
-│   │                         # sync_web_data, pipeline (orchestrator)
-│   ├── data/
-│   │   ├── raw/ interim/ output/
-│   │   └── ppp.json fx.json  # dated static reference tables
+│   │                         # sync_web_data, pipeline (orchestrator) + dev utilities
+│   ├── data/                 # raw/  interim/  output/  + ppp.json, fx.json
 │   ├── logs/                 # api.log, gpu.log (gitignored)
-│   └── requirements.txt
-├── src/                      # Next.js app (app router, components, data, types)
-├── public/                   # static assets + screenshots
+│   ├── requirements.txt
+│   └── README.md
+├── src/                      # Next.js app
+│   ├── app/                  # routes: /, /dashboard, /compare, /curriculum,
+│   │                         #         /methodology, /privacy, /roadmap
+│   ├── components/           # AppShell + dashboard cards + ui primitives
+│   ├── data/                 # gap_report.json, skill_class.json, roadmaps.json
+│   ├── lib/data.ts           # single data gateway (reads the JSON)
+│   └── types/index.ts        # schema types
 └── README.md
 ```
 
-## 🛠️ Tech stack
+## Tech stack
 
-- **Data:** Python, pandas, stdlib `urllib` (JSearch API), Ollama (Qwen3 8B)
-- **Web:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, Recharts
+- **Data:** Python, pandas, `urllib` (JSearch API), Ollama (Qwen3 8B)
+- **Web:** Next.js 16, React 19, TypeScript, Tailwind CSS 4, shadcn/ui, Recharts, lucide-react
 - **Deploy:** Vercel
 
-## 🔮 Roadmap
+## Disclaimers
 
-See [`docs/Milestones and Logs.md`](docs/Milestones%20and%20Logs.md). Pipeline milestones
-(M0–M7) are done; next is **M6** (web cleanup + consume the country-nested schema) and the
-design revamp (M9–M11).
+- **Privacy:** UDiff has no accounts, cookies or analytics; the curriculum checker runs entirely in
+  your browser and roadmap progress is stored only in `localStorage`. See the
+  [Privacy page](https://udiff-web.vercel.app/privacy).
+- **Data source and attribution:** postings come from the **JSearch API** (Google for Jobs); salary
+  estimates are from **Glassdoor** (via JSearch). Figures are best-effort and not authoritative. UDiff
+  is not affiliated with LinkedIn, Indeed, Glassdoor or Google.
+- **Local pipeline requirements:** running the data pipeline requires a **JSearch API key** and a
+  **GPU** to serve the local model with Ollama (`qwen3:8b`).
+- **Point-in-time snapshot:** the dataset is a snapshot; there is no live refresh.
 
-## 📄 License
+## License
 
 MIT (see `LICENSE`).

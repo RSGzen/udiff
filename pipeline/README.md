@@ -1,7 +1,7 @@
 # UDiff data pipeline
 
 Fetches job postings for Malaysia, Singapore and Indonesia, and turns them into
-the two JSON files the web app reads. See `docs/UDiff.md` for the full picture.
+the two JSON files the web app reads (the shape is defined in `src/types/index.ts`).
 
 ## Layout
 
