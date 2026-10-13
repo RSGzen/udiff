@@ -43,7 +43,11 @@ def skill_gaps(my_pct, peer_pct):
 
 
 def salary_deltas(my_block, peer_block, view):
-    """Per role x level, the MY value vs the peer value for one currency view."""
+    """Per role x level, the MY value vs the peer value for one currency view.
+
+    Rows where either side is a broad (All-bucket) fallback or a non-monthly
+    period are skipped — they are not comparable and would skew the deltas.
+    """
     rows = []
     for role, levels in my_block["categories"].items():
         peer_levels = peer_block["categories"].get(role, {})
@@ -53,8 +57,13 @@ def salary_deltas(my_block, peer_block, view):
             peer_entry = peer_levels.get(level)
             if not isinstance(peer_entry, dict):
                 continue
-            mine = entry.get("salary_estimate", {}).get(view)
-            theirs = peer_entry.get("salary_estimate", {}).get(view)
+            my_est = entry.get("salary_estimate") or {}
+            peer_est = peer_entry.get("salary_estimate") or {}
+            if my_est.get("broad_estimate") or peer_est.get("broad_estimate"):
+                continue
+            if my_est.get("period") != "MONTH" or peer_est.get("period") != "MONTH":
+                continue
+            mine, theirs = my_est.get(view), peer_est.get(view)
             if mine and theirs:
                 rows.append({"role": role, "level": level,
                              "my": mine["median"], "peer": theirs["median"],
@@ -122,11 +131,16 @@ def self_test():
     assert java == {"skill": "Java", "my_pct": 50.0, "peer_pct": 0.0, "delta": 50.0}
     assert all(abs(gaps[i]["delta"]) >= abs(gaps[i + 1]["delta"]) for i in range(len(gaps) - 1))
 
-    def block(nom, ppp):
-        return {"categories": {"Backend": {"All": {"salary_estimate": {
-            "nominal_myr": {"median": nom}, "ppp_myr": {"median": ppp}}}}}}
+    def block(nom, ppp, period="MONTH", broad=False):
+        est = {"nominal_myr": {"median": nom}, "ppp_myr": {"median": ppp}, "period": period}
+        if broad:
+            est["broad_estimate"] = True
+        return {"categories": {"Backend": {"All": {"salary_estimate": est}}}}
     rows = salary_deltas(block(8000, 7000), block(20000, 11000), "ppp_myr")
     assert rows[0] == {"role": "Backend", "level": "All", "my": 7000, "peer": 11000, "delta": -4000}
+    # broad fallback and non-monthly rows are skipped
+    assert salary_deltas(block(8000, 7000, broad=True), block(20000, 11000), "ppp_myr") == []
+    assert salary_deltas(block(8000, 7000, period="YEAR"), block(20000, 11000), "ppp_myr") == []
     print("self-test OK")
 
 

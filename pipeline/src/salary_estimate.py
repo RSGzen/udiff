@@ -44,6 +44,9 @@ LEVEL_YEARS = {
     "Senior": "SEVEN_TO_NINE",
 }
 
+# Ordinal rank used to keep the broad (All) fallback from inverting seniority.
+LEVEL_RANK = {"Junior": 1, "Mid": 2, "Senior": 3}
+
 # Keep only estimates the publisher is reasonably sure about.
 MIN_CONFIDENCE = {"HIGH", "VERY_HIGH"}
 MIN_SAMPLE_SIZE = 3
@@ -61,12 +64,30 @@ def is_reliable(estimate):
     )
 
 
+def normalize_period(estimate):
+    """Convert year-based estimates to monthly so every level is comparable.
+
+    The /estimated-salary endpoint returns YEAR for some (title, level, country)
+    combos; treating those as monthly inflated them ~12x (e.g. SG AI&ML Mid).
+    """
+    if not estimate:
+        return estimate
+    period = (estimate.get("period") or "").upper()
+    estimate["period_raw"] = period or None
+    if period == "YEAR":
+        for key in MONEY_KEYS:
+            if estimate.get(key) is not None:
+                estimate[key] = round(estimate[key] / 12, 2)
+        estimate["period"] = "MONTH"
+    return estimate
+
+
 def parse_estimate(rows):
     """Turn the endpoint's list response into our salary_estimate dict."""
     if not rows:
         return None
     row = rows[0]
-    return {
+    estimate = {
         "min": row.get("min_salary"),
         "median": row.get("median_salary"),
         "max": row.get("max_salary"),
@@ -77,6 +98,7 @@ def parse_estimate(rows):
         "sample_size": row.get("salary_count"),
         "fetched_at": time.strftime("%Y-%m-%d"),
     }
+    return normalize_period(estimate)
 
 
 def load_table(path):
@@ -174,6 +196,7 @@ def main():
         for category, levels in block["categories"].items():
             title = CATEGORY_TITLES.get(category, category)
             all_estimate = None
+            level_medians = {}
             for level, entry in levels.items():
                 if not isinstance(entry, dict):   # skips 'unknown_level' etc.
                     continue
@@ -185,8 +208,20 @@ def main():
                     all_estimate = entry["salary_estimate"]
                 elif level != "All" and "salary_estimate" not in entry and all_estimate:
                     # P5: no level-specific sample -> show the All-market
-                    # estimate, clearly flagged as broader.
-                    entry["salary_estimate"] = {**all_estimate, "broad_estimate": True}
+                    # estimate, but only if it won't invert seniority order.
+                    rank = LEVEL_RANK.get(level, 0)
+                    lower = [m for lv, m in level_medians.items()
+                             if LEVEL_RANK.get(lv, 0) < rank]
+                    all_median = all_estimate.get("median")
+                    if all_median is not None and (not lower or all_median >= max(lower)):
+                        entry["salary_estimate"] = {**all_estimate, "broad_estimate": True}
+                    else:
+                        print(f"  {category} / {level}: broad fallback suppressed "
+                              f"(would invert order)")
+                se = entry.get("salary_estimate")
+                if isinstance(se, dict) and se.get("median") is not None \
+                        and not se.get("broad_estimate"):
+                    level_medians[level] = se["median"]
                 median = estimate and estimate.get("median")
                 conf = estimate and estimate.get("confidence")
                 print(f"  {category} / {level}: {median} "
@@ -227,6 +262,12 @@ def self_test():
     add_conversions(estimate, "sg", {"my": 1.8, "sg": 0.9}, {"my": 1.0, "sg": 0.30})
     assert estimate["nominal_myr"]["median"] == round(7000 / 0.30, 2)
     assert estimate["ppp_myr"]["median"] == round(7000 / 0.9 * 1.8, 2)
+    # YEAR is normalised to MONTH (kept period_raw for provenance)
+    year = parse_estimate([{**sample[0], "salary_period": "YEAR",
+                            "min_salary": 90000, "median_salary": 120000,
+                            "max_salary": 180000}])
+    assert year["period"] == "MONTH" and year["period_raw"] == "YEAR"
+    assert year["median"] == 10000.0 and year["min"] == 7500.0
     # missing tables -> no conversion keys
     bare = parse_estimate(sample)
     add_conversions(bare, "sg", {}, {})

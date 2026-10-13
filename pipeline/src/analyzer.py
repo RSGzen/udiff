@@ -29,38 +29,69 @@ SAMPLE_FLOOR = 3        # a block below this is flagged low_sample
 # P1: best-effort salary mined from the ad text (JSearch's salary is usually
 # null). Text-mined, not authoritative — clearly labelled for the web.
 # ponytail: naive first-match regex; fine for a best-effort signal.
-SALARY_TEXT_PATTERN = re.compile(r"(?:RM|MYR)\s?[\d,]{3,}", re.IGNORECASE)
+SALARY_PATTERN = re.compile(
+    r"(?:RM|MYR|S\$|SGD|Rp\.?|IDR)\s?[\d][\d.,]{2,}", re.IGNORECASE)
+# Token -> ISO currency. Longer tokens first so "MYR"/"SGD" win over "RM"/"S$".
+CURRENCY_TOKENS = (("MYR", "MYR"), ("RM", "MYR"), ("SGD", "SGD"),
+                   ("S$", "SGD"), ("IDR", "IDR"), ("RP", "IDR"))
+# Monthly ceiling per currency; above this, a mention is probably an annual figure.
+MONTHLY_CEILING = {"MYR": 30000, "SGD": 25000, "IDR": 80000000}
 
 
-def extract_salary_text(description):
-    """Return the first RM/MYR amount found in the ad text, or None."""
+def extract_salary_mention(description):
+    """Best-effort salary mention from ad text, or None.
+
+    Returns {raw, value, currency, likely_annual}. `value` strips thousands
+    separators (both "5,000" and Indonesian "10.000.000").
+    """
     if description is None:
         return None
-    match = SALARY_TEXT_PATTERN.search(str(description))
-    return match.group(0).strip() if match else None
+    match = SALARY_PATTERN.search(str(description))
+    if not match:
+        return None
+    raw = match.group(0).strip()
+    upper = raw.upper().replace(" ", "")
+    currency = next((code for token, code in CURRENCY_TOKENS if upper.startswith(token)), None)
+    digits = re.sub(r"\D", "", raw)
+    value = int(digits) if digits else None
+    likely_annual = bool(value and currency in MONTHLY_CEILING
+                         and value >= MONTHLY_CEILING[currency])
+    return {"raw": raw, "value": value, "currency": currency, "likely_annual": likely_annual}
 
 
+# Skill spelling variants -> master display name. Keys are lower-cased with
+# '-'/'_' turned into spaces (see _norm_key).
 SKILL_ALIASES = {
-    # Variations : Master Term
-    'c programming': 'C',
-    'react.js': 'React',
-    'reactjs': 'React',
-    'node.js': 'Node.js',
-    'amazon web services': 'AWS',
-    'golang': 'Go',
-    'c sharp': 'C#',
-    # Add more as you see them
+    "react.js": "React", "reactjs": "React", "react js": "React",
+    "node.js": "Node.js", "nodejs": "Node.js",
+    "amazon web services": "AWS", "amazon aws": "AWS",
+    "golang": "Go", "go lang": "Go",
+    "c programming": "C", "c sharp": "C#",
+    "vue.js": "Vue", "vuejs": "Vue",
+    "angular.js": "Angular", "angularjs": "Angular",
+    "next.js": "Next.js", "nextjs": "Next.js",
+    "postgres": "PostgreSQL",
 }
 
 
-def normalize_skill(skill_name):
-    s = skill_name.lower().strip()
-    for variant, master in SKILL_ALIASES.items():
-        if s == variant:
-            return master
+def _norm_key(name):
+    return re.sub(r"\s+", " ", str(name).strip().lower().replace("-", " ").replace("_", " "))
 
-    # Capitalize properly if not in alias list
-    return skill_name.title()
+
+def skill_key(name):
+    """Canonical grouping key for a skill/skill-like string.
+
+    Aliased spellings normalise to the master's key too, so the plain spelling
+    ("React") and its variants ("React.js") share one bucket.
+    """
+    key = _norm_key(name)
+    return _norm_key(SKILL_ALIASES.get(key, key))
+
+
+def skill_display(name):
+    """Human-readable name: alias master if known, else the trimmed original."""
+    key = _norm_key(name)
+    return SKILL_ALIASES.get(key, str(name).strip())
 
 
 def categorize_role(title):
@@ -137,16 +168,30 @@ def categorize_role(title):
 
 
 def top_items(dataframe, column, n=10):
-    """Return [{name,count,percentage}] for a list-valued column."""
+    """Return [{name,count,percentage}] for a list-valued column, skill-normalised.
+
+    Variants that map to the same canonical key are merged (e.g. React.js /
+    ReactJS / React.JS -> React); the first spelling seen supplies the display.
+    """
     if column not in dataframe.columns:
         return []
-    exploded = dataframe[column].explode().dropna()
-    exploded = exploded[exploded.astype(str).str.strip() != ""]
-    counts = exploded.value_counts().head(n)
     total = max(len(dataframe), 1)
+    counts = {}
+    displays = {}
+    for value in dataframe[column].dropna():
+        if not isinstance(value, list):
+            continue
+        for item in value:
+            text = str(item).strip()
+            if not text:
+                continue
+            key = skill_key(text)
+            counts[key] = counts.get(key, 0) + 1
+            displays.setdefault(key, skill_display(text))
+    top = sorted(counts.items(), key=lambda kv: (-kv[1], displays[kv[0]]))[:n]
     return [
-        {"name": k, "count": int(v), "percentage": round((v / total) * 100, 1)}
-        for k, v in counts.items()
+        {"name": displays[k], "count": c, "percentage": round((c / total) * 100, 1)}
+        for k, c in top
     ]
 
 
@@ -158,12 +203,12 @@ def distinct_skills(dataframe):
             continue
         for value in dataframe[column].dropna():
             if isinstance(value, list):
-                seen.update(str(item).strip() for item in value if str(item).strip())
+                seen.update(skill_key(item) for item in value if str(item).strip())
     return len(seen)
 
 
 def load_raw_lookup():
-    """Map clean link -> {salary_text, posted_at, country} from the raw CSV."""
+    """Map clean link -> {salary_mention, posted_at} from the raw CSV."""
     if not config.JOB_DETAILS_CSV.is_file():
         return {}
     raw = pd.read_csv(config.JOB_DETAILS_CSV)
@@ -173,7 +218,7 @@ def load_raw_lookup():
     lookup = {}
     for _, row in raw.iterrows():
         lookup[row["clean_link"]] = {
-            "salary_text": extract_salary_text(row.get("description")),
+            "salary_mention": extract_salary_mention(row.get("description")),
             "posted_at": row.get("posted_at") if "posted_at" in raw.columns else None,
         }
     return lookup
@@ -208,9 +253,13 @@ def build_country_block(code, name, df, raw_lookup):
     if 'original_link' in df.columns:
         for _, row in df.iterrows():
             entry = raw_lookup.get(str(row['original_link']).split('?')[0])
-            if entry and entry.get("salary_text"):
+            mention = entry and entry.get("salary_mention")
+            if mention:
                 block["observed_salaries"].append({
-                    "raw": entry["salary_text"],
+                    "raw": mention["raw"],
+                    "value": mention["value"],
+                    "currency": mention["currency"],
+                    "likely_annual": mention["likely_annual"],
                     "category": row['category'],
                     "title": row.get('job_title', ''),
                 })
@@ -300,11 +349,19 @@ def analyze_market():
 
 
 def self_test():
-    assert extract_salary_text("Pay RM 5,000 - RM 7,000") == "RM 5,000"
-    assert extract_salary_text("No pay") is None
+    assert extract_salary_mention("Pay RM 5,000 - RM 7,000")["value"] == 5000
+    assert extract_salary_mention("Pay RM 5,000")["currency"] == "MYR"
+    assert extract_salary_mention("Salary S$8,000")["currency"] == "SGD"
+    assert extract_salary_mention("Gaji Rp 10.000.000")["currency"] == "IDR"
+    assert extract_salary_mention("MYR 120000")["likely_annual"] is True
+    assert extract_salary_mention("RM 4,000")["likely_annual"] is False
+    assert extract_salary_mention("No pay") is None
     assert categorize_role("Senior Backend Engineer") == "Backend"
     assert categorize_role("Data Scientist") == "AI & Machine Learning"
-    assert normalize_skill("react.js") == "React"
+    # skill normalisation: variants collapse to one key/display
+    assert skill_key("React.js") == skill_key("ReactJS") == skill_key("React.JS")
+    assert skill_display("reactjs") == "React"
+    assert skill_key("Problem-solving") == skill_key("Problem Solving")
     assert top_items(pd.DataFrame({"hard_skills": [["a", "b"], ["a"]]}), "hard_skills")[0] == {
         "name": "a", "count": 2, "percentage": 100.0}
     assert distinct_skills(pd.DataFrame({
