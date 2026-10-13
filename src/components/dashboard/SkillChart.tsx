@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell, TooltipProps } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartTooltip } from "@/components/dashboard/ChartTooltip"
 
@@ -14,28 +14,25 @@ interface SkillChartProps {
   data: Skill[]
 }
 
+interface BarTooltipProps {
+  active?: boolean
+  label?: string
+  payload?: { value: number; payload: Skill }[]
+  activeIndex: number | null
+  chartData: Skill[]
+}
+
+function ChartBarTooltip({ active, label, payload, activeIndex, chartData }: BarTooltipProps) {
+  if (!active || !payload || !payload.length || activeIndex === null) return null
+  if (payload[0].payload.name !== chartData[activeIndex]?.name) return null
+  return <ChartTooltip label={label} value={`${payload[0].value}%`} />
+}
+
 export function SkillChart({ data }: SkillChartProps) {
   const chartData = [...data].sort((a, b) => b.percentage - a.percentage).slice(0, 10)
-  
-  // State is now the "Master Switch" for the Tooltip
+
+  // The hovered bar index drives the dim/highlight; reset when the pointer leaves the chart.
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
-
-  // 1. MOVED INSIDE: Custom Tooltip now has access to 'activeIndex'
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    // The Logic: 
-    // active = Recharts thinks mouse is in the row (True even in white space)
-    // activeIndex !== null = Mouse is actually hitting the coloured Bar (Our custom tracker)
-    if (active && payload && payload.length && activeIndex !== null) {
-      
-      // Optional: Check if the row being hovered matches the active bar
-      // (Prevents edge case flickering)
-      const isMatchingRow = payload[0].payload.name === chartData[activeIndex]?.name
-      if (!isMatchingRow) return null;
-
-      return <ChartTooltip label={label} value={`${payload[0].value}%`} />
-    }
-    return null
-  }
 
   return (
     <Card className="col-span-4 bg-card border-border">
@@ -45,36 +42,36 @@ export function SkillChart({ data }: SkillChartProps) {
       <CardContent className="pl-2">
         <div className="h-[350px] w-full" onMouseLeave={() => setActiveIndex(null)}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart 
-              data={chartData} 
-              layout="vertical" 
+            <BarChart
+              data={chartData}
+              layout="vertical"
               margin={{ left: 0, right: 30 }}
             >
-              <YAxis 
-                dataKey="name" 
-                type="category" 
-                width={150} 
-                tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }} 
+              <YAxis
+                dataKey="name"
+                type="category"
+                width={150}
+                tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }}
                 tickFormatter={(value: string) => value.length > 20 ? `${value.slice(0, 19)}…` : value}
                 axisLine={false}
                 tickLine={false}
               />
               <XAxis type="number" hide />
-              
-              <Tooltip 
-                content={<CustomTooltip />}
-                cursor={{ fill: 'transparent' }} // Invisible cursor background
+
+              <Tooltip
+                content={<ChartBarTooltip activeIndex={activeIndex} chartData={chartData} />}
+                cursor={{ fill: 'transparent' }}
               />
-              
-              <Bar 
-                dataKey="percentage" 
+
+              <Bar
+                dataKey="percentage"
                 radius={[0, 4, 4, 0]}
                 onMouseEnter={(_, index) => setActiveIndex(index)}
               >
                 {chartData.map((entry, index) => {
                   const isHovered = activeIndex === index
                   const isAnythingHovered = activeIndex !== null
-                  
+
                   const finalColor = 'var(--chart-1)'
                   let finalOpacity = index < 3 ? 1 : 0.35
 
@@ -85,8 +82,8 @@ export function SkillChart({ data }: SkillChartProps) {
                   }
 
                   return (
-                    <Cell 
-                      key={`cell-${index}`} 
+                    <Cell
+                      key={`cell-${index}`}
                       fill={finalColor}
                       fillOpacity={finalOpacity}
                       stroke="none"

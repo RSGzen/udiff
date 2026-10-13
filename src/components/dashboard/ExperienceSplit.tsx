@@ -10,9 +10,14 @@ export interface ExperienceSlice {
   varName: string
 }
 
-function SliceTooltip({ active, payload }: any) {
+interface SliceTooltipProps {
+  active?: boolean
+  payload?: { payload: ExperienceSlice }[]
+}
+
+function SliceTooltip({ active, payload }: SliceTooltipProps) {
   if (!active || !payload || !payload.length) return null
-  const p = payload[0].payload as ExperienceSlice
+  const p = payload[0].payload
   return <ChartTooltip label={p.label} value={p.count} />
 }
 

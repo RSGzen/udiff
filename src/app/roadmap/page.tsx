@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useMemo, useState, useSyncExternalStore } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
@@ -11,57 +11,76 @@ import { AppShell } from "@/components/AppShell"
 // Import the MASTER data
 import allRoadmaps from "@/data/roadmaps.json"
 
+interface RoadmapPhase {
+  id: string
+  title: string
+  description: string
+  skills: string[]
+}
+
+interface Roadmap {
+  role: string
+  phases: RoadmapPhase[]
+}
+
+const roadmaps = allRoadmaps as unknown as Record<string, Roadmap>
+
+// Progress is kept in localStorage and read through an external store so the
+// component never calls setState inside an effect.
+const PROGRESS_KEY = "udiff-roadmap-progress"
+const PROGRESS_EVENT = "udiff-roadmap-progress-change"
+
+function subscribeProgress(callback: () => void) {
+  window.addEventListener("storage", callback)
+  window.addEventListener(PROGRESS_EVENT, callback)
+  return () => {
+    window.removeEventListener("storage", callback)
+    window.removeEventListener(PROGRESS_EVENT, callback)
+  }
+}
+
+function getProgressSnapshot() {
+  return localStorage.getItem(PROGRESS_KEY) ?? ""
+}
+
+function getProgressServerSnapshot() {
+  return ""
+}
+
+function writeProgress(value: Record<string, string[]>) {
+  localStorage.setItem(PROGRESS_KEY, JSON.stringify(value))
+  window.dispatchEvent(new Event(PROGRESS_EVENT))
+}
+
 export default function RoadmapPage() {
   // 1. State for selected Role (Default to Backend)
   const [selectedRoleKey, setSelectedRoleKey] = useState("Backend")
 
-  // 2. State for collected skills (We use a simple object: { "Backend": ["Git", "Java"], "AI": ["Python"] })
-  const [userProgress, setUserProgress] = useState<Record<string, string[]>>({})
-  const [loaded, setLoaded] = useState(false)
-
-  // Load persisted progress once on mount (avoids an SSR/hydration mismatch).
-  useEffect(() => {
+  // 2. Persisted progress: { "Backend": ["Git", "Java"], "AI": ["Python"] }
+  const rawProgress = useSyncExternalStore(subscribeProgress, getProgressSnapshot, getProgressServerSnapshot)
+  const userProgress = useMemo<Record<string, string[]>>(() => {
     try {
-      const saved = localStorage.getItem("udiff-roadmap-progress")
-      if (saved) setUserProgress(JSON.parse(saved))
+      return rawProgress ? JSON.parse(rawProgress) : {}
     } catch {
-      /* ignore malformed storage */
+      return {}
     }
-    setLoaded(true)
-  }, [])
+  }, [rawProgress])
 
-  // Persist on change, but only after the initial load so we never clobber saved data.
-  useEffect(() => {
-    if (!loaded) return
-    try {
-      localStorage.setItem("udiff-roadmap-progress", JSON.stringify(userProgress))
-    } catch {
-      /* ignore quota errors */
-    }
-  }, [userProgress, loaded])
-
-  // Load the data for the current view
-  // @ts-ignore
-  const currentRoadmap = allRoadmaps[selectedRoleKey] || allRoadmaps["Backend"]
-  const currentCollected = new Set(userProgress[selectedRoleKey] || [])
+  const currentRoadmap = roadmaps[selectedRoleKey] ?? roadmaps["Backend"]
+  const currentCollected = new Set(userProgress[selectedRoleKey] ?? [])
 
   const toggleSkill = (skillName: string) => {
-    const newSet = new Set(currentCollected)
-    if (newSet.has(skillName)) {
-      newSet.delete(skillName)
+    const next = new Set(currentCollected)
+    if (next.has(skillName)) {
+      next.delete(skillName)
     } else {
-      newSet.add(skillName)
+      next.add(skillName)
     }
-
-    // Save back to main state
-    setUserProgress({
-      ...userProgress,
-      [selectedRoleKey]: Array.from(newSet)
-    })
+    writeProgress({ ...userProgress, [selectedRoleKey]: Array.from(next) })
   }
 
   // Calculate Metrics
-  const totalSkills = currentRoadmap.phases.reduce((acc: any, phase: any) => acc + phase.skills.length, 0)
+  const totalSkills = currentRoadmap.phases.reduce((acc, phase) => acc + phase.skills.length, 0)
   const totalCollected = currentCollected.size
   const totalPercentage = Math.round((totalCollected / totalSkills) * 100)
 
@@ -79,7 +98,7 @@ export default function RoadmapPage() {
                     <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border text-popover-foreground">
-                    {Object.keys(allRoadmaps).map((key) => (
+                    {Object.keys(roadmaps).map((key) => (
                         <SelectItem key={key} value={key}>{key}</SelectItem>
                     ))}
                 </SelectContent>
@@ -105,16 +124,16 @@ export default function RoadmapPage() {
       <div className="max-w-3xl mx-auto space-y-8 relative pb-20">
         <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-border -z-10"></div>
 
-        {currentRoadmap.phases.map((phase: any, index: number) => {
-          const phaseCollectedCount = phase.skills.filter((s: string) => currentCollected.has(s)).length
+        {currentRoadmap.phases.map((phase, index) => {
+          const phaseCollectedCount = phase.skills.filter((s) => currentCollected.has(s)).length
           const isPhaseComplete = phaseCollectedCount === phase.skills.length
 
           // Unlock Logic: Previous phase must be > 50% done
           const previousPhase = index > 0 ? currentRoadmap.phases[index - 1] : null
           const prevCollected = previousPhase
-            ? previousPhase.skills.filter((s: string) => currentCollected.has(s)).length
+            ? previousPhase.skills.filter((s) => currentCollected.has(s)).length
             : 0
-          const isLocked = index > 0 && (prevCollected / previousPhase.skills.length) < 0.5
+          const isLocked = !!previousPhase && (prevCollected / previousPhase.skills.length) < 0.5
 
           return (
             <Card key={phase.id} className={`bg-card/80 border-border relative transition-[opacity,filter] duration-300 ease-out ${isLocked ? 'opacity-50 grayscale' : ''}`}>
@@ -141,7 +160,7 @@ export default function RoadmapPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {phase.skills.map((skill: string) => (
+                  {phase.skills.map((skill) => (
                     <div
                       key={skill}
                       className={`flex items-center space-x-3 p-3 rounded-lg border border-border/50 transition-colors duration-200 ${

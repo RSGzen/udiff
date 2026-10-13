@@ -15,12 +15,26 @@ interface ContextTreemapProps {
   data: ContextItem[]
 }
 
+interface TreemapContentProps {
+  x?: number
+  y?: number
+  width?: number
+  height?: number
+  name?: string
+  percentage?: number
+  index?: number
+  depth?: number
+  activeIndex: number | null
+  setActiveIndex: (index: number | null) => void
+}
+
 // 1. Custom Content Renderer
-// We pass activeIndex and setActiveIndex down to each block
-const CustomContent = (props: any) => {
-  const { 
-    x, y, width, height, name, percentage, index, depth, // Recharts injected props
-    activeIndex, setActiveIndex // Our custom props
+// Recharts injects the node geometry + data; we add activeIndex/setActiveIndex.
+const CustomContent = (props: TreemapContentProps) => {
+  const {
+    x = 0, y = 0, width = 0, height = 0,
+    name = "", percentage = 0, index = 0, depth,
+    activeIndex, setActiveIndex,
   } = props
 
   // Recharts renders the root node (depth 0) through this content too. It has no
