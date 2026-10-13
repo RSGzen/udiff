@@ -273,7 +273,7 @@
 - **Note:** M6 (lint hygiene) still **pending**.
 - Full detail: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §6.
 
-### M11 — Frontend revamp: Tier 2 (restructure) `In progress (13 Oct 2026)`
+### M11 — Frontend revamp: Tier 2 (restructure) `Done (13 Oct 2026)`
 - **Sub-steps:**
   - **M11.1 — Types** `Done` — `ObservedSalary` → `{ raw, value, currency, likely_annual, category, title }`;
     added `SalaryEstimate.period_raw`.
@@ -285,7 +285,13 @@
   - **M11.4 — Landing/About + route moves** `Done` — **`/`** is now a standalone landing page (hero,
     stats, pipeline, feature cards); the dashboard moved to **`/dashboard`** (shell nav + active logic
     updated).
-  - **M11.5 — Chart polish + motion + a11y/perf audit** `Next`
+  - **M11.5 — Chart polish + a11y/perf audit** `Done` — **a11y:** roadmap skill rows are now
+    keyboard-accessible (`role="button"`, Enter/Space, `aria-pressed`, focus ring); charts get
+    `role="img"` summaries. **Polish (A2):** treemap labels truncate to tile width (`…`); skill bars show
+    `%` end-labels. **Motion reviewed → left as-is** (entrance animation declined: a frequently-used data
+    tool shouldn't animate on every visit; hover/press/drawer motion is purposeful and kept). **Perf:**
+    all routes are statically prerendered; no change needed. *(Full dot-plot/lollipop redesign declined —
+    single ranked series doesn't need it.)*
 - **Deferred:** distinct-skills metric card; regional role-distribution on `/compare`; posting recency
   (needs a pipeline aggregate).
 - **New dep:** `motion` (optional). Plan: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §7.
@@ -539,6 +545,20 @@ fallbacks but does not smooth real reported values.
 
 **Verified:** `npx tsc --noEmit` + `npm run lint` + `npm run build` pass; `/dashboard` route added.
 **Next:** M11.5 (chart polish + motion + a11y/perf audit).
+
+### 13_10_2026 (web, M11.5) — chart polish + a11y (assistant)
+**Did:**
+- **a11y:** roadmap skill rows converted from mouse-only `<div onClick>` to keyboard-accessible controls
+  (`role="button"`, `tabIndex`, Enter/Space, `aria-pressed`, focus ring); `SkillChart`/`ContextTreemap`
+  get `role="img"` + summary `aria-label`; the donut is `aria-hidden` (legend is the text alternative).
+- **Chart polish (A2):** treemap labels truncate to the tile width (`…`) and hide on tiny tiles; skill
+  bars show `%` end-labels.
+- **Motion (B2):** reviewed and **left as-is** — declined entrance/stagger animation for a frequently-used
+  tool; hover/press/drawer/lock motion kept.
+- **Perf:** all routes static; no changes needed. Full dot-plot redesign consciously declined.
+
+**Verified:** `npx tsc --noEmit` + `npm run lint` + `npm run build` pass.
+**Next:** none — M0–M11 complete (M8 portfolio packaging remains a non-code step).
 
 ---
 

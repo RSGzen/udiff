@@ -33,7 +33,7 @@ export function ExperienceSplit({ slices }: { slices: ExperienceSlice[] }) {
       <CardContent className="flex flex-col items-center justify-center gap-6">
         {total > 0 ? (
           <>
-            <div className="relative aspect-square w-full max-w-[200px]">
+            <div className="relative aspect-square w-full max-w-[200px]" aria-hidden="true">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie

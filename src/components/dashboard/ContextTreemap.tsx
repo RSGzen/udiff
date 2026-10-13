@@ -60,11 +60,11 @@ const CustomContent = (props: TreemapContentProps) => {
     opacity = 0.2
   }
 
-  // C. Text Collision Logic
-  // Estimate text width: ~8px per character. 
-  // If the box width is smaller than text width + 10px padding, hide it.
-  const estimatedTextWidth = name.length * 8
-  const shouldShowText = width > (estimatedTextWidth + 10) && height > 35
+  // C. Text Collision Logic — truncate the label to the tile width; hide when too small.
+  const CHAR_W = 7
+  const maxChars = Math.floor((width - 12) / CHAR_W)
+  const label = name.length > maxChars ? `${name.slice(0, Math.max(0, maxChars - 1))}…` : name
+  const shouldShowText = maxChars >= 4 && height > 32
 
   return (
     <g
@@ -100,7 +100,7 @@ const CustomContent = (props: TreemapContentProps) => {
             dy={-6}
             style={{ pointerEvents: 'none' }} // Let mouse pass through to the rect
           >
-            {name}
+            {label}
           </text>
           <text
             x={x + width / 2}
@@ -137,7 +137,11 @@ export function ContextTreemap({ data }: ContextTreemapProps) {
         <CardTitle className="text-foreground">Technical Context</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[350px] w-full">
+        <div
+          className="h-[350px] w-full"
+          role="img"
+          aria-label={`Technical context: ${treeData.slice(0, 3).map((d) => `${d.name} ${d.percentage}%`).join(", ")}`}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <Treemap
               data={treeData}

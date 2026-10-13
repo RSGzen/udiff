@@ -163,14 +163,27 @@ export default function RoadmapPage() {
                   {phase.skills.map((skill) => (
                     <div
                       key={skill}
-                      className={`flex items-center space-x-3 p-3 rounded-lg border border-border/50 transition-colors duration-200 ${
+                      role="button"
+                      tabIndex={isLocked ? -1 : 0}
+                      aria-pressed={currentCollected.has(skill)}
+                      aria-disabled={isLocked || undefined}
+                      className={`flex items-center space-x-3 p-3 rounded-lg border border-border/50 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 ${
                         currentCollected.has(skill) ? 'bg-primary/10 text-primary border-primary/30' : 'bg-background/50 text-muted-foreground'
                       } ${isLocked ? 'pointer-events-none' : 'cursor-pointer hover:bg-muted'}`}
                       onClick={() => !isLocked && toggleSkill(skill)}
+                      onKeyDown={(e) => {
+                        if (isLocked) return
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault()
+                          toggleSkill(skill)
+                        }
+                      }}
                     >
                       <Checkbox
                         id={skill}
                         checked={currentCollected.has(skill)}
+                        tabIndex={-1}
+                        aria-hidden="true"
                         className="pointer-events-none data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                       />
                       <label htmlFor={skill} className="text-sm font-medium leading-none pointer-events-none select-none">

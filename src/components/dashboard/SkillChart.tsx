@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell, LabelList } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartTooltip } from "@/components/dashboard/ChartTooltip"
 
@@ -40,12 +40,17 @@ export function SkillChart({ data }: SkillChartProps) {
         <CardTitle className="text-foreground">Top Required Technologies</CardTitle>
       </CardHeader>
       <CardContent className="pl-2">
-        <div className="h-[350px] w-full" onMouseLeave={() => setActiveIndex(null)}>
+        <div
+          className="h-[350px] w-full"
+          role="img"
+          aria-label={`Top required technologies: ${chartData.slice(0, 3).map((s) => `${s.name} ${s.percentage}%`).join(", ")}`}
+          onMouseLeave={() => setActiveIndex(null)}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
               layout="vertical"
-              margin={{ left: 0, right: 30 }}
+              margin={{ left: 0, right: 44 }}
             >
               <YAxis
                 dataKey="name"
@@ -68,6 +73,13 @@ export function SkillChart({ data }: SkillChartProps) {
                 radius={[0, 4, 4, 0]}
                 onMouseEnter={(_, index) => setActiveIndex(index)}
               >
+                <LabelList
+                  dataKey="percentage"
+                  position="right"
+                  fill="var(--muted-foreground)"
+                  fontSize={11}
+                  formatter={(value) => `${value}%`}
+                />
                 {chartData.map((entry, index) => {
                   const isHovered = activeIndex === index
                   const isAnythingHovered = activeIndex !== null

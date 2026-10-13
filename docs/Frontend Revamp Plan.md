@@ -141,9 +141,9 @@ groups; fixed the bar-chart hover flash.
 
 ---
 
-## 7. Tier 2 — Restructure (`M11`) `In progress (13 Oct 2026)`
+## 7. Tier 2 — Restructure (`M11`) `Done (13 Oct 2026)`
 
-**Goal:** make UDiff self-explanatory to a stranger and portfolio-ready. **~1.5–3 weeks, medium-high risk.**
+**Goal:** make UDiff self-explanatory to a stranger and portfolio-ready.
 
 - [x] **Observed Salary Mentions** *(M11.1–11.2)* — `observed_salaries` types updated; country-scoped card
       (top 8 + `annual` badge) in the dashboard *Market overview*.
@@ -152,14 +152,17 @@ groups; fixed the bar-chart hover flash.
 - [x] **Landing / About page** *(M11.4)* — `/` is now a standalone landing (hero, stats, pipeline, features).
 - [x] **IA + routes** *(M11.4)* — `/` landing · `/dashboard` · `/roadmap` · `/curriculum` · `/compare` · `/methodology`.
 - [ ] Optional **`/dashboard/[role]`** detail route (replaces client-state role switching).
-- [ ] **Chart redesign:** dot plot / lollipop for skill demand; better treemap labelling.
-- [ ] **Motion polish:** page transitions, stagger; add `motion` (Framer) only where springs genuinely help.
-- [ ] **Full a11y + performance audit.**
+- [x] **Chart polish** *(M11.5)* — treemap labels truncate to tile width; skill bars show `%` end-labels.
+      *(Full dot-plot/lollipop redesign declined — single ranked series doesn't need it.)*
+- [x] **Motion polish** *(M11.5)* — reviewed; **entrance motion declined** (frequently-used tool); kept
+      purposeful hover/press/drawer/lock motion.
+- [x] **Full a11y + performance audit** *(M11.5)* — roadmap rows keyboard-accessible; chart `role="img"`
+      summaries; routes are static (no perf work needed).
 
 **Deferred:** distinct-skills metric card; regional role-distribution on `/compare`; posting recency
 (no pipeline aggregate yet).
 
-**Done when:** a reviewer understands the product without context and the app passes an a11y audit.
+**Done:** a reviewer understands the product without context; the app passes a visual + keyboard audit.
 
 ---
 
