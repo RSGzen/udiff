@@ -21,6 +21,16 @@ Live site: **https://udiff-web.vercel.app**
 - **Methodology and privacy** — how the data is produced, its limits, and what the site does and
   does not collect.
 
+## Screenshots
+
+| Landing page | Market dashboard |
+| :---: | :---: |
+| ![UDiff landing page](public/screenshots/landing.png) | ![UDiff market dashboard](public/screenshots/dashboard.png) |
+
+| Compare markets | Curriculum checker |
+| :---: | :---: |
+| ![UDiff compare markets](public/screenshots/compare.png) | ![UDiff curriculum checker](public/screenshots/curriculum.png) |
+
 ## How it works
 
 Two halves, decoupled by JSON: a Python **data pipeline** that writes the files, and a **Next.js web
