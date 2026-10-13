@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/AppShell"
+import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { generatedAt, getCountries, getCountry, getCountryName } from "@/lib/data"
@@ -186,6 +187,13 @@ export default function MethodologyPage() {
               </div>
             </Section>
           </div>
+          <p className="mt-10 border-t border-border pt-6 text-xs text-muted-foreground/70">
+            See also:{" "}
+            <Link href="/privacy" className="text-primary hover:underline">
+              Privacy
+            </Link>
+            .
+          </p>
         </div>
       </main>
     </AppShell>

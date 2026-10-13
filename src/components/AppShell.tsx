@@ -81,7 +81,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <NavList collapsed={collapsed} />
 
-        <div className="p-2 border-t border-border shrink-0">
+        <div className="p-2 border-t border-border shrink-0 space-y-1">
+          {!collapsed && (
+            <Link
+              href="/privacy"
+              className="block px-2 py-1 text-xs text-muted-foreground/70 hover:text-foreground"
+            >
+              Privacy
+            </Link>
+          )}
           <Button
             variant="ghost"
             className="w-full justify-center text-muted-foreground hover:text-foreground"
