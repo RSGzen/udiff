@@ -7,6 +7,7 @@ import time
 import ollama
 
 import config
+import dictionary_utils
 
 config.ensure_utf8_stdout()
 
@@ -68,7 +69,7 @@ def parse_names(content, num_names):
         if values and isinstance(values[0], list):
             data = values[0]
     if isinstance(data, list):
-        return [str(item) for item in data if str(item).strip()][:num_names]
+        return dictionary_utils.clean_course_names(data)[:num_names]
     return []
 
 

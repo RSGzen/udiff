@@ -117,18 +117,7 @@
                         "Release Management and Automation"
                     ],
                     "C++": [
-                        "C++ Fundamentals and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "C++ Fundamentals and Applications"
                     ],
                     "PHP": [
                         "Principles of PHP Programming",
@@ -259,32 +248,10 @@
                         "Principles of Device Driver Development"
                     ],
                     "Zephyr": [
-                        "Zephyr Principles of Aerodynamics and Atmospheric Dynamics",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Zephyr Principles of Aerodynamics and Atmospheric Dynamics"
                     ],
                     "System-level architecture": [
-                        "System-level Architecture Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "System-level Architecture Principles"
                     ],
                     "Debugging": [
                         "Fundamentals of Debugging",
@@ -315,18 +282,7 @@
                         "IPMI Best Practices"
                     ],
                     "Redfish": [
-                        "Redfish Fundamentals and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Redfish Fundamentals and Applications"
                     ],
                     "Embedded software": [
                         "Embedded Software Fundamentals",
@@ -399,18 +355,7 @@
                         "Data Analysis and Cloud Computing"
                     ],
                     "CI/CD Pipelines": [
-                        "CI/CD Pipeline Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "CI/CD Pipeline Fundamentals"
                     ],
                     "Multi-Vendor Environments": [
                         "Multi-Vendor System Integration",
@@ -569,18 +514,7 @@
                         "HTML and Responsive Design"
                     ],
                     "Frontend Development": [
-                        "Frontend Development Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Frontend Development Principles and Practices"
                     ],
                     "Web Development": [
                         "Fundamentals of Web Development",
@@ -625,18 +559,7 @@
                         "Mobile Application Design"
                     ],
                     "Front-End Development": [
-                        "Front-End Development Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Front-End Development Principles"
                     ]
                 },
                 "Fullstack": {
@@ -881,18 +804,7 @@
                         "CI/CD Automation and Optimization"
                     ],
                     "C++": [
-                        "C++ Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "C++ Programming Fundamentals"
                     ],
                     "Selenium": [
                         "Selenium Automation Testing",
@@ -993,32 +905,10 @@
                         "Postman and Agile Development"
                     ],
                     "Test Automation": [
-                        "Test Automation Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Test Automation Principles and Practices"
                     ],
                     "Quality Assurance": [
-                        "Quality Assurance Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Quality Assurance Principles and Practices"
                     ],
                     "API Testing": [
                         "API Testing Fundamentals",
@@ -1035,18 +925,7 @@
                         "Continuous Integration and API Testing"
                     ],
                     "Software Testing": [
-                        "Software Testing Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Software Testing Principles and Practices"
                     ],
                     "Mobile Testing": [
                         "Mobile Testing Fundamentals",
@@ -1121,18 +1000,7 @@
                         "RESTful API in Distributed Systems"
                     ],
                     "Spring Boot": [
-                        "Spring Boot Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Spring Boot Fundamentals"
                     ],
                     "Python": [
                         "Python Programming Fundamentals",
@@ -1191,18 +1059,7 @@
                         "C# and Cloud Computing"
                     ],
                     "Microservices": [
-                        "Microservices Architecture and Design Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Microservices Architecture and Design Principles"
                     ],
                     "Backend Development": [
                         "Principles of Backend Development",
@@ -1247,18 +1104,7 @@
                         "API Development with Frameworks"
                     ],
                     "Microservices Architecture": [
-                        "Microservices Architecture Principles and Patterns",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Microservices Architecture Principles and Patterns"
                     ],
                     "Cloud Infrastructure": [
                         "Fundamentals of Cloud Infrastructure",
@@ -1277,32 +1123,10 @@
                 },
                 "Embedded/Systems": {
                     "C/C++": [
-                        "C/C++ Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "C/C++ Programming Fundamentals"
                     ],
                     "UART": [
-                        "UART Principles and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "UART Principles and Applications"
                     ],
                     "RTOS": [
                         "Real-Time Operating Systems Fundamentals",
@@ -1361,18 +1185,7 @@
                         "Cybersecurity and Information Security"
                     ],
                     "C++": [
-                        "C++ Fundamentals and Object-Oriented Programming Concepts",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "C++ Fundamentals and Object-Oriented Programming Concepts"
                     ],
                     "Python": [
                         "Python Programming Fundamentals",
@@ -1445,32 +1258,10 @@
                         "Modern Firmware Development Practices"
                     ],
                     "Hardware-Software Integration": [
-                        "Hardware-Software Integration Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Hardware-Software Integration Principles"
                     ],
                     "Real-Time Systems": [
-                        "Real-Time Systems Principles and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Real-Time Systems Principles and Applications"
                     ],
                     "IoT": [
                         "Internet of Things Fundamentals",
@@ -1545,18 +1336,7 @@
                         "Angular Best Practices and Patterns"
                     ],
                     "C/C++": [
-                        "C/C++ Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "C/C++ Programming Fundamentals"
                     ],
                     "Git": [
                         "Fundamentals of Git Version Control",
@@ -1729,18 +1509,7 @@
                         "Flutter and Firebase Integration"
                     ],
                     "Kotlin": [
-                        "Kotlin Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Kotlin Programming Fundamentals"
                     ],
                     "Android": [
                         "Android Application Development",
@@ -1827,18 +1596,7 @@
                         "SwiftUI for Real-World Applications"
                     ],
                     "Jetpack Compose": [
-                        "Jetpack Compose Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Jetpack Compose Fundamentals"
                     ],
                     "Mobile App Development": [
                         "Mobile App Development Fundamentals",
@@ -1883,18 +1641,7 @@
                         "Android Framework and Customization"
                     ],
                     "Cross-Platform Development": [
-                        "Cross-Platform Development Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Cross-Platform Development Principles"
                     ],
                     "Mobile Development": [
                         "Mobile Application Development",
@@ -2081,18 +1828,7 @@
                         "Data Engineering for Analytics"
                     ],
                     "Predictive Analytics": [
-                        "Predictive Analytics Principles and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Predictive Analytics Principles and Applications"
                     ],
                     "Data Analysis": [
                         "Fundamentals of Data Analysis",
@@ -2111,18 +1847,7 @@
                 },
                 "IT Support": {
                     "C#/C++": [
-                        "C# and C++ Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "C# and C++ Programming Fundamentals"
                     ],
                     "Java": [
                         "Java Programming Fundamentals",
@@ -2139,18 +1864,7 @@
                         "Java and Artificial Intelligence"
                     ],
                     "Perl": [
-                        "Perl Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Perl Programming Fundamentals"
                     ],
                     "HTML5": [
                         "Fundamentals of HTML5",
@@ -2265,18 +1979,7 @@
                         "Ethical Hacking for Applications"
                     ],
                     "Real-Time Data Applications": [
-                        "Real-Time Data Processing Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Real-Time Data Processing Fundamentals"
                     ],
                     "Software Project Management": [
                         "Fundamentals of Software Project Management",
@@ -2379,18 +2082,7 @@
                         "Advanced Docker Applications"
                     ],
                     "Python": [
-                        "Python Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Python Programming Fundamentals"
                     ],
                     "DevOps": [
                         "DevOps Fundamentals",
@@ -2463,18 +2155,7 @@
                         "Cloud Infrastructure Best Practices"
                     ],
                     "CI/CD Pipelines": [
-                        "CI/CD Pipeline Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "CI/CD Pipeline Fundamentals"
                     ],
                     "DevOps Automation": [
                         "DevOps Automation Fundamentals",
@@ -2491,18 +2172,7 @@
                         "DevOps Automation Best Practices"
                     ],
                     "Containerization": [
-                        "Containerization Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Containerization Fundamentals"
                     ]
                 },
                 "Data & Analytics": {
@@ -2577,18 +2247,7 @@
                         "ETL Automation and Scripting"
                     ],
                     "Data Pipelines": [
-                        "Data Pipeline Design and Implementation",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Data Pipeline Design and Implementation"
                     ],
                     "Linux": [
                         "Fundamentals of Linux Systems",
@@ -2691,18 +2350,7 @@
                 },
                 "Cybersecurity": {
                     "Penetration Testing": [
-                        "Penetration Testing Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Penetration Testing Fundamentals"
                     ],
                     "Cybersecurity": [
                         "Fundamentals of Cybersecurity",
@@ -2803,32 +2451,10 @@
                         "Cloud Security and Risk Management"
                     ],
                     "IEC 62443": [
-                        "IEC 62443 Fundamentals and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "IEC 62443 Fundamentals and Applications"
                     ],
                     "Incident Response": [
-                        "Incident Response Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Incident Response Principles and Practices"
                     ]
                 },
                 "Hardware & Manufacturing": {
@@ -2847,18 +2473,7 @@
                         "Electronics Engineering Design Practices"
                     ],
                     "EMC/EMI": [
-                        "EMC/EMI Fundamentals and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "EMC/EMI Fundamentals and Applications"
                     ],
                     "Hardware Design": [
                         "Fundamentals of Hardware Design",
@@ -2931,60 +2546,16 @@
                         "C++ and Low-Level System Programming"
                     ],
                     "Object-Oriented": [
-                        "Object-Oriented Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Object-Oriented Programming Fundamentals"
                     ],
                     "Linux-based development": [
-                        "Linux-based Development Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Linux-based Development Fundamentals"
                     ],
                     "Electrical Systems Design": [
-                        "Electrical Systems Design Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Electrical Systems Design Principles"
                     ],
                     "Consumer Electronics": [
-                        "Consumer Electronics Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Consumer Electronics Fundamentals"
                     ],
                     "Hardware Development": [
                         "Fundamentals of Hardware Development",
@@ -3015,18 +2586,7 @@
                         "Product Standards and Industry Practices"
                     ],
                     "Semiconductor ATE": [
-                        "Semiconductor ATE Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Semiconductor ATE Fundamentals"
                     ],
                     "Instrument Drivers": [
                         "Instrumentation and Driver Development",
@@ -3161,18 +2721,7 @@
                         "TensorFlow in Robotics Applications"
                     ],
                     "PyTorch": [
-                        "PyTorch Fundamentals and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "PyTorch Fundamentals and Applications"
                     ],
                     "React": [
                         "React Fundamentals",
@@ -3331,18 +2880,7 @@
                         "Data Visualization and User Experience"
                     ],
                     "Predictive Modeling": [
-                        "Predictive Modeling Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Predictive Modeling Principles"
                     ],
                     "AI": [
                         "Fundamentals of Artificial Intelligence",
@@ -3699,18 +3237,7 @@
                         "Quality Assurance Practices under ISO 9001"
                     ],
                     "Root Cause Analysis": [
-                        "Root Cause Analysis Principles and Techniques",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Root Cause Analysis Principles and Techniques"
                     ],
                     "Git": [
                         "Fundamentals of Git Version Control",
@@ -3727,18 +3254,7 @@
                         "Git Essentials for Beginners"
                     ],
                     "Quality Assurance": [
-                        "Quality Assurance Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Quality Assurance Principles and Practices"
                     ],
                     "CAPA": [
                         "Principles of Cybersecurity and Privacy",
@@ -3797,32 +3313,10 @@
                         "Selenium Security Testing"
                     ],
                     "Test Automation": [
-                        "Test Automation Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Test Automation Principles and Practices"
                     ],
                     "Regulatory Compliance": [
-                        "Regulatory Compliance Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Regulatory Compliance Principles and Practices"
                     ],
                     "Web Testing": [
                         "Web Testing Fundamentals",
@@ -3911,18 +3405,7 @@
                         "React for Mobile Applications"
                     ],
                     "CI/CD": [
-                        "CI/CD Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "CI/CD Principles and Practices"
                     ],
                     "Angular": [
                         "Angular Fundamentals",
@@ -4023,18 +3506,7 @@
                         "Distributed Systems and Backend"
                     ],
                     "Microservices Architecture": [
-                        "Microservices Architecture Principles and Patterns",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Microservices Architecture Principles and Patterns"
                     ],
                     "Frontend Development": [
                         "Fundamentals of Frontend Development",
@@ -4095,18 +3567,7 @@
                         "Git Security and Compliance"
                     ],
                     "C++": [
-                        "C++ Fundamentals and Object-Oriented Programming Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "C++ Fundamentals and Object-Oriented Programming Principles"
                     ],
                     "Java": [
                         "Java Programming Fundamentals",
@@ -4263,34 +3724,12 @@
                         "Testing for Web Applications"
                     ],
                     "Observability": [
-                        "Observability Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Observability Principles and Practices"
                     ]
                 },
                 "Embedded/Systems": {
                     "C++": [
-                        "C++ Fundamentals and Object-Oriented Programming Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "C++ Fundamentals and Object-Oriented Programming Principles"
                     ],
                     "C": [
                         "Introduction to Computer Science",
@@ -4349,18 +3788,7 @@
                         "Software Quality Assurance and Testing"
                     ],
                     "UART": [
-                        "UART Principles and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "UART Principles and Applications"
                     ],
                     "I2C": [
                         "Introduction to I2C Communication",
@@ -4433,18 +3861,7 @@
                         "Designing Embedded Systems for IoT Applications"
                     ],
                     "Real-Time Systems": [
-                        "Real-Time Systems Principles and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Real-Time Systems Principles and Applications"
                     ],
                     "Cloud Infrastructure": [
                         "Fundamentals of Cloud Infrastructure",
@@ -4461,18 +3878,7 @@
                         "Cloud Infrastructure Best Practices"
                     ],
                     "real-time systems": [
-                        "Real-Time Systems Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Real-Time Systems Fundamentals"
                     ],
                     "embedded systems": [
                         "Introduction to Embedded Systems",
@@ -4533,32 +3939,10 @@
                         "Advanced GPU Computing Paradigms"
                     ],
                     "CUDA kernel optimization": [
-                        "CUDA Kernel Optimization Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "CUDA Kernel Optimization Principles"
                     ],
                     "distributed training and inference": [
-                        "Distributed Training and Inference Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Distributed Training and Inference Fundamentals"
                     ],
                     "large models": [
                         "Foundations of Large Models",
@@ -4575,18 +3959,7 @@
                         "Large Model Deployment Strategies"
                     ],
                     "GPU training clusters": [
-                        "GPU Training Clusters Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "GPU Training Clusters Fundamentals"
                     ],
                     "model/system co-design": [
                         "Model and System Co-Design Principles",
@@ -4631,18 +4004,7 @@
                         "Regression Detection and Model Integrity Analysis"
                     ],
                     "recommendation systems": [
-                        "Recommendation Systems Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Recommendation Systems Fundamentals"
                     ],
                     "GPU optimizations": [
                         "GPU Optimization Techniques",
@@ -4689,18 +4051,7 @@
                         "Java and Cloud Computing"
                     ],
                     "Kotlin": [
-                        "Kotlin Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Kotlin Programming Fundamentals"
                     ],
                     "Flutter": [
                         "Flutter Fundamentals",
@@ -4887,18 +4238,7 @@
                 },
                 "Cloud & DevOps": {
                     "Kubernetes": [
-                        "Kubernetes Fundamentals and Architecture",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Kubernetes Fundamentals and Architecture"
                     ],
                     "CI/CD": [
                         "Continuous Integration and Deployment",
@@ -4915,18 +4255,7 @@
                         "CI/CD for Cloud Platforms"
                     ],
                     "Terraform": [
-                        "Terraform Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Terraform Principles and Practices"
                     ],
                     "DevOps": [
                         "DevOps Fundamentals",
@@ -4999,32 +4328,10 @@
                         "GrafaN and API Integration"
                     ],
                     "Linux": [
-                        "Linux Fundamentals and System Administration",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Linux Fundamentals and System Administration"
                     ],
                     "Prometheus": [
-                        "Prometheus: Foundations of Myth and Meaning",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Prometheus: Foundations of Myth and Meaning"
                     ],
                     "Cloud Infrastructure": [
                         "Cloud Infrastructure Fundamentals",
@@ -5041,46 +4348,13 @@
                         "Cloud Infrastructure Trends"
                     ],
                     "CI/CD Pipelines": [
-                        "CI/CD Pipeline Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "CI/CD Pipeline Fundamentals"
                     ],
                     "Infrastructure as Code": [
-                        "Infrastructure as Code Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Infrastructure as Code Principles and Practices"
                     ],
                     "Containerization": [
-                        "Containerization Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Containerization Principles and Practices"
                     ]
                 },
                 "Frontend Web": {
@@ -5225,18 +4499,7 @@
                         "Modern Angular Application Development"
                     ],
                     "Frontend Development": [
-                        "Frontend Development Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Frontend Development Principles and Practices"
                     ],
                     "Web Development": [
                         "Web Development Fundamentals",
@@ -5493,18 +4756,7 @@
                         "OAuth Integration and Identity Management"
                     ],
                     "Full-Stack Backend": [
-                        "Full-Stack Backend Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Full-Stack Backend Principles and Practices"
                     ]
                 },
                 "Cybersecurity": {
@@ -5523,32 +4775,10 @@
                         "SIEM Best Practices and Optimization"
                     ],
                     "Penetration Testing": [
-                        "Penetration Testing Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Penetration Testing Principles and Practices"
                     ],
                     "Incident Response": [
-                        "Incident Response Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Incident Response Principles and Practices"
                     ],
                     "Python": [
                         "Python Programming Fundamentals",
@@ -5565,18 +4795,7 @@
                         "Python for Cybersecurity Applications"
                     ],
                     "Vulnerability Assessment": [
-                        "Vulnerability Assessment Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Vulnerability Assessment Fundamentals"
                     ],
                     "Cybersecurity": [
                         "Fundamentals of Cybersecurity",
@@ -5593,18 +4812,7 @@
                         "Operational Security and Cyber Hygiene"
                     ],
                     "NIST": [
-                        "NIST Principles and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "NIST Principles and Applications"
                     ],
                     "EDR": [
                         "Introduction to Educational Research",
@@ -5649,32 +4857,10 @@
                         "AWS Cloud Migration Strategies"
                     ],
                     "Threat Intelligence": [
-                        "Threat Intelligence Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Threat Intelligence Fundamentals"
                     ],
                     "Cloud Security": [
-                        "Cloud Security Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Cloud Security Fundamentals"
                     ],
                     "Network Security": [
                         "Network Security Fundamentals",
@@ -5777,18 +4963,7 @@
                         "MySQL for Data Warehousing and Analytics"
                     ],
                     "Django": [
-                        "Django Web Development Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Django Web Development Fundamentals"
                     ],
                     "DevOps": [
                         "DevOps Fundamentals",
@@ -5847,18 +5022,7 @@
                         "Cloud Infrastructure Best Practices"
                     ],
                     "Infrastructure as Code": [
-                        "Infrastructure as Code Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Infrastructure as Code Principles and Practices"
                     ],
                     "Machine Learning": [
                         "Foundations of Machine Learning",
@@ -6045,18 +5209,7 @@
                         "Innovations in Application Development"
                     ],
                     "Client-Server Communication": [
-                        "Client-Server Communication Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Client-Server Communication Principles"
                     ]
                 },
                 "Hardware & Manufacturing": {
@@ -6159,32 +5312,10 @@
                         "Managing Cross-functional Projects and Deliverables"
                     ],
                     "Electrical Engineering": [
-                        "Electrical Engineering Principles and Applications",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Electrical Engineering Principles and Applications"
                     ],
                     "UAV Design": [
-                        "UAV Design and Engineering Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "UAV Design and Engineering Fundamentals"
                     ],
                     "Flight Controllers": [
                         "Fundamentals of Flight Control Systems",
@@ -6229,18 +5360,7 @@
                         "Embedded Firmware for IoT Applications"
                     ],
                     "Thermal Control": [
-                        "Thermal Control Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Thermal Control Fundamentals"
                     ],
                     "PCB Design": [
                         "PCB Design Fundamentals",
@@ -6503,18 +5623,7 @@
                         "Python and Cloud Computing"
                     ],
                     "Java": [
-                        "Java Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Java Programming Fundamentals"
                     ],
                     "JavaScript": [
                         "Fundamentals of JavaScript",
@@ -6757,18 +5866,7 @@
                         "PostgreSQL Integration with Modern Applications"
                     ],
                     "Microservices": [
-                        "Microservices Architecture and Design Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Microservices Architecture and Design Principles"
                     ],
                     "CI/CD": [
                         "Continuous Integration and Deployment",
@@ -6941,18 +6039,7 @@
                         "Advanced CI/CD Automation Techniques"
                     ],
                     "Kotlin": [
-                        "Kotlin Programming Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Kotlin Programming Fundamentals"
                     ],
                     "Git": [
                         "Fundamentals of Git Version Control",
@@ -6983,18 +6070,7 @@
                         "SwiftUI Project Applications"
                     ],
                     "Clean Architecture": [
-                        "Clean Architecture Principles and Patterns",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Clean Architecture Principles and Patterns"
                     ],
                     "React Native": [
                         "React Native Fundamentals",
@@ -7109,18 +6185,7 @@
                         "Mobile App Development Trends"
                     ],
                     "Android Development": [
-                        "Android Development Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Android Development Fundamentals"
                     ]
                 },
                 "QA & Testing": {
@@ -7237,32 +6302,10 @@
                         "Testing in DevOps Pipelines"
                     ],
                     "Katalon": [
-                        "Katalon Principles and Automation Testing",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Katalon Principles and Automation Testing"
                     ],
                     "Test Cases": [
-                        "Test Case Design and Implementation Techniques",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Test Case Design and Implementation Techniques"
                     ],
                     "API Testing": [
                         "API Testing Fundamentals",
@@ -7293,18 +6336,7 @@
                         "Software Testing in Distributed Systems"
                     ],
                     "Quality Assurance": [
-                        "Quality Assurance Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Quality Assurance Principles and Practices"
                     ],
                     "Test Automation": [
                         "Test Automation Fundamentals",
@@ -7321,18 +6353,7 @@
                         "Test Automation in Agile Environments"
                     ],
                     "Performance Testing": [
-                        "Performance Testing Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Performance Testing Fundamentals"
                     ]
                 },
                 "Cloud & DevOps": {
@@ -7365,32 +6386,10 @@
                         "Docker for Application Deployment"
                     ],
                     "CI/CD": [
-                        "CI/CD Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "CI/CD Principles and Practices"
                     ],
                     "Terraform": [
-                        "Terraform Principles and Practice",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Terraform Principles and Practice"
                     ],
                     "Monitoring": [
                         "Fundamentals of Monitoring Systems",
@@ -7407,18 +6406,7 @@
                         "Monitoring in Cloud Computing"
                     ],
                     "Linux": [
-                        "Linux Fundamentals and System Administration",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Linux Fundamentals and System Administration"
                     ],
                     "Python": [
                         "Python Programming Fundamentals",
@@ -7435,18 +6423,7 @@
                         "Python and Big Data Processing"
                     ],
                     "Prometheus": [
-                        "Prometheus: The Origins of Scientific Inquiry",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Prometheus: The Origins of Scientific Inquiry"
                     ],
                     "Grafana": [
                         "Introduction to Grafana",
@@ -7491,46 +6468,13 @@
                         "Cloud Infrastructure Scalability"
                     ],
                     "DevOps": [
-                        "DevOps Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "DevOps Principles and Practices"
                     ],
                     "Infrastructure as Code": [
-                        "Infrastructure as Code Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Infrastructure as Code Principles and Practices"
                     ],
                     "Containerization": [
-                        "Containerization Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Containerization Principles and Practices"
                     ],
                     "DevOps Automation": [
                         "DevOps Automation Fundamentals",
@@ -7675,18 +6619,7 @@
                         "Data Engineering Case Studies"
                     ],
                     "Looker Studio": [
-                        "Looker Studio Essentials for Data Visualization",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Looker Studio Essentials for Data Visualization"
                     ],
                     "Data Analysis": [
                         "Fundamentals of Data Analysis",
@@ -7747,18 +6680,7 @@
                 },
                 "Network & Infrastructure": {
                     "System Monitoring": [
-                        "System Monitoring Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "System Monitoring Fundamentals"
                     ],
                     "Operating Systems": [
                         "Fundamentals of Operating Systems",
@@ -7775,60 +6697,16 @@
                         "Modern Operating Systems"
                     ],
                     "Application Software": [
-                        "Application Software Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Application Software Principles and Practices"
                     ],
                     "System Management Tools": [
-                        "System Management Tools Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "System Management Tools Fundamentals"
                     ],
                     "Infrastructure Design": [
-                        "Infrastructure Design and Implementation Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Infrastructure Design and Implementation Principles"
                     ],
                     "Application Performance Testing": [
-                        "Application Performance Testing Principles",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Application Performance Testing Principles"
                     ],
                     "Security Strategies": [
                         "Security Strategies and Risk Management",
@@ -7873,18 +6751,7 @@
                         "Redundancy and System Resilience"
                     ],
                     "Custom Scripting": [
-                        "Custom Scripting Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Custom Scripting Fundamentals"
                     ],
                     "System Administration": [
                         "Fundamentals of System Administration",
@@ -8439,18 +7306,7 @@
                         "React and State Management Patterns"
                     ],
                     "Next.js": [
-                        "Next.js Fundamentals and Best Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "Next.js Fundamentals and Best Practices"
                     ],
                     "Git": [
                         "Fundamentals of Git Version Control",
@@ -8581,18 +7437,7 @@
                         "Incident Response Simulation and Training"
                     ],
                     "MITRE ATT&CK": [
-                        "MITRE ATT&CK Fundamentals",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "MITRE ATT&CK Fundamentals"
                     ],
                     "Python": [
                         "Introduction to Python Programming",
@@ -8905,18 +7750,7 @@
                         "Cloud Security and Data Protection"
                     ],
                     "On-prem Security": [
-                        "On-prem Security Principles and Practices",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", ",
-                        ":",
-                        ", "
+                        "On-prem Security Principles and Practices"
                     ],
                     "Security Operations": [
                         "Security Operations Fundamentals",
