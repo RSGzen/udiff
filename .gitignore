@@ -49,6 +49,9 @@ next-env.d.ts
 # local agent notes (not committed)
 AGENTS.md
 
+# personal documentation (not committed)
+docs/
+
 # python (pipeline)
 __pycache__/
 *.py[cod]
