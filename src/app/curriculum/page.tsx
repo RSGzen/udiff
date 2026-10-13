@@ -14,8 +14,47 @@ import { DEFAULT_COUNTRY, getSkillClassRoles, getSkillClass } from "@/lib/data"
 
 const ROLES = getSkillClassRoles(DEFAULT_COUNTRY)
 
-// Helper: Normalize text (lowercase, remove special chars) for robust matching
-const normalize = (text: string) => text.toLowerCase().replace(/[^a-z0-9\s]/g, "")
+// Normalize for matching: fold tech punctuation into safe tokens (C++ → cpp, C# → csharp,
+// .NET → dotnet), then keep only alphanumerics. Returns space-separated tokens.
+const normalize = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/c\+\+/g, " cpp ")
+    .replace(/c#/g, " csharp ")
+    .replace(/f#/g, " fsharp ")
+    .replace(/\.net/g, " dotnet ")
+    .replace(/node\.?js/g, " nodejs ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+
+// Whole-word / phrase match. Prevents "C#" (→"c") from matching "Computer", and skips
+// empty terms (junk synonyms like "," that would otherwise match everything).
+const containsTerm = (haystack: string, term: string) => {
+  const t = normalize(term)
+  if (!t) return false
+  const pattern = t.split(" ").map(escapeRegExp).join("\\s+")
+  return new RegExp(`(?:^| )${pattern}(?: |$)`).test(haystack)
+}
+
+// Curated cross-walk: common syllabus phrasings the generated course-name dictionary misses.
+// Keys are `normalize(skillName)`; values are extra phrases to match (whole-word). Edit freely.
+const SKILL_ALIASES: Record<string, string[]> = {
+  sql: ["database", "relational database", "dbms"],
+  mysql: ["database", "relational database", "dbms"],
+  "database management": ["database", "dbms"],
+  "cloud infrastructure": ["cloud computing", "cloud services", "cloud"],
+  "restful apis": ["rest api", "restful", "web services"],
+  "api development": ["rest api", "api", "web services"],
+  "api integration": ["rest api", "api", "web services"],
+  git: ["version control"],
+  docker: ["containerization", "containers"],
+  "spring boot": ["spring framework", "spring boot"],
+  microservices: ["microservice"],
+  "microservices architecture": ["microservice", "microservices"],
+  "backend development": ["backend", "server side", "server-side"],
+}
 
 export default function CurriculumCheckPage() {
   // --- STATE ---
@@ -50,23 +89,21 @@ export default function CurriculumCheckPage() {
 
     // 2. Iterate through each Target Skill
     targetSkills.forEach((skillName) => {
-      let isMatch = false
+      // Check A: the skill itself (whole-word / phrase).
+      let isMatch = containsTerm(userTextClean, skillName)
 
-      // Check A: Does the exact skill name appear? (e.g. "Python")
-      if (userTextClean.includes(normalize(skillName))) {
-        isMatch = true
-      }
-
-      // Check B: Do any of the Synonyms/Class Names appear?
-      // (e.g. "Intro to Programming", "Applied Machine Learning")
+      // Check B: any of the generated course-name synonyms.
       if (!isMatch) {
         const synonyms = roleData[skillName] || []
-        // Check if ANY synonym exists in the user text
-        const foundSynonym = synonyms.find((syn: string) => userTextClean.includes(normalize(syn)))
-        if (foundSynonym) isMatch = true
+        isMatch = synonyms.some((syn) => containsTerm(userTextClean, syn))
       }
 
-      // 3. Sort into buckets
+      // Check C: the curated cross-walk for common phrasings.
+      if (!isMatch) {
+        const aliases = SKILL_ALIASES[normalize(skillName)] ?? []
+        isMatch = aliases.some((alias) => containsTerm(userTextClean, alias))
+      }
+
       if (isMatch) {
         found.push(skillName)
       } else {
