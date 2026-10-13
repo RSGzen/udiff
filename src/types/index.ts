@@ -15,6 +15,9 @@ export interface Company {
 
 export interface ObservedSalary {
   raw: string;
+  value: number;
+  currency: string;
+  likely_annual: boolean;
   category: string;
   title: string;
 }
@@ -36,6 +39,7 @@ export interface SalaryEstimate {
   max: number;
   currency: string;
   period: string;
+  period_raw: string;
   source: string;
   confidence: string;
   sample_size: number;

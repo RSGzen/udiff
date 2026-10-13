@@ -9,6 +9,7 @@ import { JobDistribution } from "@/components/dashboard/JobDistribution"
 import { ExperienceSplit } from "@/components/dashboard/ExperienceSplit"
 import { JobsByState } from "@/components/dashboard/JobsByState"
 import { TopCompanies } from "@/components/dashboard/TopCompanies"
+import { ObservedSalaries } from "@/components/dashboard/ObservedSalaries"
 import { SectionHeading } from "@/components/dashboard/SectionHeading"
 import { SalaryBands } from "@/components/dashboard/SalaryBands"
 import { RolePanel } from "@/components/dashboard/RolePanel"
@@ -206,6 +207,7 @@ export default function Home() {
                   companies={country.top_companies}
                   placeholder={country.placeholder_companies}
                 />
+                <ObservedSalaries data={country.observed_salaries} />
               </>
             ) : (
               <div className="bg-card/50 border border-border rounded-xl p-12 text-center text-muted-foreground flex flex-col items-center">

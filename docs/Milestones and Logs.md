@@ -273,20 +273,20 @@
 - **Note:** M6 (lint hygiene) still **pending**.
 - Full detail: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §6.
 
-### M11 — Frontend revamp: Tier 2 (restructure) `Future`
-- **New data view (from the 13 Oct data audit):** **Observed Salary Mentions** (`UDiff.md` §4) is now
-  unblocked — `observed_salaries` is multi-country (MY 33 · SG 13 · ID 5) with `{value, currency,
-  likely_annual}`. Render as a **per-country list + `likely_annual` flag**: a compact card on the
-  dashboard *Market overview* section **and** the full explanation on the Methodology page *(decision (c))*.
-- **Prereq types:** update `ObservedSalary` (`value`/`currency`/`likely_annual`) and add
-  `SalaryEstimate.period_raw` in `src/types/index.ts`.
-- Landing/About page, IA + route moves (`/` → landing, `/dashboard`, `/methodology`), optional
-  role detail route, methodology/data page (surface `UDiff.md` §6 limits + observed-pay caveats),
-  chart redesign, motion polish, full a11y + performance audit.
-- **Doc sync:** `UDiff.md` §4 chart types corrected + *Posting recency* marked not-in-data (done);
-  `Tech Stack.md` §3 contract updated for `observed_salaries` + `period_raw`.
+### M11 — Frontend revamp: Tier 2 (restructure) `In progress (13 Oct 2026)`
+- **Sub-steps:**
+  - **M11.1 — Types** `Done` — `ObservedSalary` → `{ raw, value, currency, likely_annual, category, title }`;
+    added `SalaryEstimate.period_raw`.
+  - **M11.2 — Observed Salary Mentions** `Done` — country-scoped card (top 8, `annual` badge, count footer)
+    in the dashboard *Market overview*.
+  - **M11.3 — Methodology page** `Done` — new **`/methodology`** route (added to the shell nav): sources,
+    processing, caveats, known quirks, per-country sample sizes, and the **full** observed-salary lists
+    *(decision (c)).*
+  - **M11.4 — Landing/About + route moves** `Next` — `/` becomes a landing page; the dashboard moves to
+    **`/dashboard`**.
+  - **M11.5 — Chart redesign + motion polish + a11y/perf audit** `Todo`
 - **Deferred:** distinct-skills metric card; regional role-distribution on `/compare`; posting recency
-  (needs a pipeline aggregate — no data yet).
+  (needs a pipeline aggregate).
 - **New dep:** `motion` (optional). Plan: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §7.
 - **Done when:** a stranger understands UDiff without context and the app passes an a11y audit.
 
@@ -515,6 +515,19 @@ fallbacks but does not smooth real reported values.
 
 **Verified:** `npx tsc --noEmit` + `npm run lint` + `npm run build` all pass (lint clean; was 15+ errors).
 **Next:** M11 (Tier 2).
+
+### 13_10_2026 (web, M11.1–11.3) — observed salaries + methodology (assistant)
+**Did:**
+- **M11.1:** `ObservedSalary` type → `{ raw, value, currency, likely_annual, category, title }`; added
+  `SalaryEstimate.period_raw`.
+- **M11.2:** new `ObservedSalaries` card (top 8, `annual` badge, count footer) in the dashboard
+  *Market overview* — country-scoped.
+- **M11.3:** new **`/methodology`** route + shell-nav entry: data source, processing pipeline, caveats,
+  known quirks, per-country sample sizes, and the **full** observed-salary lists *(decision (c) full half)*.
+
+**Verified:** `npx tsc --noEmit` + `npm run lint` + `npm run build` pass (now 5 routes: `/`, `/compare`,
+`/curriculum`, `/methodology`, `/roadmap`).
+**Next:** M11.4 (landing page + route moves).
 
 ---
 

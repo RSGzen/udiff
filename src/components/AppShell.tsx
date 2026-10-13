@@ -8,6 +8,7 @@ import {
   ArrowLeftRight,
   Route,
   GraduationCap,
+  BookOpen,
   PanelLeftClose,
   PanelLeftOpen,
   Menu,
@@ -21,6 +22,7 @@ const NAV = [
   { href: "/compare", label: "Compare", icon: ArrowLeftRight },
   { href: "/roadmap", label: "Roadmap", icon: Route },
   { href: "/curriculum", label: "Curriculum", icon: GraduationCap },
+  { href: "/methodology", label: "Methodology", icon: BookOpen },
 ]
 
 function NavList({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: () => void }) {
