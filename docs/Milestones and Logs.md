@@ -282,9 +282,10 @@
   - **M11.3 — Methodology page** `Done` — new **`/methodology`** route (added to the shell nav): sources,
     processing, caveats, known quirks, per-country sample sizes, and the **full** observed-salary lists
     *(decision (c)).*
-  - **M11.4 — Landing/About + route moves** `Next` — `/` becomes a landing page; the dashboard moves to
-    **`/dashboard`**.
-  - **M11.5 — Chart redesign + motion polish + a11y/perf audit** `Todo`
+  - **M11.4 — Landing/About + route moves** `Done` — **`/`** is now a standalone landing page (hero,
+    stats, pipeline, feature cards); the dashboard moved to **`/dashboard`** (shell nav + active logic
+    updated).
+  - **M11.5 — Chart polish + motion + a11y/perf audit** `Next`
 - **Deferred:** distinct-skills metric card; regional role-distribution on `/compare`; posting recency
   (needs a pipeline aggregate).
 - **New dep:** `motion` (optional). Plan: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §7.
@@ -528,6 +529,16 @@ fallbacks but does not smooth real reported values.
 **Verified:** `npx tsc --noEmit` + `npm run lint` + `npm run build` pass (now 5 routes: `/`, `/compare`,
 `/curriculum`, `/methodology`, `/roadmap`).
 **Next:** M11.4 (landing page + route moves).
+
+### 13_10_2026 (web, M11.4) — landing page + route moves (assistant)
+**Did:**
+- Moved the dashboard from `/` to **`/dashboard`** (`src/app/dashboard/page.tsx`).
+- New **`/`** landing page (standalone, no app shell): header (logo · Methodology · Open dashboard),
+  hero, stats (postings / markets / roles), "How it works" pipeline, feature cards, footer.
+- AppShell nav "Dashboard" → `/dashboard`; active-match now `pathname === href || startsWith(href + "/")`.
+
+**Verified:** `npx tsc --noEmit` + `npm run lint` + `npm run build` pass; `/dashboard` route added.
+**Next:** M11.5 (chart polish + motion + a11y/perf audit).
 
 ---
 

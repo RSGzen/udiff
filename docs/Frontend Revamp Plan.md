@@ -149,8 +149,8 @@ groups; fixed the bar-chart hover flash.
       (top 8 + `annual` badge) in the dashboard *Market overview*.
 - [x] **Methodology / Data page** *(M11.3)* — `/methodology`: sources, processing, caveats, known quirks,
       sample sizes, and the full per-market observed-salary lists.
-- [ ] **Landing / About page** — what UDiff is, who it is for, the pipeline in one diagram, data-source honesty.
-- [ ] **IA + routes:** `/` (landing), `/dashboard`, `/roadmap`, `/curriculum`, `/compare`, `/methodology`.
+- [x] **Landing / About page** *(M11.4)* — `/` is now a standalone landing (hero, stats, pipeline, features).
+- [x] **IA + routes** *(M11.4)* — `/` landing · `/dashboard` · `/roadmap` · `/curriculum` · `/compare` · `/methodology`.
 - [ ] Optional **`/dashboard/[role]`** detail route (replaces client-state role switching).
 - [ ] **Chart redesign:** dot plot / lollipop for skill demand; better treemap labelling.
 - [ ] **Motion polish:** page transitions, stagger; add `motion` (Framer) only where springs genuinely help.

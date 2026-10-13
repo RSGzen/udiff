@@ -1,228 +1,177 @@
-"use client"
-
-import { useState } from "react"
-import { MetricCard } from "@/components/dashboard/MetricCard"
-import { SkillChart } from "@/components/dashboard/SkillChart"
-import { ContextTreemap } from "@/components/dashboard/ContextTreemap"
-import { SoftSkills } from "@/components/dashboard/SoftSkills"
-import { JobDistribution } from "@/components/dashboard/JobDistribution"
-import { ExperienceSplit } from "@/components/dashboard/ExperienceSplit"
-import { JobsByState } from "@/components/dashboard/JobsByState"
-import { TopCompanies } from "@/components/dashboard/TopCompanies"
-import { ObservedSalaries } from "@/components/dashboard/ObservedSalaries"
-import { SectionHeading } from "@/components/dashboard/SectionHeading"
-import { SalaryBands } from "@/components/dashboard/SalaryBands"
-import { RolePanel } from "@/components/dashboard/RolePanel"
-import { AppShell } from "@/components/AppShell"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import {
-  DEFAULT_COUNTRY,
-  getCountries,
-  getCountryName,
-  getRoles,
-  getLevelBucket,
-  getCountry,
-  getRole,
-} from "@/lib/data"
-import { Briefcase, DollarSign, PieChart, AlertCircle } from "lucide-react"
+  LayoutDashboard,
+  ArrowLeftRight,
+  Route,
+  GraduationCap,
+  ArrowRight,
+  Github,
+} from "lucide-react"
+import { DEFAULT_COUNTRY, getCountries, getCountry, getCountryName, getRoles } from "@/lib/data"
 
-export default function Home() {
-  // 1. STATE MANAGEMENT
-  const [selectedCountry, setSelectedCountry] = useState(DEFAULT_COUNTRY)
-  const categoryNames = getRoles(selectedCountry)
-  const [selectedCategory, setSelectedCategory] = useState(categoryNames[0])
-  const [selectedLevel, setSelectedLevel] = useState("All")
+const PIPELINE = [
+  { step: "Fetch", desc: "Pull live postings from the JSearch API for MY, SG & ID." },
+  { step: "Extract", desc: "A local LLM reads each ad for hard skills, soft skills & context." },
+  { step: "Analyze", desc: "Aggregate demand per role × experience level, per country." },
+  { step: "Estimate", desc: "Add attributed pay bands — nominal MYR and PPP-adjusted." },
+  { step: "Compare", desc: "Diff every market against Malaysia." },
+]
 
-  // 2. GET DATA LOGIC (all through the schema layer)
-  const stats = getLevelBucket(selectedCountry, selectedCategory, selectedLevel)
-  const allStats = getLevelBucket(selectedCountry, selectedCategory, "All")
+const FEATURES = [
+  {
+    href: "/dashboard",
+    title: "Market Dashboard",
+    desc: "In-demand skills, salary ranges, soft skills and hiring spread by role and experience.",
+    icon: LayoutDashboard,
+  },
+  {
+    href: "/compare",
+    title: "Compare Markets",
+    desc: "Skill gaps and salary deltas — Malaysia vs Singapore and Indonesia.",
+    icon: ArrowLeftRight,
+  },
+  {
+    href: "/roadmap",
+    title: "Career Roadmaps",
+    desc: "Gamified, phase-locked learning paths for 15+ roles, with saved progress.",
+    icon: Route,
+  },
+  {
+    href: "/curriculum",
+    title: "Curriculum Checker",
+    desc: "Paste a syllabus and see which in-demand skills it covers — and which it misses.",
+    icon: GraduationCap,
+  },
+]
 
-  // 3. CALCULATE METRICS
-  const jobCount = stats?.job_count ?? 0
-
-  const estimate = stats?.salary_estimate
-  const salaryDisplay = estimate
-    ? `RM ${Math.round(estimate.nominal_myr.min).toLocaleString()} - ${Math.round(estimate.nominal_myr.max).toLocaleString()}`
-    : "N/A"
-  const salarySubtext = estimate
-    ? "Market estimate · monthly (MYR)"
-    : "Not reported in source data"
-
-  const totalCategoryJobs = allStats?.job_count ?? 1
-  const marketShare = ((jobCount / totalCategoryJobs) * 100).toFixed(1)
-
-  const country = getCountry(selectedCountry)
-  const role = getRole(selectedCountry, selectedCategory)
-  const distribution = country.job_distribution
-  const expSlices = [
-    { label: "Junior", count: role?.Junior?.job_count ?? 0, varName: "--chart-1" },
-    { label: "Mid", count: role?.Mid?.job_count ?? 0, varName: "--chart-2" },
-    { label: "Senior", count: role?.Senior?.job_count ?? 0, varName: "--chart-3" },
-    {
-      label: "Unknown",
-      count: typeof role?.unknown_level === "number" ? role.unknown_level : 0,
-      varName: "--muted-foreground",
-    },
-  ]
-
-  const hasData = jobCount > 0
+export default function LandingPage() {
+  const countries = getCountries()
+  const totalJobs = countries.reduce((sum, cc) => sum + getCountry(cc).total_jobs_analyzed, 0)
+  const roles = getRoles(DEFAULT_COUNTRY).length
 
   return (
-    <AppShell>
-      <div className="flex">
-        <RolePanel
-          categories={categoryNames}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-          selectedLevel={selectedLevel}
-          onSelectLevel={setSelectedLevel}
-        />
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Header */}
+      <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+          <Link href="/" className="text-xl font-bold text-primary">
+            UDiff
+          </Link>
+          <nav className="flex items-center gap-2">
+            <Button asChild variant="ghost" className="text-muted-foreground hover:text-foreground">
+              <Link href="/methodology">Methodology</Link>
+            </Button>
+            <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Link href="/dashboard">
+                Open dashboard <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
+          </nav>
+        </div>
+      </header>
 
-        <main className="flex-1 min-w-0">
-          {/* Header Bar */}
-          <div className="border-b border-border p-8 flex flex-wrap justify-between items-start gap-4">
-            <div className="min-w-0">
-              <h2 className="text-3xl font-bold tracking-tight text-foreground">
-                {selectedCategory}
-              </h2>
-              <p className="text-muted-foreground mt-2">
-                Analysis based on {jobCount} job postings in {getCountryName(selectedCountry)}.
-              </p>
-            </div>
+      {/* Hero */}
+      <section className="mx-auto max-w-5xl px-6 pb-16 pt-20">
+        <p className="text-sm font-medium uppercase tracking-wider text-primary">
+          {countries.map(getCountryName).join(" · ")}
+        </p>
+        <h1 className="mt-4 max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          See the gap between what universities teach and what the market hires for.
+        </h1>
+        <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+          UDiff turns thousands of live tech job postings into a comparable, honest snapshot of demand —
+          the skills, salary bands and hiring spread behind each role — then checks a syllabus against it.
+        </p>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Link href="/dashboard">Explore the dashboard</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/methodology">How the data works</Link>
+          </Button>
+        </div>
+      </section>
 
-            {/* Level + country controls (desktop) */}
-            <div className="hidden lg:flex items-center gap-3 shrink-0">
-              <span className="text-sm bg-muted text-primary px-3 py-1 rounded-full border border-border">
-                {selectedLevel}
-              </span>
-              <Select
-                value={selectedCountry}
-                onValueChange={(val) => {
-                  setSelectedCountry(val)
-                  setSelectedCategory(getRoles(val)[0])
-                }}
-              >
-                <SelectTrigger className="w-[160px] bg-card border-border text-foreground">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border text-popover-foreground">
-                  {getCountries().map((code) => (
-                    <SelectItem key={code} value={code}>
-                      {getCountryName(code)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+      {/* Stats */}
+      <section className="border-y border-border">
+        <div className="mx-auto grid max-w-5xl grid-cols-3 gap-4 px-6 py-10">
+          <div>
+            <div className="text-3xl font-bold tabular-nums text-foreground">
+              {totalJobs.toLocaleString()}
             </div>
-
-            {/* Filters (mobile) */}
-            <div className="flex lg:hidden flex-wrap items-center gap-2 w-full">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="flex-1 min-w-[140px] bg-card border-border text-foreground">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border text-popover-foreground max-h-[300px]">
-                  {categoryNames.map((cat) => (
-                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                <SelectTrigger className="w-[110px] bg-card border-border text-foreground">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border text-popover-foreground">
-                  <SelectItem value="All">All</SelectItem>
-                  <SelectItem value="Junior">Junior</SelectItem>
-                  <SelectItem value="Mid">Mid</SelectItem>
-                  <SelectItem value="Senior">Senior</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={selectedCountry}
-                onValueChange={(val) => {
-                  setSelectedCountry(val)
-                  setSelectedCategory(getRoles(val)[0])
-                }}
-              >
-                <SelectTrigger className="w-[130px] bg-card border-border text-foreground">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border text-popover-foreground">
-                  {getCountries().map((code) => (
-                    <SelectItem key={code} value={code}>
-                      {getCountryName(code)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="text-sm text-muted-foreground">postings analysed</div>
           </div>
-
-          {/* Dashboard Content */}
-          <div className="p-8 space-y-8">
-
-            {/* Row 1: Metrics */}
-            <div className="grid gap-4 md:grid-cols-3">
-              <MetricCard
-                title={`${selectedLevel} Openings`}
-                value={jobCount}
-                subtext="Job postings analysed"
-                icon={Briefcase}
-              />
-              <MetricCard
-                title="Estimated Base Salary"
-                value={salaryDisplay}
-                subtext={salarySubtext}
-                icon={DollarSign}
-              />
-              <MetricCard
-                title="Share of Role"
-                value={`${marketShare}%`}
-                subtext={`of all ${selectedCategory} jobs`}
-                icon={PieChart}
-              />
-            </div>
-
-            {/* CHECK: Do we have data? */}
-            {hasData ? (
-              <>
-                <SectionHeading title="Skills & experience" scope="role × level" />
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                  <SkillChart data={stats?.top_hard_skills ?? []} />
-                  <ContextTreemap data={stats?.top_technical_context ?? []} />
-                </div>
-                <div className="grid gap-4 lg:grid-cols-2">
-                  <SoftSkills data={stats?.top_soft_skills ?? []} />
-                  <ExperienceSplit slices={expSlices} />
-                </div>
-                <SalaryBands estimate={stats?.salary_estimate} />
-
-                <SectionHeading title="Market overview" scope="country only" />
-                <div className="grid gap-4 lg:grid-cols-2">
-                  <JobDistribution data={distribution} selectedRole={selectedCategory} />
-                  <JobsByState data={country.states} />
-                </div>
-                <TopCompanies
-                  companies={country.top_companies}
-                  placeholder={country.placeholder_companies}
-                />
-                <ObservedSalaries data={country.observed_salaries} />
-              </>
-            ) : (
-              <div className="bg-card/50 border border-border rounded-xl p-12 text-center text-muted-foreground flex flex-col items-center">
-                <AlertCircle className="h-12 w-12 text-muted-foreground/60 mb-4" />
-                <h3 className="text-lg font-semibold text-foreground">No Data Found</h3>
-                <p className="max-w-sm mt-2">
-                  We couldn&apos;t find any {selectedLevel} level jobs for this category in the current dataset.
-                  Try switching to &quot;All&quot; or &quot;Mid&quot;.
-                </p>
-              </div>
-            )}
-
+          <div>
+            <div className="text-3xl font-bold tabular-nums text-foreground">{countries.length}</div>
+            <div className="text-sm text-muted-foreground">markets</div>
           </div>
-        </main>
-      </div>
-    </AppShell>
+          <div>
+            <div className="text-3xl font-bold tabular-nums text-foreground">{roles}</div>
+            <div className="text-sm text-muted-foreground">tech roles tracked</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pipeline */}
+      <section className="mx-auto max-w-5xl px-6 py-16">
+        <h2 className="text-2xl font-semibold text-foreground">How it works</h2>
+        <p className="mt-2 text-muted-foreground">A one-way batch pipeline, from raw ads to a live report.</p>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {PIPELINE.map((p, i) => (
+            <div key={p.step} className="rounded-lg border border-border bg-card p-4">
+              <div className="text-xs font-mono tabular-nums text-primary">{String(i + 1).padStart(2, "0")}</div>
+              <div className="mt-2 font-semibold text-foreground">{p.step}</div>
+              <div className="mt-1 text-sm text-muted-foreground">{p.desc}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="mx-auto max-w-5xl px-6 pb-20">
+        <h2 className="text-2xl font-semibold text-foreground">Explore</h2>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          {FEATURES.map(({ href, title, desc, icon: Icon }) => (
+            <Link key={href} href={href} className="group">
+              <Card className="h-full bg-card border-border transition-colors group-hover:border-primary/50">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-5 w-5 text-primary" />
+                    <span className="font-semibold text-foreground">{title}</span>
+                    <ArrowRight className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+                  </div>
+                  <p className="mt-3 text-sm text-muted-foreground">{desc}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-border">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-muted-foreground">
+          <p>
+            UDiff — a point-in-time snapshot. Estimated and text-mined figures are best-effort, not
+            authoritative.
+          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/methodology" className="hover:text-foreground">
+              Methodology
+            </Link>
+            <a
+              href="https://github.com/RSGzen/udiff"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1 hover:text-foreground"
+            >
+              <Github className="h-4 w-4" /> GitHub
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }

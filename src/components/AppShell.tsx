@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 const NAV = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/compare", label: "Compare", icon: ArrowLeftRight },
   { href: "/roadmap", label: "Roadmap", icon: Route },
   { href: "/curriculum", label: "Curriculum", icon: GraduationCap },
@@ -31,7 +31,7 @@ function NavList({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: (
   return (
     <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
       {NAV.map(({ href, label, icon: Icon }) => {
-        const active = href === "/" ? pathname === "/" : pathname.startsWith(href)
+        const active = pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))
         return (
           <Button
             key={href}
