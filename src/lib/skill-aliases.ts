@@ -1,0 +1,163 @@
+// Curated keyword-set dictionary for the curriculum checker.
+//
+// Keys are `normalize(skillName)` (lowercase; tech punctuation folded — C++ → cpp,
+// C# → csharp, .NET → dotnet, Node.js → nodejs; other punctuation becomes spaces).
+// Values are phrases a syllabus might use in place of the skill name. Matching is
+// whole-word / phrase, so entries stay conservative.
+//
+// This is consulted for every role and country, whenever a skill with a matching key
+// appears — so it improves coverage across all courses.
+
+export const SKILL_ALIASES: Record<string, string[]> = {
+  // --- Databases / data ---
+  sql: ["database", "relational database", "dbms", "structured query language", "query languages"],
+  mysql: ["database", "relational database", "dbms", "sql"],
+  postgresql: ["database", "relational database", "dbms", "sql"],
+  "database systems": ["database", "dbms"],
+  "database management": ["database", "dbms", "data modeling"],
+  "database optimization": ["database", "query optimization", "indexing", "dbms"],
+  "database design": ["database", "data modeling", "entity relationship", "erd"],
+  mongodb: ["database", "nosql", "document database"],
+  nosql: ["database", "mongodb"],
+  "data modeling": ["database design", "entity relationship", "erd"],
+
+  // --- Cloud / DevOps ---
+  "cloud infrastructure": ["cloud computing", "cloud services", "cloud"],
+  "cloud computing": ["cloud", "cloud services", "cloud infrastructure"],
+  "cloud services": ["cloud", "cloud computing", "cloud infrastructure"],
+  aws: ["amazon web services", "cloud"],
+  azure: ["microsoft azure", "cloud"],
+  gcp: ["google cloud", "cloud"],
+  docker: ["containerization", "containers", "container"],
+  kubernetes: ["container orchestration", "k8s", "containers"],
+  containerization: ["docker", "containers", "kubernetes", "container"],
+  "ci cd": ["continuous integration", "continuous delivery", "continuous deployment"],
+  devops: ["ci cd", "continuous integration", "infrastructure as code"],
+  "infrastructure as code": ["terraform", "ansible", "iac"],
+  terraform: ["infrastructure as code", "iac"],
+  ansible: ["configuration management", "infrastructure as code"],
+  jenkins: ["ci cd", "continuous integration"],
+  observability: ["monitoring", "logging", "tracing"],
+  monitoring: ["observability", "logging"],
+  linux: ["unix", "operating systems", "shell scripting"],
+
+  // --- Backend ---
+  "backend development": ["backend", "server side", "server-side"],
+  "api development": ["rest api", "restful", "web services", "api"],
+  "api integration": ["rest api", "restful", "web services", "api"],
+  "api design": ["rest api", "restful", "web services", "api"],
+  "restful apis": ["rest api", "restful", "web services", "api"],
+  "rest api": ["restful", "web services", "api"],
+  graphql: ["api", "web services"],
+  microservices: ["microservice", "service oriented architecture"],
+  "microservices architecture": ["microservice", "microservices", "service oriented architecture"],
+  "spring boot": ["spring framework", "java spring"],
+  java: ["object oriented programming", "oop"],
+  "node js": ["nodejs", "javascript"],
+  nodejs: ["node js", "javascript"],
+  dotnet: ["csharp", "asp net", "object oriented programming"],
+  csharp: ["dotnet", "object oriented programming", "oop"],
+  php: ["web development", "server side"],
+  golang: ["go", "go language"],
+  "server side rendering": ["ssr", "server side"],
+
+  // --- Frontend ---
+  "frontend development": ["frontend", "front end", "client side", "client-side"],
+  "front end development": ["frontend", "front end", "client side"],
+  "web development": ["web", "web applications", "web programming", "frontend"],
+  "web applications": ["web development", "web"],
+  javascript: ["js", "ecmascript", "es6"],
+  typescript: ["ts", "typed javascript"],
+  react: ["react js", "reactjs"],
+  "react js": ["react", "reactjs"],
+  "next js": ["nextjs", "react"],
+  vue: ["vue js", "vuejs"],
+  "vue js": ["vue", "vuejs"],
+  angular: ["angular js", "angularjs"],
+  html: ["html5", "markup"],
+  css: ["css3", "styling", "stylesheets", "cascading style sheets"],
+  "css frameworks": ["bootstrap", "tailwind", "css"],
+  tailwind: ["tailwind css", "utility css", "css"],
+  "web performance": ["performance optimization", "page speed", "web optimization"],
+  "responsive design": ["responsive web design", "mobile first", "mobile-first", "adaptive design"],
+  "ui ux design": [
+    "ui design", "ux design", "user experience", "user interface",
+    "hci", "human computer interaction", "interface design",
+  ],
+  accessibility: ["a11y", "wcag", "inclusive design", "web accessibility"],
+  "full stack development": ["fullstack", "full stack", "web development"],
+
+  // --- Mobile ---
+  "mobile development": ["mobile app development", "mobile applications", "android", "ios"],
+  "mobile app development": ["mobile development", "mobile applications"],
+  android: ["android development", "kotlin", "mobile development"],
+  ios: ["ios development", "swift", "mobile development"],
+  swift: ["ios", "swiftui"],
+  kotlin: ["android", "kotlin android"],
+  flutter: ["cross platform", "dart"],
+  "react native": ["cross platform", "mobile development"],
+
+  // --- AI / ML / data ---
+  "machine learning": ["ml", "artificial intelligence", "statistical learning"],
+  "deep learning": ["neural networks", "machine learning", "dl"],
+  nlp: ["natural language processing", "text mining", "computational linguistics"],
+  "natural language processing": ["nlp", "text mining"],
+  "computer vision": ["image processing", "vision", "image analysis"],
+  tensorflow: ["deep learning", "machine learning frameworks", "neural networks"],
+  pytorch: ["deep learning", "machine learning frameworks", "neural networks"],
+  "scikit learn": ["machine learning", "sklearn"],
+  "artificial intelligence": ["ai", "machine learning"],
+  "data science": ["data analysis", "data analytics", "statistics", "machine learning"],
+  "data analysis": ["data analytics", "statistics", "data science"],
+  "data analytics": ["data analysis", "statistics", "data science"],
+  "data engineering": ["data pipelines", "etl", "data warehousing"],
+  etl: ["data pipelines", "data integration", "data warehousing"],
+  "data pipelines": ["etl", "data engineering"],
+  "data visualization": ["visualization", "dashboards", "data analysis"],
+  pandas: ["data analysis", "python"],
+
+  // --- QA / testing ---
+  testing: ["software testing", "quality assurance", "qa"],
+  "software testing": ["testing", "quality assurance", "qa"],
+  "automated testing": ["test automation", "selenium", "unit testing"],
+  "test automation": ["automated testing", "selenium", "testing"],
+  "unit testing": ["testing", "test driven development", "tdd"],
+  selenium: ["test automation", "automated testing", "testing"],
+  qa: ["quality assurance", "testing", "software testing"],
+  "software quality": ["quality assurance", "software quality engineering"],
+
+  // --- Security ---
+  cybersecurity: ["information security", "computer security", "network security", "security"],
+  "information security": ["cybersecurity", "infosec", "security"],
+  "network security": ["cybersecurity", "firewalls", "security"],
+  "penetration testing": ["pentesting", "ethical hacking", "security testing"],
+  cryptography: ["encryption", "security"],
+  security: ["cybersecurity", "information security", "infosec"],
+
+  // --- Systems / networking / CS core ---
+  "operating systems": ["os", "linux", "unix", "systems programming"],
+  networking: ["computer networks", "network technology", "network protocols", "tcp ip"],
+  "computer networks": ["networking", "network technology"],
+  "distributed systems": ["distributed computing", "parallel computing"],
+  "embedded systems": ["embedded", "microcontrollers", "firmware", "iot"],
+  "real time systems": ["realtime systems", "embedded systems"],
+  "data structures": ["data structure", "data structures and algorithms", "dsa"],
+  algorithms: ["algorithm analysis", "algorithm design", "data structures and algorithms", "dsa"],
+  "object oriented": ["oop", "object oriented programming", "object oriented design", "object oriented modeling"],
+  "object oriented programming": ["oop", "object oriented", "object oriented design"],
+  "design patterns": ["software design patterns", "software architecture and design patterns"],
+  "software architecture": ["software design", "design patterns", "system architecture"],
+  "software engineering": ["software development", "sdlc", "software development life cycle"],
+  "software project management": ["project management", "sdlc", "agile development"],
+  "agile development": ["agile", "scrum", "kanban"],
+  agile: ["agile development", "scrum"],
+  scrum: ["agile", "agile development"],
+  "version control": ["git", "svn"],
+  git: ["version control"],
+
+  // --- Soft skills ---
+  communication: ["teamwork", "collaboration", "communication skills"],
+  "communication skills": ["communication", "teamwork"],
+  teamwork: ["collaboration", "communication"],
+  "problem solving": ["critical thinking", "algorithms"],
+}

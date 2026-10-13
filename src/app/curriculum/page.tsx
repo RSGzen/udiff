@@ -11,6 +11,7 @@ import { CheckCircle2, AlertCircle, ArrowRight } from "lucide-react"
 
 // 1. Read the skill→course dictionary through the schema layer
 import { DEFAULT_COUNTRY, getSkillClassRoles, getSkillClass } from "@/lib/data"
+import { SKILL_ALIASES } from "@/lib/skill-aliases"
 
 const ROLES = getSkillClassRoles(DEFAULT_COUNTRY)
 
@@ -36,24 +37,6 @@ const containsTerm = (haystack: string, term: string) => {
   if (!t) return false
   const pattern = t.split(" ").map(escapeRegExp).join("\\s+")
   return new RegExp(`(?:^| )${pattern}(?: |$)`).test(haystack)
-}
-
-// Curated cross-walk: common syllabus phrasings the generated course-name dictionary misses.
-// Keys are `normalize(skillName)`; values are extra phrases to match (whole-word). Edit freely.
-const SKILL_ALIASES: Record<string, string[]> = {
-  sql: ["database", "relational database", "dbms"],
-  mysql: ["database", "relational database", "dbms"],
-  "database management": ["database", "dbms"],
-  "cloud infrastructure": ["cloud computing", "cloud services", "cloud"],
-  "restful apis": ["rest api", "restful", "web services"],
-  "api development": ["rest api", "api", "web services"],
-  "api integration": ["rest api", "api", "web services"],
-  git: ["version control"],
-  docker: ["containerization", "containers"],
-  "spring boot": ["spring framework", "spring boot"],
-  microservices: ["microservice"],
-  "microservices architecture": ["microservice", "microservices"],
-  "backend development": ["backend", "server side", "server-side"],
 }
 
 export default function CurriculumCheckPage() {
