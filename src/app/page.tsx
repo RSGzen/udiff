@@ -136,13 +136,11 @@ export default function LandingPage() {
           {FEATURES.map(({ href, title, desc, icon: Icon }) => (
             <Link key={href} href={href} className="group">
               <Card className="h-full bg-card border-border transition-colors group-hover:border-primary/50">
-                <CardContent className="flex flex-1 flex-col justify-center pt-6 text-center">
-                  <div className="flex items-center justify-center gap-3">
-                    <Icon className="h-5 w-5 text-primary" />
-                    <span className="text-[1.25rem] font-semibold text-foreground">{title}</span>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
-                  </div>
-                  <p className="mt-3 text-[1.09375rem] text-muted-foreground">{desc}</p>
+                <CardContent className="relative flex flex-1 flex-col items-center justify-center gap-3 text-center">
+                  <ArrowRight className="absolute right-6 top-6 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
+                  <Icon className="h-5 w-5 text-primary" />
+                  <span className="text-[1.25rem] font-semibold text-foreground">{title}</span>
+                  <p className="text-[1.09375rem] text-muted-foreground">{desc}</p>
                 </CardContent>
               </Card>
             </Link>
