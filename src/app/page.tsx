@@ -96,20 +96,20 @@ export default function LandingPage() {
 
       {/* Stats */}
       <section className="border-y border-border">
-        <div className="mx-auto grid max-w-5xl grid-cols-3 gap-4 px-6 py-10">
+        <div className="mx-auto grid max-w-5xl grid-cols-3 gap-4 px-6 py-10 text-center">
           <div>
-            <div className="text-3xl font-bold tabular-nums text-foreground">
+            <div className="text-[3rem] font-bold tabular-nums text-foreground">
               {totalJobs.toLocaleString()}
             </div>
-            <div className="text-sm text-muted-foreground">postings analysed</div>
+            <div className="text-[1.4rem] text-muted-foreground">Postings Analysed</div>
           </div>
           <div>
-            <div className="text-3xl font-bold tabular-nums text-foreground">{countries.length}</div>
-            <div className="text-sm text-muted-foreground">markets</div>
+            <div className="text-[3rem] font-bold tabular-nums text-foreground">{countries.length}</div>
+            <div className="text-[1.4rem] text-muted-foreground">Markets</div>
           </div>
           <div>
-            <div className="text-3xl font-bold tabular-nums text-foreground">{roles}</div>
-            <div className="text-sm text-muted-foreground">tech roles tracked</div>
+            <div className="text-[3rem] font-bold tabular-nums text-foreground">{roles}</div>
+            <div className="text-[1.4rem] text-muted-foreground">Tech Roles Tracked</div>
           </div>
         </div>
       </section>
