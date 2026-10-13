@@ -201,12 +201,15 @@
     `comparisons` skip broad/non-month rows, and widened `observed_salaries` to all
     currencies — see the work log.
 
-### M6 — Web cleanup `Pending`
-- Remove the `as any` casts and unused default assets; ensure types are honest.
-- Verify `npm run build` + `npm run lint`; add a screenshot/GIF to the README.
-- **Note:** this is the **code-hygiene** pass (`as any`, `@ts-ignore`, lint), separate from the
-  **design** revamp (M9–M11). Run M6 **before** M9 so the revamp starts from a typed, lint-clean base.
-- **Done when:** build/lint pass with no dead cruft and docs show the live link.
+### M6 — Web cleanup `Done (13 Oct 2026)`
+- **Result:** `npm run lint` is now **clean** (was 15+ errors). Removed every `any` / `@ts-ignore`;
+  typed the roadmap JSON (`Roadmap`/`RoadmapPhase`), the two Recharts tooltip/content props, and the
+  treemap content props; moved the bar-chart tooltip **out of render** (fixes the "component created
+  during render" rule); replaced the roadmap `useEffect` progress-load with **`useSyncExternalStore`**
+  (fixes `react-hooks/set-state-in-effect`); deleted 5 unused default Next.js SVGs.
+- Screenshots already live under `public/screenshots/` and are referenced by the README.
+- **Verified:** `npx tsc --noEmit` + `npm run lint` + `npm run build` all pass.
+- **Done when:** build/lint pass with no dead cruft and docs show the live link. ✅
 
 ### M7 — Automate the data contract `Done (12 Oct 2026)`
 - Added `pipeline/src/sync_web_data.py` (the final orchestrator step) that copies `gap_report.json` + `skill_class.json` into `src/data/`.
@@ -271,9 +274,19 @@
 - Full detail: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §6.
 
 ### M11 — Frontend revamp: Tier 2 (restructure) `Future`
+- **New data view (from the 13 Oct data audit):** **Observed Salary Mentions** (`UDiff.md` §4) is now
+  unblocked — `observed_salaries` is multi-country (MY 33 · SG 13 · ID 5) with `{value, currency,
+  likely_annual}`. Render as a **per-country list + `likely_annual` flag**: a compact card on the
+  dashboard *Market overview* section **and** the full explanation on the Methodology page *(decision (c))*.
+- **Prereq types:** update `ObservedSalary` (`value`/`currency`/`likely_annual`) and add
+  `SalaryEstimate.period_raw` in `src/types/index.ts`.
 - Landing/About page, IA + route moves (`/` → landing, `/dashboard`, `/methodology`), optional
-  role detail route, mobile drawer, methodology/data page (surface `UDiff.md` §6 limits), chart
-  redesign, motion polish, full a11y + performance audit.
+  role detail route, methodology/data page (surface `UDiff.md` §6 limits + observed-pay caveats),
+  chart redesign, motion polish, full a11y + performance audit.
+- **Doc sync:** `UDiff.md` §4 chart types corrected + *Posting recency* marked not-in-data (done);
+  `Tech Stack.md` §3 contract updated for `observed_salaries` + `period_raw`.
+- **Deferred:** distinct-skills metric card; regional role-distribution on `/compare`; posting recency
+  (needs a pipeline aggregate — no data yet).
 - **New dep:** `motion` (optional). Plan: [`Frontend Revamp Plan.md`](Frontend%20Revamp%20Plan.md) §7.
 - **Done when:** a stranger understands UDiff without context and the app passes an a11y audit.
 
@@ -473,6 +486,35 @@ fallbacks but does not smooth real reported values.
 **Contract change for the web agent:** `observed_salaries` is now multi-country with
 `value`/`currency`/`likely_annual` (the deferred observed-salary scatter can be enabled);
 `salary_estimate` gained `period_raw` (its `period` is always `MONTH`).
+
+### 13_10_2026 (web, planning) — M11 scoped against refreshed data (assistant)
+**Did:**
+- Reviewed the refreshed `src/data/gap_report.json` (generated `2026-10-13 17:09`) + the data-audit log.
+  The only dashboard-relevant **new** data is **`observed_salaries`** — now multi-country
+  (MY 33 · SG 13 · ID 5) with `value`/`currency`/`likely_annual` — plus `salary_estimate.period_raw`.
+  (No `posted_at`/recency field exists in the report.)
+- Reconciled `UDiff.md` §4 against what M9/M10 actually built; corrected the chart-type column
+  (donut / ranked list / range-bar toggle) and marked **Posting recency** as *no data*.
+- Scoped **M11**: add an **Observed Salary Mentions** view (per-country **list + `likely_annual` flag**)
+  as a compact dashboard *Market overview* card **and** a full explanation on the Methodology page
+  *(decision (c))*; prereq = update the `ObservedSalary` type + add `period_raw`.
+- **Decision:** run **M6** (lint hygiene) **before** M11.
+- Deferred: distinct-skills metric card; regional role-distribution on `/compare`; posting recency.
+
+**Next:** M6 → M11.
+
+### 13_10_2026 (web, M6) — lint hygiene (assistant)
+**Did:**
+- Removed all `any` / `@ts-ignore` from the app: typed `roadmaps.json` (`Roadmap`/`RoadmapPhase`), the
+  `SkillChart` + `ExperienceSplit` tooltip props, and the `ContextTreemap` content props.
+- Moved `ChartBarTooltip` to module scope (was created during render — `react-hooks/static-components`).
+- Replaced the roadmap `useEffect` progress-load with **`useSyncExternalStore`** (+ a
+  `udiff-roadmap-progress-change` event), removing `react-hooks/set-state-in-effect` while keeping
+  persistence.
+- Deleted 5 unused default Next.js SVGs from `public/`.
+
+**Verified:** `npx tsc --noEmit` + `npm run lint` + `npm run build` all pass (lint clean; was 15+ errors).
+**Next:** M11 (Tier 2).
 
 ---
 

@@ -141,18 +141,27 @@ groups; fixed the bar-chart hover flash.
 
 ---
 
-## 7. Tier 2 — Restructure `Deferred`
+## 7. Tier 2 — Restructure (`M11`) `Deferred`
 
 **Goal:** make UDiff self-explanatory to a stranger and portfolio-ready. **~1.5–3 weeks, medium-high risk.**
 
+- [ ] **New data view — Observed Salary Mentions** (unblocked by the 13 Oct data audit): `observed_salaries`
+      is now multi-country with `value` / `currency` / `likely_annual`. Render as a **per-country list +
+      `likely_annual` flag** — a compact card on the dashboard *Market overview* **and** the full
+      explanation on Methodology *(decision (c))*. Prereq: update the `ObservedSalary` type + add
+      `SalaryEstimate.period_raw` in `src/types/index.ts`.
 - [ ] **Landing / About page** — what UDiff is, who it is for, the pipeline in one diagram, data-source honesty.
-- [ ] **IA + routes:** `/` (landing), `/dashboard`, `/roadmap`, `/curriculum`, `/methodology`.
+- [ ] **IA + routes:** `/` (landing), `/dashboard`, `/roadmap`, `/curriculum`, `/compare`, `/methodology`.
 - [ ] Optional **`/dashboard/[role]`** detail route (replaces client-state role switching).
-- [ ] **Mobile drawer + full responsive** pass.
-- [ ] **Methodology / Data page:** sources, sample size, known limits (salary null, keyword matching).
+- [ ] **Methodology / Data page:** sources, sample sizes, known limits — including observed pay
+      (text-mined, sparse, best-effort), salary-estimate period normalisation, and the residual
+      SG-Cyber / ID-Fullstack source anomalies surfaced in the data audit.
 - [ ] **Chart redesign:** dot plot / lollipop for skill demand; better treemap labelling.
 - [ ] **Motion polish:** page transitions, stagger; add `motion` (Framer) only where springs genuinely help.
 - [ ] **Full a11y + performance audit.**
+
+**Deferred:** distinct-skills metric card; regional role-distribution on `/compare`; posting recency
+(no pipeline aggregate yet).
 
 **Done when:** a reviewer understands the product without context and the app passes an a11y audit.
 

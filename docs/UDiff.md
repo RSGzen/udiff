@@ -63,21 +63,25 @@ What the dashboard surfaces and how each view is meant to be used. Rows marked `
 |---|---|---|---|
 | Top hard skills (per role × level) | ranked categorical + % | horizontal bar | Most-demanded technologies for a role |
 | Technical context / domains | weighted categories | treemap | Which application areas skills are used in (NLP, Android, Spring…) |
-| Soft skills `*` | ranked list + count/% | bar / chips | Non-technical demand (communication, ownership) |
-| Job distribution by role | category counts | bar / donut | Market composition — which roles have the most openings |
-| Experience split (All / Junior / Mid / Senior) | ordinal buckets | stacked bar | Demand by seniority, incl. junior-market size |
-| Jobs by state `*` | geographic category | bar / choropleth | Where hiring is concentrated (KL, Selangor, Penang…) |
-| Top hiring companies `*` | ranked category + `kind` flag | bubble map (toggle placeholders) | Who is hiring; recruiter/confidential share |
-| Salary estimate — nominal (MYR) | range per role × level | range / box bar | Market pay bands (estimated, attributed) |
-| Salary estimate — PPP-adjusted (MYR) | range per role × level | dual range bar | Real purchasing power (cost-of-living adjusted) |
-| Observed salary mentions `*` | sparse per-posting values | scatter / histogram | Best-effort observed-pay signal from ad text |
+| Soft skills `*` | ranked list + count/% | bar (arrow) | Non-technical demand (communication, ownership) |
+| Job distribution by role | category counts | bar | Market composition — which roles have the most openings |
+| Experience split (All / Junior / Mid / Senior) | ordinal buckets | donut | Demand by seniority, incl. junior-market size |
+| Jobs by location `*` | geographic category | ranked bar | Where hiring is concentrated (KL, Selangor, Penang…) |
+| Top hiring companies `*` | ranked category + `kind` flag | ranked list (+ placeholders toggle) | Who is hiring; recruiter/confidential share |
+| Salary estimate — nominal (MYR) | range per role × level | range bar | Market pay bands (estimated, attributed) |
+| Salary estimate — PPP-adjusted (MYR) | range per role × level | range bar (nominal/PPP toggle) | Real purchasing power (cost-of-living adjusted) |
+| Observed salary mentions `*` | sparse per-posting values | list (+ `likely_annual` flag) | Best-effort observed-pay signal from ad text |
 | Distinct skills `*` | scalar | metric card | Breadth of demand for a role |
-| Posting recency `*` | time series | line / bar | Data freshness ("% posted in last 30 days") |
+| Posting recency `*` | time series | — **(no data)** | Data freshness ("% posted in last 30 days") — **not aggregated in the pipeline yet** |
 | Curriculum skill→course map | lookup dictionary | table / checker UI | Match a syllabus against demanded skills |
 | Country skill gap (e.g. MY vs SG) `†` | signed deltas | diverging bar | Skills the local market is missing vs a peer |
-| Country salary delta (nominal & PPP) `†` | signed deltas / ranges | dumbbell / diverging bar | Pay comparison between countries |
-| Regional role distribution `†` | multi-category counts | grouped / stacked bar | Market composition across SEA |
+| Country salary delta (nominal & PPP) `†` | signed deltas / ranges | diverging bar | Pay comparison between countries |
+| Regional role distribution `†` | multi-category counts | grouped bar | Market composition across SEA |
 | Career roadmaps | hand-authored phases | timeline / checklist | Guided learning path per role |
+
+> **Built status (M9/M10):** every row is rendered **except** *Observed salary mentions* (planned M11)
+> and *Posting recency* (no pipeline aggregate yet). *Distinct skills* and *Regional role distribution*
+> have data but are deferred. Asia/geo rows use ranked bars — **no map dependency**.
 
 ## 5. Expected outcome
 
