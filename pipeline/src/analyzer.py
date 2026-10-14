@@ -52,8 +52,17 @@ def extract_salary_mention(description):
     raw = match.group(0).strip()
     upper = raw.upper().replace(" ", "")
     currency = next((code for token, code in CURRENCY_TOKENS if upper.startswith(token)), None)
-    digits = re.sub(r"\D", "", raw)
-    value = int(digits) if digits else None
+
+    # Indonesian RP salary format is funky (Exp --> Rp 5.500.000 = IDR 5,000,000 = IDR 5000000)
+    if currency == "IDR":
+        cleaned_digit = raw.replace(",", "").replace(".", "")
+        value = int(cleaned_digit)
+    elif currency == "MYR" or currency == "SGD":
+        cleaned_digit = raw.replace(",", "").split(".")
+        value = int(cleaned_digit[0])
+    else:
+        value = None
+
     likely_annual = bool(value and currency in MONTHLY_CEILING
                          and value >= MONTHLY_CEILING[currency])
     return {"raw": raw, "value": value, "currency": currency, "likely_annual": likely_annual}
